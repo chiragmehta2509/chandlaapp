@@ -1,0 +1,30 @@
+
+   INFO  Seeding database.  
+
+1. Seeding Users...
+2. Seeding Contacts...
+3. Seeding Events...
+4. Seeding Invitations...
+5. Seeding UPI Transactions...
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S02]: Base table or view not found: 1146 Table 'chandla_book.u_p_i_transactions' doesn't exist (Connection: mysql, SQL: insert into `u_p_i_transactions` (`user_id`, `event_id`, `transaction_id`, `amount`, `status`, `payment_method`, `updated_at`, `created_at`) values (2, 5, TXN_sYJFLwgXdB, 1000, pending, upi, 2026-01-01 10:27:07, 2026-01-01 10:27:07))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:829
+    825▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    826▕                 );
+    827▕             }
+    828▕ 
+  ➜ 829▕             throw new QueryException(
+    830▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    831▕             );
+    832▕         }
+    833▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\MySqlConnection.php:39
+      PDOException::("SQLSTATE[42S02]: Base table or view not found: 1146 Table 'chandla_book.u_p_i_transactions' doesn't exist")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\MySqlConnection.php:39
+      PDO::prepare("insert into `u_p_i_transactions` (`user_id`, `event_id`, `transaction_id`, `amount`, `status`, `payment_method`, `updated_at`, `created_at`) values (?, ?, ?, ?, ?, ?, ?, ?)")
+

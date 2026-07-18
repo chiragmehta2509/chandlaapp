@@ -1,0 +1,247 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\User\UserController;
+use App\Http\Controllers\Api\Notification\NotificationController;
+use App\Http\Controllers\Api\Event\EventController;
+use App\Http\Controllers\Api\Contact\ContactController;
+use App\Http\Controllers\Api\Entry\EntryController;
+use App\Http\Controllers\Api\Invitation\InvitationController;
+use App\Http\Controllers\Api\UPI\UPIController;
+use App\Http\Controllers\Api\Report\ReportController;
+use App\Http\Controllers\Api\Chandla\ChandlaController;
+use App\Http\Controllers\Api\Pack\PackController;
+use App\Http\Controllers\Api\Transaction\TransactionController;
+use App\Http\Controllers\Api\Invitation\MarriageInvitationController as ApiMarriageInvitationController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+| Base URL: https://skylighttech.in/chandlaApp/api/v1
+*/
+
+// Public routes
+Route::prefix('v1')->group(function () {
+    
+    // Authentication Routes (Public)
+    Route::prefix('auth')->group(function () {
+        // Social Login
+        Route::post('/google/login', [AuthController::class, 'googleLogin']);
+        Route::post('/facebook/login', [AuthController::class, 'facebookLogin']);
+        Route::post('/apple/login', [AuthController::class, 'appleLogin']);
+        
+        // Phone OTP
+        Route::post('/phone/send-otp', [AuthController::class, 'sendOTP']);
+        Route::post('/phone/verify-otp', [AuthController::class, 'verifyOTP']);
+        
+        // Email/Password
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    });
+});
+
+// Protected routes - Authentication required via Sanctum
+Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+    
+    // Authentication Routes
+    Route::prefix('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/change-password', [AuthController::class, 'changePassword']);
+        Route::post('/update-profile', [AuthController::class, 'updateProfile']);
+    });
+    
+    // User Routes
+    Route::prefix('user')->group(function () {
+        Route::get('/profile', [UserController::class, 'getProfile']);
+        Route::put('/profile', [UserController::class, 'updateProfile']);
+        Route::post('/avatar', [UserController::class, 'uploadAvatar']);
+        Route::delete('/avatar', [UserController::class, 'deleteAvatar']);
+        
+        // Subscription
+        Route::get('/subscription', [UserController::class, 'getSubscription']);
+        Route::post('/subscription/upgrade', [UserController::class, 'upgradeSubscription']);
+        Route::post('/subscription/cancel', [UserController::class, 'cancelSubscription']);
+        
+        // Account Management
+        Route::post('/deactivate', [UserController::class, 'deactivateAccount']);
+        Route::post('/delete', [UserController::class, 'deleteAccount']);
+        Route::get('/stats', [UserController::class, 'getStats']);
+    });
+    
+    // Notification Routes
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread', [NotificationController::class, 'unread']);
+        Route::get('/{id}', [NotificationController::class, 'show']);
+        Route::put('/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/clear-all', [NotificationController::class, 'clearAll']);
+        Route::delete('/{id}', [NotificationController::class, 'destroy']);
+        Route::delete('/', [NotificationController::class, 'clearAll']);
+        
+        // Device Token Management
+        Route::post('/device/register', [NotificationController::class, 'registerDevice']);
+        Route::delete('/device/{id}', [NotificationController::class, 'unregisterDevice']);
+        Route::get('/device/list', [NotificationController::class, 'listDevices']);
+        
+        // Preferences
+        Route::get('/preferences', [NotificationController::class, 'getPreferences']);
+        Route::put('/preferences', [NotificationController::class, 'updatePreferences']);
+    });
+    
+    // Event Routes
+    Route::prefix('events')->group(function () {
+        Route::get('/', [EventController::class, 'index']);
+        Route::get('/upcoming', [EventController::class, 'upcoming']);
+        Route::get('/past', [EventController::class, 'past']);
+        Route::get('/archived', [EventController::class, 'archived']);
+        Route::get('/{id}', [EventController::class, 'show']);
+        Route::post('/', [EventController::class, 'store']);
+        Route::put('/{id}', [EventController::class, 'update']);
+        Route::post('/{id}', [EventController::class, 'update']);
+        Route::delete('/{id}', [EventController::class, 'destroy']);
+        Route::post('/{id}/archive', [EventController::class, 'archive']);
+        Route::post('/{id}/unarchive', [EventController::class, 'unarchive']);
+        Route::post('/{id}/duplicate', [EventController::class, 'duplicate']);
+        Route::get('/{id}/stats', [EventController::class, 'getStats']);
+        
+        // Collaborators
+        Route::get('/{id}/collaborators', [EventController::class, 'getCollaborators']);
+        Route::post('/{id}/collaborators', [EventController::class, 'addCollaborator']);
+        Route::put('/{id}/collaborators/{userId}', [EventController::class, 'updateCollaborator']);
+        Route::delete('/{id}/collaborators/{userId}', [EventController::class, 'removeCollaborator']);
+    });
+    
+    // Contact Routes
+    Route::prefix('contacts')->group(function () {
+        Route::get('/', [ContactController::class, 'index']);
+        Route::get('/favorites', [ContactController::class, 'favorites']);
+        Route::get('/search', [ContactController::class, 'search']);
+        Route::get('/{id}', [ContactController::class, 'show']);
+        Route::post('/', [ContactController::class, 'store']);
+        Route::put('/{id}', [ContactController::class, 'update']);
+        Route::delete('/{id}', [ContactController::class, 'destroy']);
+        Route::post('/{id}/favorite', [ContactController::class, 'toggleFavorite']);
+        
+        // Import/Export
+        Route::post('/import', [ContactController::class, 'import']);
+        Route::get('/export', [ContactController::class, 'export']);
+        Route::get('/export/template', [ContactController::class, 'downloadTemplate']);
+    });
+    
+    // Entry / RSVP Routes
+    Route::prefix('entries')->group(function () {
+        Route::get('/', [EntryController::class, 'index']);
+        Route::get('/event/{eventId}', [EntryController::class, 'getByEvent']);
+        Route::get('/{id}', [EntryController::class, 'show']);
+        Route::post('/', [EntryController::class, 'store']);
+        Route::put('/{id}', [EntryController::class, 'update']);
+        Route::delete('/{id}', [EntryController::class, 'destroy']);
+        Route::put('/{id}/status', [EntryController::class, 'updateStatus']);
+        Route::post('/bulk', [EntryController::class, 'bulkCreate']);
+        Route::put('/bulk/status', [EntryController::class, 'bulkUpdateStatus']);
+    });
+
+    // Chandlas / Ledger Routes
+    Route::prefix('chandlas')->group(function () {
+        Route::get('/', [ChandlaController::class, 'index']);
+        Route::get('/stats', [ChandlaController::class, 'stats']);
+        Route::get('/{id}', [ChandlaController::class, 'show']);
+        Route::post('/', [ChandlaController::class, 'store']);
+        Route::put('/{id}', [ChandlaController::class, 'update']);
+        Route::delete('/{id}', [ChandlaController::class, 'destroy']);
+    });
+    
+    // Invitation Routes
+    Route::prefix('invitations')->group(function () {
+        Route::get('/', [InvitationController::class, 'index']);
+        Route::get('/event/{eventId}', [InvitationController::class, 'getByEvent']);
+        Route::get('/{id}', [InvitationController::class, 'show']);
+        Route::get('/code/{code}', [InvitationController::class, 'getByCode']);
+        Route::post('/', [InvitationController::class, 'store']);
+        Route::put('/{id}', [InvitationController::class, 'update']);
+        Route::delete('/{id}', [InvitationController::class, 'destroy']);
+        
+        // Send Invitations
+        Route::post('/{id}/send', [InvitationController::class, 'send']);
+        Route::post('/{id}/send-bulk', [InvitationController::class, 'sendBulk']);
+        
+        // Share
+        Route::post('/{id}/share', [InvitationController::class, 'share']);
+        Route::get('/{id}/shares', [InvitationController::class, 'getShares']);
+        
+        // Generate
+        Route::post('/{id}/generate-pdf', [InvitationController::class, 'generatePDF']);
+        Route::post('/{id}/generate-image', [InvitationController::class, 'generateImage']);
+        
+        // Response
+        Route::post('/{code}/respond', [InvitationController::class, 'respond']);
+        Route::get('/{id}/analytics', [InvitationController::class, 'getAnalytics']);
+    });
+
+    // Marriage Invitation Routes
+    Route::prefix('marriage-invitations')->group(function () {
+        Route::get('/', [ApiMarriageInvitationController::class, 'index']);
+        Route::get('/{id}', [ApiMarriageInvitationController::class, 'show']);
+        Route::post('/', [ApiMarriageInvitationController::class, 'store']);
+        Route::put('/{id}', [ApiMarriageInvitationController::class, 'update']);
+    });
+
+    // Pack Purchase / Subscription Routes
+    Route::prefix('packs')->group(function () {
+        Route::get('/', [PackController::class, 'index']);
+        Route::post('/{slug}/order', [PackController::class, 'createOrder']);
+        Route::post('/{slug}/verify', [PackController::class, 'verifyPayment']);
+    });
+
+    // Transactions Route
+    Route::prefix('transactions')->group(function () {
+        Route::get('/', [TransactionController::class, 'index']);
+        Route::get('/{txnNumber}', [TransactionController::class, 'show']);
+    });
+    
+    // UPI Payment Routes
+    Route::prefix('payments')->group(function () {
+        Route::get('/', [UPIController::class, 'index']);
+        Route::get('/{id}', [UPIController::class, 'show']);
+        Route::post('/create-order', [UPIController::class, 'createOrder']);
+        Route::post('/verify', [UPIController::class, 'verifyPayment']);
+        Route::post('/refund', [UPIController::class, 'refund']);
+        Route::get('/history', [UPIController::class, 'getHistory']);
+        Route::get('/stats', [UPIController::class, 'getStats']);
+    });
+    
+    // Report Routes
+    Route::prefix('reports')->group(function () {
+        Route::get('/events', [ReportController::class, 'eventsReport']);
+        Route::get('/entries', [ReportController::class, 'entriesReport']);
+        Route::get('/invitations', [ReportController::class, 'invitationsReport']);
+        Route::get('/payments', [ReportController::class, 'paymentsReport']);
+        Route::get('/contacts', [ReportController::class, 'contactsReport']);
+        Route::get('/dashboard', [ReportController::class, 'dashboard']);
+        Route::get('/export/{type}', [ReportController::class, 'exportReport']);
+    });
+    
+    // Sync Routes (for offline support)
+    Route::prefix('sync')->group(function () {
+        Route::post('/events', [EventController::class, 'sync']);
+        Route::post('/contacts', [ContactController::class, 'sync']);
+        Route::post('/entries', [EntryController::class, 'sync']);
+        Route::get('/status', function () {
+            return response()->json(['status' => 'sync_enabled']);
+        });
+    });
+});

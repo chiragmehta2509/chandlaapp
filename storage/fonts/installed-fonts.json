@@ -1,0 +1,15 @@
+{
+    "pdfgujarati": {
+        "normal": "pdfgujarati_normal_b1903c1e4a214ad0a20dca1e3fd0d77e"
+    },
+    "cormorant garamond": {
+        "italic": "C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\storage\\fonts\/cormorant_garamond_italic_f3e17e0bf495984ba1c7d87ea594a089",
+        "500_italic": "C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\storage\\fonts\/cormorant_garamond_500_italic_4c3ad6869426eee3f4ad50ba8ab649db",
+        "normal": "C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\storage\\fonts\/cormorant_garamond_normal_f63dc2fe9b66f4d26b154165ba900d17",
+        "500": "C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\storage\\fonts\/cormorant_garamond_500_7dd57302265d63e30a8b1c79eedd51d6",
+        "600": "cormorant_garamond_600_2a7acbaee9ca69c6f7a654ef09a63a6b"
+    },
+    "great vibes": {
+        "normal": "great_vibes_normal_dfefb61a3041d3a73d616bdfa48ddec4"
+    }
+}

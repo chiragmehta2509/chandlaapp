@@ -1,0 +1,139 @@
+
+
+  <div class="bg-grid"></div>
+
+  <div class="container">
+    
+    <!-- Top actions & Theme Mode -->
+    <div class="top-bar">
+      <button class="theme-toggle-btn" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+        <svg id="themeIcon" viewBox="0 0 24 24">
+          <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header">
+      <div class="badge-promo">⚡ Transparent Interconnected Plans</div>
+      <h1 class="title">Gift Ledger / Chandla App Packages</h1>
+      <p class="subtitle">A fully interconnected billing structure. Upgrading unlocks additional premium capabilities while retaining 100% of your previous plan's benefits.</p>
+    </div>
+
+    <!-- Upgrade Hierarchy Visualizer -->
+    <div class="hierarchy-container">
+      <div class="hierarchy-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+        Interconnected Upgrade Path (Unlock benefits cumulatively)
+      </div>
+      <div class="hierarchy-flow" id="hierarchyFlow">
+        <div class="hierarchy-progress-bar" id="hierarchyProgress"></div>
+        <!-- Steps rendered dynamically by JS -->
+      </div>
+    </div>
+
+    <!-- Interactive Recommender Flow -->
+    <div class="recommender-card">
+      <h2 class="hierarchy-title" style="margin-bottom: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9.663 17h4.673M12 3v1m6.364 1.364l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h0a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+        </svg>
+        Interactive Plan Recommender
+      </h2>
+      <p class="subtitle" style="margin: 0 0 25px 0; text-align: left; font-size: 0.9rem;">Adjust your expected usage metrics to identify the absolute best value package for your event.</p>
+      
+      <div class="recommender-grid">
+        <div class="recommender-inputs">
+          
+          <!-- Slider 1: Events -->
+          <div class="input-group">
+            <label class="input-label" for="recommenderEvents">
+              <span>Expected Number of Events</span>
+              <span class="value-display" id="eventsVal">1 Event</span>
+            </label>
+            <input type="range" class="slider" id="recommenderEvents" min="1" max="15" value="1">
+          </div>
+
+          <!-- Slider 2: Entries -->
+          <div class="input-group">
+            <label class="input-label" for="recommenderEntries">
+              <span>Total Ledger Entries (Gifts/Chandla)</span>
+              <span class="value-display" id="entriesVal">50 Entries</span>
+            </label>
+            <input type="range" class="slider" id="recommenderEntries" min="50" max="1000" step="50" value="50">
+          </div>
+
+          <!-- Toggle 1: QR Collections -->
+          <div class="toggle-container">
+            <div class="toggle-text">
+              <span class="toggle-title">Personal UPI/QR Collections</span>
+              <span class="toggle-desc">Guests scan to contribute directly to you</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="recommenderQR">
+              <span class="slider-round"></span>
+            </label>
+          </div>
+
+          <!-- Toggle 2: Family Editors -->
+          <div class="toggle-container">
+            <div class="toggle-text">
+              <span class="toggle-title">Multi-user Family Editors</span>
+              <span class="toggle-desc">Enable multiple people to manage the ledger</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="recommenderEditors">
+              <span class="slider-round"></span>
+            </label>
+          </div>
+
+        </div>
+
+        <div class="recommender-result" id="recommendationResult">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Cards Grid -->
+    <div class="plans-grid" id="plansGrid">
+      <!-- Plans dynamically populated by JS -->
+    </div>
+
+    <!-- Features Comparison Section -->
+    <div class="comparison-section" id="comparisonTableSection">
+      <div class="comparison-header">
+        <div>
+          <h2 class="comparison-title">Detailed Feature Matrix</h2>
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 4px;">Compare exact features and scale parameters side-by-side.</p>
+        </div>
+        <div class="comparison-toggle" id="tableFilterToggle">
+          <button class="comparison-toggle-btn active" data-filter="all">All Plans</button>
+          <button class="comparison-toggle-btn" data-filter="popular">Popular Plans</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="comparison-table" id="comparisonTable">
+          <!-- Generated dynamically by JS -->
+        </table>
+      </div>
+    </div>
+
+    <!-- FAQ / Footer -->
+    <div class="footer">
+      <p>Have questions about plans or customization? We are here to help make your celebration flawless.</p>
+      <div class="footer-links">
+        <a href="#contact">Contact Support</a>
+        <a href="#terms">Terms of Service</a>
+        <a href="#privacy">Privacy Policy</a>
+      </div>
+      <p style="margin-top: 25px; font-size: 0.75rem;">&copy; 2026 Gift Ledger & Chandla Management. All rights reserved.</p>
+    </div>
+
+  </div>
+
+  <!-- JavaScript logic to render pricing and handle UI interactions -->
+  

@@ -1,0 +1,11 @@
+{
+    "name": "chandlabook",
+    "private": true,
+    "scripts": {
+        "build:css": "tailwindcss -i ./resources/css/tailwind-input.css -o ./public/css/tailwind.css --minify",
+        "watch:css": "tailwindcss -i ./resources/css/tailwind-input.css -o ./public/css/tailwind.css --watch"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.17"
+    }
+}
