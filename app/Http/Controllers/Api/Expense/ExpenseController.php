@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Expense;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\Chandla;
 use App\Models\Event;
 use App\Models\Expense;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -544,6 +545,121 @@ class ExpenseController extends Controller
         return response($pdfBytes)
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="expense-register-' . now()->format('Y-m-d') . '.pdf"');
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // GET /api/v1/expenses/cash-ledger
+    // ──────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Cash Ledger — Cash In (chandla cash receipts) vs Cash Out (cash expenses).
+     *
+     * Query params (all optional):
+     *   event_id   – filter both sides to a specific event
+     *   from_date  – ISO date, inclusive
+     *   to_date    – ISO date, inclusive
+     *
+     * Response shape:
+     * {
+     *   success: true,
+     *   data: {
+     *     summary: {
+     *       cash_in:       <float>,
+     *       cash_out:      <float>,
+     *       net_balance:   <float>,   // cash_in - cash_out
+     *       status:        "surplus" | "deficit" | "balanced"
+     *     },
+     *     cash_in_entries:  [ { id, date, event, giver_name, giver_phone, amount } … ],
+     *     cash_out_entries: [ { id, date, event, title, payee_name, amount } … ]
+     *   }
+     * }
+     */
+    public function cashLedger(Request $request)
+    {
+        $userId = $request->user()->dataOwnerId();
+
+        // ── Cash In (chandla entries paid in cash) ─────────────────────────
+        $cashInQuery = Chandla::where('user_id', $userId)
+            ->where('payment_method', 'cash')
+            ->with('event');
+
+        if ($request->filled('event_id')) {
+            // Verify event belongs to user
+            $this->userEvent($request, $request->event_id);
+            $cashInQuery->where('event_id', $request->event_id);
+        }
+        if ($request->filled('from_date')) {
+            $cashInQuery->where('received_date', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $cashInQuery->where('received_date', '<=', $request->to_date);
+        }
+
+        $cashInEntries = $cashInQuery
+            ->orderBy('received_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn($c) => [
+                'id'          => $c->id,
+                'date'        => $c->received_date?->toDateString(),
+                'event_id'    => $c->event_id,
+                'event_title' => $c->event?->title,
+                'giver_name'  => $c->giver_name,
+                'giver_phone' => $c->giver_phone,
+                'category'    => $c->category,
+                'amount'      => (float) $c->amount,
+            ]);
+
+        // ── Cash Out (expense entries paid in cash) ────────────────────────
+        $cashOutQuery = Expense::where('user_id', $userId)
+            ->where('payment_method', 'cash')
+            ->with('event');
+
+        if ($request->filled('event_id')) {
+            $cashOutQuery->where('event_id', $request->event_id);
+        }
+        if ($request->filled('from_date')) {
+            $cashOutQuery->where('expense_date', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $cashOutQuery->where('expense_date', '<=', $request->to_date);
+        }
+
+        $cashOutEntries = $cashOutQuery
+            ->orderBy('expense_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn($e) => [
+                'id'          => $e->id,
+                'date'        => $e->expense_date?->toDateString(),
+                'event_id'    => $e->event_id,
+                'event_title' => $e->event?->title,
+                'title'       => $e->title,
+                'category'    => $e->category,
+                'payee_name'  => $e->payee_name,
+                'payee_phone' => $e->payee_phone,
+                'amount'      => (float) $e->amount,
+            ]);
+
+        // ── Summary ────────────────────────────────────────────────────────
+        $cashIn      = $cashInEntries->sum('amount');
+        $cashOut     = $cashOutEntries->sum('amount');
+        $netBalance  = round($cashIn - $cashOut, 2);
+        $status      = $netBalance > 0 ? 'surplus' : ($netBalance < 0 ? 'deficit' : 'balanced');
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'summary' => [
+                    'cash_in'     => round($cashIn,  2),
+                    'cash_out'    => round($cashOut, 2),
+                    'net_balance' => $netBalance,
+                    'status'      => $status,
+                ],
+                'cash_in_entries'  => $cashInEntries,
+                'cash_out_entries' => $cashOutEntries,
+            ],
+        ]);
     }
 }
 

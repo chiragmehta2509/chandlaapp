@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Chandla;
 use App\Models\Event;
 use App\Models\Expense;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -57,11 +58,32 @@ class ExpenseController extends Controller
         $categories = Expense::categories();
 
         // Stats
-        $totalAmount   = $expenses->sum('amount');
+        $totalAmount    = $expenses->sum('amount');
         $categoryTotals = $expenses->groupBy('category')->map(fn($g) => $g->sum('amount'));
 
+        // Cash In = all chandla cash receipts for the same user (filtered by event if set)
+        $cashInQuery = Chandla::whereIn('user_id', $this->allowedUserIds())
+            ->where('payment_method', 'cash')
+            ->with('event');
+        if ($request->filled('event_id')) {
+            $cashInQuery->where('event_id', $request->event_id);
+        }
+        if ($request->filled('from_date')) {
+            $cashInQuery->where('received_date', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $cashInQuery->where('received_date', '<=', $request->to_date);
+        }
+        $cashInEntries = $cashInQuery->orderBy('received_date', 'desc')->orderBy('id', 'desc')->get();
+        $cashIn        = (float) $cashInEntries->sum('amount');
+
+        // Cash Out = expense entries paid in cash
+        $cashOut     = (float) $expenses->where('payment_method', 'cash')->sum('amount');
+        $cashBalance = $cashIn - $cashOut;
+
         return view('client.expenses.index', compact(
-            'expenses', 'events', 'categories', 'totalAmount', 'categoryTotals'
+            'expenses', 'events', 'categories', 'totalAmount', 'categoryTotals',
+            'cashIn', 'cashOut', 'cashBalance', 'cashInEntries'
         ));
     }
 

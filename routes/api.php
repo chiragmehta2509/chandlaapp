@@ -281,16 +281,17 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
     // Expense Management Routes
     Route::prefix('expenses')->group(function () {
-        Route::get('/categories', [ExpenseController::class, 'categories']);       // list all categories
-        Route::get('/stats',      [ExpenseController::class, 'stats']);            // overall / event stats
-        Route::get('/pdf',        [ExpenseController::class, 'pdf']);              // generate/download PDF via api
+        Route::get('/categories',   [ExpenseController::class, 'categories']);     // list all categories
+        Route::get('/stats',        [ExpenseController::class, 'stats']);          // overall / event stats
+        Route::get('/cash-ledger',  [ExpenseController::class, 'cashLedger']);    // cash in vs cash out ledger
+        Route::get('/pdf',          [ExpenseController::class, 'pdf']);            // generate/download PDF via api
         Route::get('/event/{eventId}', [ExpenseController::class, 'byEvent']);    // all expenses for one event
-        Route::get('/',           [ExpenseController::class, 'index']);            // list all (with filters)
-        Route::get('/{id}',       [ExpenseController::class, 'show']);             // single expense
-        Route::post('/',          [ExpenseController::class, 'store']);            // create expense
-        Route::put('/{id}',       [ExpenseController::class, 'update']);           // update expense
-        Route::post('/{id}',      [ExpenseController::class, 'update']);           // update (multipart fallback)
-        Route::delete('/{id}',    [ExpenseController::class, 'destroy']);          // delete expense
+        Route::get('/',             [ExpenseController::class, 'index']);          // list all (with filters)
+        Route::get('/{id}',         [ExpenseController::class, 'show']);           // single expense
+        Route::post('/',            [ExpenseController::class, 'store']);          // create expense
+        Route::put('/{id}',         [ExpenseController::class, 'update']);         // update expense
+        Route::post('/{id}',        [ExpenseController::class, 'update']);         // update (multipart fallback)
+        Route::delete('/{id}',      [ExpenseController::class, 'destroy']);        // delete expense
     });
 });
 
