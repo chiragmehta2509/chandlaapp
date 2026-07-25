@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Invitation\MarriageInvitationController as ApiMarri
 use App\Http\Controllers\Api\Ganpati\GanpatiController;
 use App\Http\Controllers\Api\FamilyMember\FamilyMemberController;
 use App\Http\Controllers\Api\Expense\ExpenseController;
+use App\Http\Controllers\Api\Subscription\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -228,6 +229,16 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/', [PackController::class, 'index']);
         Route::post('/{slug}/order', [PackController::class, 'createOrder']);
         Route::post('/{slug}/verify', [PackController::class, 'verifyPayment']);
+    });
+
+    // ── Subscription Routes (consolidated) ───────────────────────────────────
+    Route::prefix('subscription')->group(function () {
+        Route::get('/',          [SubscriptionController::class, 'current']);   // current plan + features
+        Route::get('/plans',     [SubscriptionController::class, 'plans']);     // all available plans
+        Route::get('/history',   [SubscriptionController::class, 'history']);   // payment history
+        Route::post('/purchase', [SubscriptionController::class, 'purchase']);  // create Razorpay order
+        Route::post('/verify',   [SubscriptionController::class, 'verify']);    // verify & activate plan
+        Route::post('/cancel',   [SubscriptionController::class, 'cancel']);    // cancel legacy subscription
     });
 
     // Transactions Route
