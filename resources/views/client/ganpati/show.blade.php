@@ -1,0 +1,305 @@
+@extends('layouts.client')
+
+@section('title', $event->title . ' — Ganpati Special')
+
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<style>
+    #ganpatiTable_wrapper .dataTables_filter input {
+        border: 1px solid var(--gp-border);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 0.875rem;
+        outline: none;
+        background: var(--cb-input-bg);
+        color: var(--cb-navy);
+        transition: border-color .2s;
+        min-width: 200px;
+        max-width: 100%;
+    }
+    #ganpatiTable_wrapper .dataTables_filter input:focus {
+        border-color: var(--gp-orange);
+    }
+    #ganpatiTable_wrapper .dataTables_length select {
+        border: 1px solid var(--gp-border);
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 0.875rem;
+        background: var(--cb-input-bg);
+        color: var(--cb-navy);
+    }
+    #ganpatiTable_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 6px !important;
+        padding: 4px 10px !important;
+        margin: 0 2px;
+        font-size: 0.8rem;
+        color: var(--cb-navy) !important;
+    }
+    #ganpatiTable_wrapper .dataTables_paginate .paginate_button.current {
+        background: var(--gp-btn-bg) !important;
+        border-color: var(--gp-orange) !important;
+        color: #fff !important;
+    }
+    #ganpatiTable_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
+        background: var(--gp-bg-accent) !important;
+        border-color: var(--gp-border) !important;
+        color: var(--gp-text) !important;
+    }
+    #ganpatiTable_wrapper .dataTables_info {
+        font-size: 0.8rem;
+        color: var(--cb-muted);
+    }
+    table#ganpatiTable thead th { cursor: pointer; user-select: none; }
+</style>
+@endpush
+
+@section('content')
+<div class="max-w-4xl mx-auto space-y-5">
+
+    {{-- Header --}}
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="min-w-0">
+                <p class="gp-page-label mb-0.5">🪔 Ganpati Special</p>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl sm:text-2xl font-bold text-cb-navy leading-tight">{{ $event->title }}</h1>
+                    @canEdit
+                    <a href="{{ route('client.ganpati.edit', $event->id) }}" class="text-sky-500 hover:text-sky-700 mt-1" title="Edit Event">
+                        <i class="fas fa-pencil text-sm" aria-hidden="true"></i>
+                    </a>
+                    @endcanEdit
+                </div>
+                <p class="text-sm cb-subtitle mt-1">
+                    <i class="fas fa-calendar-day mr-1" aria-hidden="true"></i>
+                    {{ optional($event->event_date)->format('d M Y') ?? '—' }}
+                    @if($event->venue)
+                        &nbsp;·&nbsp;<i class="fas fa-map-marker-alt mr-1" aria-hidden="true"></i>{{ $event->venue }}
+                    @endif
+                </p>
+            </div>
+        </div>
+        @canEdit
+        <div class="flex flex-wrap gap-2 shrink-0">
+            <a href="{{ route('client.ganpati.chandla.create', $event->id) }}" class="gp-btn min-h-[2.5rem]">
+                <i class="fas fa-plus" aria-hidden="true"></i> Add Entry
+            </a>
+            <a href="{{ route('client.ganpati.pdf', $event->id) }}"
+               class="gp-btn gp-btn--outline min-h-[2.5rem]">
+                <i class="fas fa-file-pdf" aria-hidden="true"></i> Download PDF
+            </a>
+        </div>
+        @endcanEdit
+    </div>
+
+    {{-- Stats row --}}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        @php
+        $statCards = [
+            ['label' => 'Total Amount', 'value' => '₹' . number_format($totalAmount, 2), 'icon' => 'fa-indian-rupee-sign', 'bg' => 'rgba(249,115,22,0.12)', 'color' => 'var(--gp-orange)'],
+            ['label' => 'Cash', 'value' => '₹' . number_format($cashAmount, 2), 'icon' => 'fa-money-bill-wave', 'bg' => 'rgba(34,197,94,0.12)', 'color' => '#16a34a'],
+            ['label' => 'GPay', 'value' => '₹' . number_format($gpayAmount, 2), 'icon' => 'fa-mobile-screen-button', 'bg' => 'rgba(59,130,246,0.12)', 'color' => '#2563eb'],
+            ['label' => 'Entries', 'value' => $totalEntries, 'icon' => 'fa-list-check', 'bg' => 'rgba(147,51,234,0.12)', 'color' => '#9333ea'],
+        ];
+        @endphp
+        @foreach($statCards as $s)
+        <div class="gp-stat">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="gp-stat__label">{{ $s['label'] }}</p>
+                <div class="gp-stat__icon" style="background:{{ $s['bg'] }}; color:{{ $s['color'] }};">
+                    <i class="fas {{ $s['icon'] }} text-xs" aria-hidden="true"></i>
+                </div>
+            </div>
+            <p class="gp-stat__value">{{ $s['value'] }}</p>
+        </div>
+        @endforeach
+    </div>
+
+    {{-- Quick Actions --}}
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <a href="{{ route('client.ganpati.scanner', $event->id) }}" class="gp-action">
+            <div class="gp-action__icon gp-action__icon--orange">
+                <i class="fas fa-qrcode text-lg" style="color:var(--gp-orange);" aria-hidden="true"></i>
+            </div>
+            <p class="gp-action__label">UPI Scanner</p>
+            <p class="gp-action__sub">Upload / view QR</p>
+        </a>
+        @canEdit
+        <a href="{{ route('client.ganpati.edit', $event->id) }}" class="gp-action">
+            <div class="gp-action__icon gp-action__icon--sky">
+                <i class="fas fa-pencil text-lg" style="color:#0ea5e9;" aria-hidden="true"></i>
+            </div>
+            <p class="gp-action__label">Edit Event</p>
+            <p class="gp-action__sub">Update details</p>
+        </a>
+        <form method="POST" action="{{ route('client.ganpati.destroy', $event->id) }}"
+              onsubmit="return confirm('Delete this Ganpati event and ALL its entries? This cannot be undone.')">
+            @csrf @method('DELETE')
+            <button type="submit" class="gp-action">
+                <div class="gp-action__icon gp-action__icon--red">
+                    <i class="fas fa-trash text-lg" style="color:#ef4444;" aria-hidden="true"></i>
+                </div>
+                <p class="gp-action__label">Delete</p>
+                <p class="gp-action__sub">Remove event</p>
+            </button>
+        </form>
+        @endcanEdit
+    </div>
+
+    {{-- UPI / Scanner preview --}}
+    @if($event->upi_id || $event->gpay_qr_image)
+    <div class="gp-qr-box">
+        @if($event->gpay_qr_image)
+        <img src="{{ asset('storage/' . $event->gpay_qr_image) }}" alt="UPI QR Scanner"
+             class="h-20 w-20 rounded-lg object-contain bg-white shadow-sm"
+             style="border:1.5px solid var(--gp-border);">
+        @endif
+        <div class="min-w-0 flex-1">
+            <p class="gp-qr-box__label">UPI Scanner</p>
+            @if($event->upi_id)
+                <p class="gp-qr-box__value">{{ $event->upi_id }}</p>
+                <a href="{{ route('client.ganpati.qr', $event->id) }}" target="_blank" class="gp-qr-box__link">
+                    <i class="fas fa-qrcode" aria-hidden="true"></i> View UPI QR
+                </a>
+            @endif
+        </div>
+    </div>
+    @endif
+
+    {{-- Entries table --}}
+    <div class="cb-card overflow-hidden" style="border-color:var(--gp-border-soft);">
+        <div class="gp-table-header">
+            <div>
+                <p class="gp-table-header__title">Chanda Entries</p>
+                <p class="gp-table-header__sub">{{ $totalEntries }} total records</p>
+            </div>
+            @canEdit
+            <a href="{{ route('client.ganpati.chandla.create', $event->id) }}" class="gp-btn" style="padding:.375rem .875rem; font-size:.8rem;">
+                <i class="fas fa-plus" aria-hidden="true"></i> Add
+            </a>
+            @endcanEdit
+        </div>
+
+        @if($event->chandlas->isEmpty())
+        <div class="p-8 text-center">
+            <span style="font-size:2.5rem; display:block; margin-bottom:.75rem;">📋</span>
+            <p class="text-sm cb-subtitle mb-4">No entries yet. Add the first chanda entry!</p>
+            @canEdit
+            <a href="{{ route('client.ganpati.chandla.create', $event->id) }}" class="gp-btn">
+                <i class="fas fa-plus" aria-hidden="true"></i> Add First Entry
+            </a>
+            @endcanEdit
+        </div>
+        @else
+        <div class="overflow-x-auto">
+            <table id="ganpatiTable" class="w-full gp-table">
+                <thead>
+                    <tr>
+                        <th style="width:2.5rem;">#</th>
+                        <th>Name</th>
+                        <th class="hidden sm:table-cell">Phone</th>
+                        <th>Date & Time</th>
+                        <th>Method</th>
+                        <th class="text-right">Amount</th>
+                        @canEdit <th style="text-align:center;">Actions</th> @endcanEdit
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($event->chandlas as $i => $chandla)
+                    <tr>
+                        <td style="font-size:.7rem; color:var(--gp-serial-color);">{{ $i + 1 }}</td>
+                        <td>
+                            <span class="font-semibold text-cb-navy">{{ $chandla->giver_name }}</span>
+                            @if($chandla->giver_address)
+                                <span class="block text-xs cb-subtitle truncate max-w-[14rem]">{{ $chandla->giver_address }}</span>
+                            @endif
+                        </td>
+                        <td class="hidden sm:table-cell text-xs">{{ $chandla->giver_phone ?? '—' }}</td>
+                        <td class="text-xs font-variant-numeric">
+                            <span class="block font-medium text-cb-navy">{{ optional($chandla->created_at)->format('d M Y') ?? '—' }}</span>
+                            <span class="block text-[0.65rem] text-slate-400 mt-0.5">{{ optional($chandla->created_at)->format('h:i A') ?? '' }}</span>
+                        </td>
+                        <td>
+                            @php
+                            $methodBadge = match($chandla->payment_method) {
+                                'cash' => ['label' => 'Cash', 'bg' => 'rgba(34,197,94,0.12)', 'color' => '#166534'],
+                                'gpay' => ['label' => 'GPay', 'bg' => 'rgba(59,130,246,0.12)', 'color' => '#1e40af'],
+                                default => ['label' => ucfirst($chandla->payment_method ?? 'Other'), 'bg' => 'rgba(100,116,139,0.12)', 'color' => 'var(--cb-muted)'],
+                            };
+                            @endphp
+                            <span class="rounded-full px-2 py-0.5 text-xs font-semibold"
+                                  style="background:{{ $methodBadge['bg'] }}; color:{{ $methodBadge['color'] }};">
+                                {{ $methodBadge['label'] }}
+                            </span>
+                        </td>
+                        <td style="text-align:right; font-weight:600; font-variant-numeric:tabular-nums;">
+                            ₹{{ number_format((float)$chandla->amount, 2) }}
+                        </td>
+                        @canEdit
+                        <td style="text-align:center;">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('client.ganpati.chandla.edit', [$event->id, $chandla->id]) }}"
+                                   class="gp-back-btn h-7 w-7 rounded-md hover:text-sky-600" title="Edit">
+                                    <i class="fas fa-pencil text-xs" aria-hidden="true"></i>
+                                </a>
+                                <form method="POST"
+                                      action="{{ route('client.ganpati.chandla.destroy', [$event->id, $chandla->id]) }}"
+                                      onsubmit="return confirm('Delete this entry?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit"
+                                            class="gp-back-btn h-7 w-7 rounded-md hover:text-red-500 hover:border-red-200"
+                                            title="Delete">
+                                        <i class="fas fa-trash text-xs" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        @endcanEdit
+                    </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="gp-total-label">Total Collection</td>
+                        <td class="gp-total-value">₹{{ number_format($totalAmount, 2) }}</td>
+                        @canEdit <td></td> @endcanEdit
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        @endif
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function () {
+    var tableEl = $('#ganpatiTable');
+    if (tableEl.length && tableEl.find('tbody tr').length > 0 && !tableEl.find('tbody td').hasClass('dataTables_empty')) {
+        tableEl.DataTable({
+            order: [[0, 'asc']],
+            pageLength: 25,
+            lengthMenu: [10, 25, 50, 100, 250],
+            language: {
+                search: '<i class="fas fa-search" style="margin-right:6px;color:var(--gp-orange);"></i>',
+                searchPlaceholder: 'Search name, phone, amount…',
+                lengthMenu: 'Show _MENU_ entries',
+                info: 'Showing _START_ – _END_ of _TOTAL_ entries',
+                infoEmpty: 'No entries found',
+                infoFiltered: '(filtered from _MAX_ total)',
+                paginate: {
+                    previous: '‹',
+                    next: '›',
+                }
+            },
+            columnDefs: [
+                { orderable: false, targets: -1 }
+            ],
+            dom: '<"flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3 border-b border-slate-100 dark:border-slate-800"lf>rt<"flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-5 py-3 border-t border-slate-100 dark:border-slate-800"ip>',
+        });
+    }
+});
+</script>
+@endpush

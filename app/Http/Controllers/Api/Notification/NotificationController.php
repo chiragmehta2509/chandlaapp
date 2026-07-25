@@ -137,10 +137,10 @@ class NotificationController extends Controller
 
         $device = DeviceToken::updateOrCreate(
             [
-                'user_id' => $request->user()->id,
                 'token' => $request->token,
             ],
             [
+                'user_id' => $request->user()->id,
                 'platform' => $request->platform,
                 'device_id' => $request->device_id,
                 'device_name' => $request->device_name,

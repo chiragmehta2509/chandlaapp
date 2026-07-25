@@ -84,6 +84,11 @@ class Event extends Model
         return $this->hasOne(EventCashInventory::class);
     }
 
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
     /**
      * Organiser may use guest Direct GPay flow for this event (paid unlock per event, or legacy account-wide).
      */

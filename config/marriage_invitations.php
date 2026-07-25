@@ -156,5 +156,36 @@ return [
             'badge' => '✦',
             'badge_class' => 'bg-amber-400/90 text-amber-950',
         ],
+        'emerald_palace' => [
+            'name' => 'Emerald palace',
+            'description' => 'Deep emerald green, mughal arches, and vintage gold details — royal Indian heritage.',
+            'badge' => 'E',
+            'badge_class' => 'bg-emerald-800 text-amber-200',
+        ],
+        'vintage_rose' => [
+            'name' => 'Vintage rose',
+            'description' => 'Dusty pink background, classical scrollwork, and elegant script — timeless romance.',
+            'badge' => 'V',
+            'badge_class' => 'bg-rose-100 text-rose-800',
+        ],
+        'modern_arch' => [
+            'name' => 'Modern arch',
+            'description' => 'Minimalist pastel arches, earthy terracotta accents, and modern serif typography.',
+            'badge' => 'A',
+            'badge_class' => 'bg-orange-100 text-orange-800',
+        ],
+        'luxury_champagne' => [
+            'name' => 'Luxury champagne',
+            'description' => 'Sleek champagne gold, silk borders, and sophisticated typography for a resort wedding vibe.',
+            'badge' => 'L',
+            'badge_class' => 'bg-yellow-50 text-yellow-800',
+        ],
+        'celestial_indigo' => [
+            'name' => 'Celestial indigo',
+            'description' => 'Deep twilight blue, gold constellations, and whimsical star dust borders.',
+            'badge' => '★',
+            'badge_class' => 'bg-indigo-950 text-amber-200',
+        ],
     ],
 ];
+

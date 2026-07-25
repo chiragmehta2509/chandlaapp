@@ -15,6 +15,9 @@ use App\Http\Controllers\Api\Chandla\ChandlaController;
 use App\Http\Controllers\Api\Pack\PackController;
 use App\Http\Controllers\Api\Transaction\TransactionController;
 use App\Http\Controllers\Api\Invitation\MarriageInvitationController as ApiMarriageInvitationController;
+use App\Http\Controllers\Api\Ganpati\GanpatiController;
+use App\Http\Controllers\Api\FamilyMember\FamilyMemberController;
+use App\Http\Controllers\Api\Expense\ExpenseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +81,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/deactivate', [UserController::class, 'deactivateAccount']);
         Route::post('/delete', [UserController::class, 'deleteAccount']);
         Route::get('/stats', [UserController::class, 'getStats']);
+        Route::get('/active-plan', [UserController::class, 'activePlan']);
+        Route::post('/plan/update', [UserController::class, 'updatePlan']);
     });
     
     // Notification Routes
@@ -137,6 +142,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/favorite', [ContactController::class, 'toggleFavorite']);
         
         // Import/Export
+        Route::post('/bulk', [ContactController::class, 'bulkStore']);
         Route::post('/import', [ContactController::class, 'import']);
         Route::get('/export', [ContactController::class, 'export']);
         Route::get('/export/template', [ContactController::class, 'downloadTemplate']);
@@ -163,6 +169,23 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/', [ChandlaController::class, 'store']);
         Route::put('/{id}', [ChandlaController::class, 'update']);
         Route::delete('/{id}', [ChandlaController::class, 'destroy']);
+    });
+
+    // Ganpati Special Routes
+    Route::prefix('ganpati')->group(function () {
+        Route::get('/', [GanpatiController::class, 'index']);
+        Route::post('/', [GanpatiController::class, 'store']);
+        Route::get('/{id}', [GanpatiController::class, 'show']);
+        Route::put('/{id}', [GanpatiController::class, 'update']);
+        Route::delete('/{id}', [GanpatiController::class, 'destroy']);
+        Route::post('/{id}/scanner', [GanpatiController::class, 'updateScanner']);
+        Route::get('/{id}/pdf', [GanpatiController::class, 'downloadPdf']);
+        Route::get('/{id}/qr', [GanpatiController::class, 'qr']);
+        Route::post('/{id}/chandlas', [GanpatiController::class, 'storeChandla']);
+        Route::get('/{id}/chandlas', [GanpatiController::class, 'listChandlas']);
+        Route::get('/{id}/chandlas/{chandlaId}', [GanpatiController::class, 'showChandla']);
+        Route::put('/{id}/chandlas/{chandlaId}', [GanpatiController::class, 'updateChandla']);
+        Route::delete('/{id}/chandlas/{chandlaId}', [GanpatiController::class, 'destroyChandla']);
     });
     
     // Invitation Routes
@@ -212,6 +235,16 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
         Route::get('/{txnNumber}', [TransactionController::class, 'show']);
     });
+
+    // Family Members Routes
+    Route::prefix('family-members')->group(function () {
+        Route::get('/', [FamilyMemberController::class, 'index']);
+        Route::post('/', [FamilyMemberController::class, 'store']);
+        Route::get('/{id}', [FamilyMemberController::class, 'show']);
+        Route::put('/{id}', [FamilyMemberController::class, 'update']);
+        Route::delete('/{id}', [FamilyMemberController::class, 'destroy']);
+        Route::post('/{id}/toggle-active', [FamilyMemberController::class, 'toggleActive']);
+    });
     
     // UPI Payment Routes
     Route::prefix('payments')->group(function () {
@@ -240,8 +273,26 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/events', [EventController::class, 'sync']);
         Route::post('/contacts', [ContactController::class, 'sync']);
         Route::post('/entries', [EntryController::class, 'sync']);
+        Route::post('/expenses', [ExpenseController::class, 'sync']);
         Route::get('/status', function () {
             return response()->json(['status' => 'sync_enabled']);
         });
     });
+
+    // Expense Management Routes
+    Route::prefix('expenses')->group(function () {
+        Route::get('/categories', [ExpenseController::class, 'categories']);       // list all categories
+        Route::get('/stats',      [ExpenseController::class, 'stats']);            // overall / event stats
+        Route::get('/pdf',        [ExpenseController::class, 'pdf']);              // generate/download PDF via api
+        Route::get('/event/{eventId}', [ExpenseController::class, 'byEvent']);    // all expenses for one event
+        Route::get('/',           [ExpenseController::class, 'index']);            // list all (with filters)
+        Route::get('/{id}',       [ExpenseController::class, 'show']);             // single expense
+        Route::post('/',          [ExpenseController::class, 'store']);            // create expense
+        Route::put('/{id}',       [ExpenseController::class, 'update']);           // update expense
+        Route::post('/{id}',      [ExpenseController::class, 'update']);           // update (multipart fallback)
+        Route::delete('/{id}',    [ExpenseController::class, 'destroy']);          // delete expense
+    });
 });
+
+require __DIR__ . '/vendor_api.php';
+

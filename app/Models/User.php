@@ -217,8 +217,8 @@ class User extends Authenticatable
     {
         $level = $this->planLevel();
         if ($level >= 6) return 999; // Unlimited for professional/enterprise
-        if ($level >= 4) return 3;
-        return 0; // Levels 0, 1, 2, 3 cannot add family editors
+        if ($level >= 4) return 10;  // 10 slots for Family / Premium plan
+        return 5;                    // 5 slots for basic/free users
     }
 
     /** Level 1+: Marriage invitation + pre-wedding + video. */

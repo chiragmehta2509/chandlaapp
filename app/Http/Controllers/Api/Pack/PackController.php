@@ -221,6 +221,12 @@ class PackController extends Controller
         }
     }
 
+    /** Public wrapper used by UserController::updatePlan */
+    public function activatePackPublic(string $configKey, int $ownerId, string $paymentId): void
+    {
+        $this->activatePack($configKey, $ownerId, $paymentId);
+    }
+
     private function activatePack(string $configKey, int $ownerId, string $paymentId): void
     {
         DB::transaction(function () use ($configKey, $ownerId, $paymentId) {

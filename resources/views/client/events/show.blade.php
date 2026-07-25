@@ -9,10 +9,16 @@
     </a>
     <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start">
         <h1 class="cb-page-title pr-2">{{ $event->title }}</h1>
-        <a href="{{ route('client.events.edit', $event->id) }}" class="cb-btn cb-btn-ghost w-full sm:w-auto shrink-0 justify-center border-slate-200">
-            <i class="fas fa-edit"></i>Edit
-        </a>
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto shrink-0">
+            <a href="{{ route('client.vendors.index', ['event_id' => $event->id]) }}" class="cb-btn cb-btn-gold w-full sm:w-auto justify-center">
+                <i class="fas fa-store"></i> Find Vendors
+            </a>
+            <a href="{{ route('client.events.edit', $event->id) }}" class="cb-btn cb-btn-ghost w-full sm:w-auto justify-center border-slate-200">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+        </div>
     </div>
+
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6 items-start">
@@ -241,7 +247,10 @@
                 <i class="fas fa-qrcode"></i>QR
             </a>
             <a href="{{ route('client.events.chandlas.pdf', $event->id) }}" data-no-loader class="cb-btn cb-btn--sm text-white bg-slate-600 hover:opacity-95 border-0">
-                <i class="fas fa-chart-bar"></i>Report
+                <i class="fas fa-chart-bar"></i>Ledger PDF
+            </a>
+            <a href="{{ route('client.expenses.pdf', ['event_id' => $event->id]) }}" data-no-loader class="cb-btn cb-btn--sm text-white bg-rose-600 hover:opacity-95 border-0" target="_blank">
+                <i class="fas fa-file-pdf"></i>Expense PDF
             </a>
             <a href="{{ route('client.cash-inventory.show', $event->id) }}" class="cb-btn cb-btn--sm text-white bg-amber-600 hover:opacity-95 border-0">
                 <i class="fas fa-coins"></i>Cash

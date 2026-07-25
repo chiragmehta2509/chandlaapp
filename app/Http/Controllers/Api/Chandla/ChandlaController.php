@@ -79,7 +79,7 @@ class ChandlaController extends Controller
     public function stats(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'event_id' => 'required|exists:events,id'
+            'event_id' => 'nullable|exists:events,id'
         ]);
 
         if ($validator->fails()) {
@@ -90,33 +90,111 @@ class ChandlaController extends Controller
             ], 422);
         }
 
-        $userId = $request->user()->dataOwnerId();
-        $eventId = $request->event_id;
+        $userId  = $request->user()->dataOwnerId();
+        $eventId = $request->input('event_id');
 
-        // Ensure event belongs to user
-        Event::where('user_id', $userId)->findOrFail($eventId);
+        // ── Single-event stats ─────────────────────────────────────────────
+        if ($eventId) {
+            // Ensure the event belongs to this user
+            Event::where('user_id', $userId)->findOrFail($eventId);
 
-        $stats = Chandla::where('user_id', $userId)
-            ->where('event_id', $eventId)
+            $stats = Chandla::where('user_id', $userId)
+                ->where('event_id', $eventId)
+                ->selectRaw("
+                    SUM(amount) as total_amount,
+                    SUM(CASE WHEN payment_method = 'cash'      THEN amount ELSE 0 END) as cash_amount,
+                    SUM(CASE WHEN payment_method = 'gpay'      THEN amount ELSE 0 END) as gpay_amount,
+                    SUM(CASE WHEN payment_method = 'hard_form' THEN amount ELSE 0 END) as hard_form_amount,
+                    SUM(CASE WHEN payment_method = 'other'     THEN amount ELSE 0 END) as other_amount,
+                    SUM(CASE WHEN category = 'cover' THEN 1 ELSE 0 END) as cover_count,
+                    SUM(CASE WHEN category = 'gift' THEN 1 ELSE 0 END) as gift_count,
+                    SUM(CASE WHEN payment_method = 'gpay' THEN 1 ELSE 0 END) as gpay_txns,
+                    COUNT(*) as total_entries
+                ")
+                ->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'event_id'         => (int) $eventId,
+                    'total_amount'     => (float) ($stats->total_amount     ?? 0),
+                    'cash_amount'      => (float) ($stats->cash_amount      ?? 0),
+                    'gpay_amount'      => (float) ($stats->gpay_amount      ?? 0),
+                    'hard_form_amount' => (float) ($stats->hard_form_amount ?? 0),
+                    'other_amount'     => (float) ($stats->other_amount     ?? 0),
+                    'cover_count'      => (int)   ($stats->cover_count      ?? 0),
+                    'gift_count'       => (int)   ($stats->gift_count       ?? 0),
+                    'gpay_txns'        => (int)   ($stats->gpay_txns        ?? 0),
+                    'total_entries'    => (int)   ($stats->total_entries    ?? 0),
+                ]
+            ]);
+        }
+
+        // ── All-events aggregate stats ─────────────────────────────────────
+        $overall = Chandla::where('user_id', $userId)
             ->selectRaw("
                 SUM(amount) as total_amount,
-                SUM(CASE WHEN payment_method = 'cash' THEN amount ELSE 0 END) as cash_amount,
-                SUM(CASE WHEN payment_method = 'gpay' THEN amount ELSE 0 END) as gpay_amount,
+                SUM(CASE WHEN payment_method = 'cash'      THEN amount ELSE 0 END) as cash_amount,
+                SUM(CASE WHEN payment_method = 'gpay'      THEN amount ELSE 0 END) as gpay_amount,
                 SUM(CASE WHEN payment_method = 'hard_form' THEN amount ELSE 0 END) as hard_form_amount,
-                SUM(CASE WHEN payment_method = 'other' THEN amount ELSE 0 END) as other_amount,
-                COUNT(*) as total_entries
+                SUM(CASE WHEN payment_method = 'other'     THEN amount ELSE 0 END) as other_amount,
+                SUM(CASE WHEN category = 'cover' THEN 1 ELSE 0 END) as cover_count,
+                SUM(CASE WHEN category = 'gift' THEN 1 ELSE 0 END) as gift_count,
+                SUM(CASE WHEN payment_method = 'gpay' THEN 1 ELSE 0 END) as gpay_txns,
+                COUNT(*) as total_entries,
+                COUNT(DISTINCT event_id) as total_events
             ")
             ->first();
+
+        // Per-event breakdown
+        $perEvent = Chandla::where('chandlas.user_id', $userId)
+            ->join('events', 'events.id', '=', 'chandlas.event_id')
+            ->selectRaw("
+                chandlas.event_id,
+                events.title as event_title,
+                SUM(chandlas.amount) as total_amount,
+                SUM(CASE WHEN chandlas.payment_method = 'cash'      THEN chandlas.amount ELSE 0 END) as cash_amount,
+                SUM(CASE WHEN chandlas.payment_method = 'gpay'      THEN chandlas.amount ELSE 0 END) as gpay_amount,
+                SUM(CASE WHEN chandlas.payment_method = 'hard_form' THEN chandlas.amount ELSE 0 END) as hard_form_amount,
+                SUM(CASE WHEN chandlas.payment_method = 'other'     THEN chandlas.amount ELSE 0 END) as other_amount,
+                SUM(CASE WHEN chandlas.category = 'cover' THEN 1 ELSE 0 END) as cover_count,
+                SUM(CASE WHEN chandlas.category = 'gift' THEN 1 ELSE 0 END) as gift_count,
+                SUM(CASE WHEN chandlas.payment_method = 'gpay' THEN 1 ELSE 0 END) as gpay_txns,
+                COUNT(*) as total_entries
+            ")
+            ->groupBy('chandlas.event_id', 'events.title')
+            ->orderByDesc('total_amount')
+            ->get()
+            ->map(fn($row) => [
+                'event_id'         => (int)   $row->event_id,
+                'event_title'      =>          $row->event_title,
+                'total_amount'     => (float)  $row->total_amount,
+                'cash_amount'      => (float)  $row->cash_amount,
+                'gpay_amount'      => (float)  $row->gpay_amount,
+                'hard_form_amount' => (float)  $row->hard_form_amount,
+                'other_amount'     => (float)  $row->other_amount,
+                'cover_count'      => (int)    $row->cover_count,
+                'gift_count'       => (int)    $row->gift_count,
+                'gpay_txns'        => (int)    $row->gpay_txns,
+                'total_entries'    => (int)    $row->total_entries,
+            ]);
 
         return response()->json([
             'success' => true,
             'data' => [
-                'total_amount' => (float) ($stats->total_amount ?? 0),
-                'cash_amount' => (float) ($stats->cash_amount ?? 0),
-                'gpay_amount' => (float) ($stats->gpay_amount ?? 0),
-                'hard_form_amount' => (float) ($stats->hard_form_amount ?? 0),
-                'other_amount' => (float) ($stats->other_amount ?? 0),
-                'total_entries' => (int) ($stats->total_entries ?? 0)
+                'overall' => [
+                    'total_amount'     => (float) ($overall->total_amount     ?? 0),
+                    'cash_amount'      => (float) ($overall->cash_amount      ?? 0),
+                    'gpay_amount'      => (float) ($overall->gpay_amount      ?? 0),
+                    'hard_form_amount' => (float) ($overall->hard_form_amount ?? 0),
+                    'other_amount'     => (float) ($overall->other_amount     ?? 0),
+                    'cover_count'      => (int)   ($overall->cover_count      ?? 0),
+                    'gift_count'       => (int)   ($overall->gift_count       ?? 0),
+                    'gpay_txns'        => (int)   ($overall->gpay_txns        ?? 0),
+                    'total_entries'    => (int)   ($overall->total_entries    ?? 0),
+                    'total_events'     => (int)   ($overall->total_events     ?? 0),
+                ],
+                'per_event' => $perEvent,
             ]
         ]);
     }

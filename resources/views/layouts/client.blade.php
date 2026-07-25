@@ -17,6 +17,7 @@
     <meta name="theme-color" content="#1a3646">
     <link rel="stylesheet" href="{{ asset('css/tailwind.css') }}?v=4">
     <link rel="stylesheet" href="{{ asset('css/chandla-client.css') }}?v=12">
+    <link rel="stylesheet" href="{{ asset('css/ganpati.css') }}?v=1">
     <link rel="stylesheet" href="{{ asset('css/cb-loader.css') }}?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="{{ asset('js/cb-loader.js') }}?v=2" defer></script>
@@ -55,17 +56,15 @@
                     </a>
                 </div>
                 <nav class="hidden md:flex items-center gap-1 flex-wrap justify-end" aria-label="Main">
-                    <a href="{{ route('client.dashboard') }}" class="cb-nav-item {{ request()->routeIs('client.dashboard') ? 'cb-nav-item--active' : '' }}">Home</a>
                     <a href="{{ route('client.events.index') }}" class="cb-nav-item {{ request()->routeIs('client.events.*') ? 'cb-nav-item--active' : '' }}">Events</a>
                     <a href="{{ route('client.chandlas.index') }}" class="cb-nav-item {{ request()->routeIs('client.chandlas.*') ? 'cb-nav-item--active' : '' }}">Ledger</a>
+                    <a href="{{ route('client.expenses.index') }}" class="cb-nav-item {{ request()->routeIs('client.expenses.*') ? 'cb-nav-item--active' : '' }}">💸 Expenses</a>
+                    <a href="{{ route('client.ganpati.index') }}" class="cb-nav-item cb-nav-item--ganpati {{ request()->routeIs('client.ganpati.*') ? 'cb-nav-item--active' : '' }}" style="color: #ea6d0e;">🪔 Ganpati Special</a>
                     <a href="{{ route('client.contacts.index') }}" class="cb-nav-item {{ request()->routeIs('client.contacts.*') ? 'cb-nav-item--active' : '' }}">Contacts</a>
                     <a href="{{ route('client.marriage-invitations.index') }}" class="cb-nav-item {{ request()->routeIs('client.marriage-invitations.*') ? 'cb-nav-item--active' : '' }}">Invitation</a>
                     <a href="{{ route('client.pre-wedding.index') }}" class="cb-nav-item {{ request()->routeIs('client.pre-wedding.*') ? 'cb-nav-item--active' : '' }}">Pre-wedding</a>
                     <a href="{{ route('client.plans') }}" class="cb-nav-item {{ request()->routeIs('client.plans') ? 'cb-nav-item--active' : '' }}">Plans</a>
-                    <a href="{{ route('client.faq') }}" class="cb-nav-item {{ request()->routeIs('client.faq') ? 'cb-nav-item--active' : '' }}">FAQ</a>
-                    {{-- Find Partner (matrimonial) — hidden for now; uncomment when re-enabling
-                    <a href="{{ route('client.matrimonial.index') }}" class="cb-nav-item {{ request()->routeIs('client.matrimonial.*') ? 'cb-nav-item--active' : '' }}">Find Partner</a>
-                    --}}
+                    {{-- <a href="{{ route('client.matrimonial.index') }}" class="cb-nav-item {{ request()->routeIs('client.matrimonial.*') ? 'cb-nav-item--active' : '' }}">Find Partner</a> --}}
                 </nav>
                 <div class="flex items-center gap-2 relative shrink-0 z-[60]">
                     <button id="cb-dark-mode-toggle" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition" title="Toggle theme">
@@ -131,6 +130,14 @@
                             >
                                 <i class="fa-solid fa-key w-4 text-center text-slate-400" aria-hidden="true"></i>
                                 Change password
+                            </a>
+                            <a
+                                href="{{ route('client.faq') }}"
+                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 {{ request()->routeIs('client.faq') ? 'bg-slate-50/80' : '' }}"
+                                role="menuitem"
+                            >
+                                <i class="fa-solid fa-circle-question w-4 text-center text-slate-400" aria-hidden="true"></i>
+                                FAQ
                             </a>
                             <form action="{{ route('client.logout') }}" method="POST" role="none">
                                 @csrf
@@ -258,6 +265,14 @@
                 <i class="fa-solid fa-book-open"></i>
                 <span>Ledger</span>
             </a>
+            <a href="{{ route('client.expenses.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.expenses.*') ? 'cb-bottom-nav__item--active' : '' }}">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="{{ route('client.ganpati.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.ganpati.*') ? 'cb-bottom-nav__item--active' : '' }}" style="{{ request()->routeIs('client.ganpati.*') ? 'color:#ea6d0e;' : '' }}">
+                <span style="font-size:1.1rem;">🪔</span>
+                <span>Ganpati</span>
+            </a>
             <a href="{{ route('client.contacts.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.contacts.*') ? 'cb-bottom-nav__item--active' : '' }}">
                 <i class="fa-solid fa-user-group"></i>
                 <span>Contacts</span>
@@ -270,12 +285,10 @@
                 <i class="fa-solid fa-camera-retro"></i>
                 <span>PreWed</span>
             </a>
-            {{-- Find Partner (matrimonial) — hidden for now; uncomment when re-enabling
-            <a href="{{ route('client.matrimonial.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.matrimonial.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            {{-- <a href="{{ route('client.matrimonial.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.matrimonial.*') ? 'cb-bottom-nav__item--active' : '' }}">
                 <i class="fa-solid fa-heart"></i>
                 <span>Partner</span>
-            </a>
-            --}}
+            </a> --}}
             <a href="{{ route('client.password.edit') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.password.*') ? 'cb-bottom-nav__item--active' : '' }}">
                 <i class="fa-solid fa-gear"></i>
                 <span>Account</span>

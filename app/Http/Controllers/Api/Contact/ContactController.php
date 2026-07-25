@@ -362,4 +362,61 @@ class ContactController extends Controller
             'data' => $synced
         ]);
     }
+
+    public function bulkStore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'contacts' => 'required|array|min:1',
+            'contacts.*.name' => 'required|string|max:255',
+            'contacts.*.phone' => 'nullable|string',
+            'contacts.*.email' => 'nullable|email',
+            'contacts.*.address' => 'nullable|string',
+            'contacts.*.relationship' => 'nullable|string',
+            'contacts.*.notes' => 'nullable|string',
+            'contacts.*.is_favorite' => 'nullable|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $userId = $request->user()->dataOwnerId();
+        $created = [];
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $userId, &$created) {
+            foreach ($request->input('contacts') as $item) {
+                $contact = Contact::create([
+                    'user_id' => $userId,
+                    'name' => trim($item['name']),
+                    'phone' => $item['phone'] ?? null,
+                    'email' => $item['email'] ?? null,
+                    'address' => $item['address'] ?? null,
+                    'relationship' => $item['relationship'] ?? null,
+                    'notes' => $item['notes'] ?? null,
+                    'is_favorite' => $item['is_favorite'] ?? false,
+                ]);
+                $created[] = $contact;
+            }
+        });
+
+        ActivityLog::create([
+            'user_id' => $request->user()->id,
+            'action' => 'bulk_create_contacts',
+            'model_type' => Contact::class,
+            'model_id' => null,
+            'new_values' => ['count' => count($created)],
+            'ip_address' => $request->ip(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => count($created) . ' contacts created successfully',
+            'count' => count($created),
+            'data' => $created
+        ], 201);
+    }
 }

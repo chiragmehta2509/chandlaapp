@@ -1,0 +1,263 @@
+/* ============================================================
+   Ganpati Special — CSS design tokens (light + dark)
+   Append to chandla-client.css or include separately
+   ============================================================ */
+
+/* ── Light-mode tokens ── */
+:root {
+  --gp-orange:        #f97316;
+  --gp-orange-dark:   #ea580c;
+  --gp-deep:          #c2410c;
+  --gp-text:          #9a3412;
+  --gp-muted:         #ea580c;
+  --gp-bg-banner:     linear-gradient(135deg, #fff7ed 0%, #ffedd5 60%, #fed7aa 100%);
+  --gp-bg-card:       #ffffff;
+  --gp-bg-header:     linear-gradient(to right, #fff7ed, #fffbf5);
+  --gp-bg-tfoot:      #fff7ed;
+  --gp-bg-accent:     #fff7ed;
+  --gp-bg-even:       #fffbf5;
+  --gp-bg-hover:      rgba(249, 115, 22, 0.06);
+  --gp-border:        #fed7aa;
+  --gp-border-soft:   #ffedd5;
+  --gp-border-tfoot:  #f97316;
+  --gp-badge-bg:      #fff7ed;
+  --gp-badge-color:   #ea580c;
+  --gp-th-color:      #9a3412;
+  --gp-td-color:      #1a3646;
+  --gp-stat-bg:       #ffffff;
+  --gp-stat-border:   rgba(26, 54, 70, 0.08);
+  --gp-btn-bg:        linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  --gp-btn-color:     #ffffff;
+  --gp-qr-bg:         linear-gradient(135deg, #fff7ed, #ffedd5);
+  --gp-qr-border:     #fed7aa;
+  --gp-qr-text:       #ea580c;
+}
+
+/* ── Dark-mode tokens ── */
+html.dark {
+  --gp-orange:        #fb923c;
+  --gp-orange-dark:   #f97316;
+  --gp-deep:          #fdba74;
+  --gp-text:          #fed7aa;
+  --gp-muted:         #fb923c;
+  --gp-bg-banner:     linear-gradient(135deg, rgba(124,45,18,0.4) 0%, rgba(154,52,18,0.28) 100%);
+  --gp-bg-card:       #151e2e;
+  --gp-bg-header:     linear-gradient(to right, rgba(124,45,18,0.22), rgba(21,30,46,0.9));
+  --gp-bg-tfoot:      rgba(124, 45, 18, 0.28);
+  --gp-bg-accent:     rgba(124, 45, 18, 0.22);
+  --gp-bg-even:       rgba(30, 41, 59, 0.5);
+  --gp-bg-hover:      rgba(249, 115, 22, 0.09);
+  --gp-border:        rgba(253, 186, 116, 0.28);
+  --gp-border-soft:   rgba(253, 186, 116, 0.16);
+  --gp-border-tfoot:  rgba(249, 115, 22, 0.5);
+  --gp-badge-bg:      rgba(124, 45, 18, 0.32);
+  --gp-badge-color:   #fdba74;
+  --gp-th-color:      #fb923c;
+  --gp-td-color:      #cbd5e1;
+  --gp-stat-bg:       #151e2e;
+  --gp-stat-border:   rgba(255, 255, 255, 0.09);
+  --gp-btn-bg:        linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  --gp-btn-color:     #fff7ed;
+  --gp-qr-bg:         linear-gradient(135deg, rgba(124,45,18,0.38), rgba(154,52,18,0.26));
+  --gp-qr-border:     rgba(253, 186, 116, 0.32);
+  --gp-qr-text:       #fb923c;
+}
+
+/* ── Ganpati banner ── */
+.gp-banner {
+  background: var(--gp-bg-banner);
+  border: 1.5px solid var(--gp-border);
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(249,115,22,0.08);
+}
+html.dark .gp-banner { box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+.gp-banner__inner { padding: 1rem 1.25rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.gp-banner__title { color: var(--gp-text); font-weight: 600; font-size: 0.875rem; }
+.gp-banner__body  { color: var(--gp-muted); font-size: 0.75rem; margin-top: 2px; line-height: 1.5; }
+.gp-banner__badge {
+  flex-shrink: 0; display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.75rem; font-weight: 700; border-radius: 0.5rem;
+  border: 1px solid var(--gp-border); background: var(--gp-badge-bg);
+  color: var(--gp-badge-color); padding: 0.5rem 0.75rem;
+}
+
+/* ── Event cards on index ── */
+.gp-event-card {
+  position: relative; background: var(--gp-bg-card);
+  border: 1.5px solid var(--gp-border); border-radius: 1rem;
+  padding: 1.25rem; text-decoration: none;
+  display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.2s;
+}
+.gp-event-card:hover { box-shadow: 0 8px 32px rgba(249,115,22,0.15); transform: translateY(-2px); }
+html.dark .gp-event-card:hover { box-shadow: 0 8px 32px rgba(249,115,22,0.1); }
+.gp-event-card__accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  border-radius: 1rem 1rem 0 0;
+  background: linear-gradient(90deg, #f97316, #fb923c, #fbbf24);
+}
+.gp-event-card__icon {
+  display: flex; align-items: center; justify-content: center;
+  height: 2.5rem; width: 2.5rem; border-radius: 0.75rem;
+  background: var(--gp-bg-accent); border: 1.5px solid var(--gp-border); flex-shrink: 0;
+}
+.gp-event-card__badge {
+  border-radius: 9999px; padding: 0.125rem 0.625rem; font-size: 0.7rem; font-weight: 600;
+  background: var(--gp-badge-bg); color: var(--gp-badge-color); border: 1px solid var(--gp-border);
+}
+.gp-event-card__title { font-size: 0.875rem; font-weight: 700; color: var(--cb-navy); line-height: 1.35; margin-bottom: 0.25rem; }
+.gp-event-card:hover .gp-event-card__title { color: var(--gp-muted); }
+.gp-event-card__meta { font-size: 0.7rem; color: var(--cb-muted); margin-bottom: 0.75rem; }
+.gp-event-card__footer {
+  margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--gp-border-soft);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.gp-event-card__footer-text { font-size: 0.7rem; color: var(--cb-muted); }
+.gp-event-card__arrow { margin-left: auto; color: var(--gp-orange); font-size: 0.75rem; transition: transform 0.2s; }
+.gp-event-card:hover .gp-event-card__arrow { transform: translateX(4px); }
+
+/* ── Empty state ── */
+.gp-empty {
+  background: var(--gp-bg-card); border: 1.5px solid var(--gp-border);
+  border-radius: 1rem; padding: 2.5rem 1.25rem; text-align: center;
+}
+.gp-empty__icon {
+  margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;
+  height: 4rem; width: 4rem; border-radius: 1rem;
+  background: var(--gp-bg-accent); border: 1.5px solid var(--gp-border);
+}
+
+/* ── Stat cards ── */
+.gp-stat {
+  background: var(--gp-stat-bg); border: 1px solid var(--gp-stat-border);
+  border-radius: 1rem; padding: 0.75rem 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+html.dark .gp-stat { box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+.gp-stat__label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--cb-muted); margin-bottom: 0.5rem; }
+.gp-stat__value { font-size: 1.15rem; font-weight: 700; color: var(--cb-navy); font-variant-numeric: tabular-nums; }
+.gp-stat__icon { display: flex; align-items: center; justify-content: center; height: 1.75rem; width: 1.75rem; border-radius: 0.5rem; }
+
+/* ── Quick action tiles ── */
+.gp-action {
+  background: var(--gp-bg-card); border: 1.5px solid var(--gp-stat-border);
+  border-radius: 1rem; padding: 1rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.5rem; text-align: center; text-decoration: none;
+  transition: box-shadow 0.2s; cursor: pointer; width: 100%;
+}
+.gp-action:hover { box-shadow: 0 4px 16px rgba(249,115,22,0.12); }
+html.dark .gp-action:hover { box-shadow: 0 4px 16px rgba(249,115,22,0.08); }
+.gp-action__icon { height: 2.5rem; width: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem; transition: transform 0.15s; }
+.gp-action:hover .gp-action__icon { transform: scale(1.1); }
+.gp-action__icon--orange { background: var(--gp-bg-accent); border: 1.5px solid var(--gp-border); }
+.gp-action__icon--sky    { background: rgba(14,165,233,0.1); border: 1.5px solid rgba(14,165,233,0.2); }
+html.dark .gp-action__icon--sky { background: rgba(14,165,233,0.08); border-color: rgba(14,165,233,0.15); }
+.gp-action__icon--red    { background: rgba(239,68,68,0.08); border: 1.5px solid rgba(239,68,68,0.15); }
+html.dark .gp-action__icon--red { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
+.gp-action__label { font-size: 0.75rem; font-weight: 600; color: var(--cb-navy); }
+.gp-action__sub   { font-size: 0.65rem; color: var(--cb-muted); }
+
+/* ── UPI QR box ── */
+.gp-qr-box {
+  background: var(--gp-qr-bg); border: 1.5px solid var(--gp-qr-border);
+  border-radius: 1rem; padding: 1rem 1.25rem;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
+}
+.gp-qr-box__label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gp-qr-text); margin-bottom: 0.25rem; }
+.gp-qr-box__value { font-weight: 600; font-size: 0.875rem; color: var(--cb-navy); word-break: break-all; margin-bottom: 0.5rem; }
+.gp-qr-box__link  { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; font-weight: 600; color: var(--gp-qr-text); text-decoration: none; transition: opacity 0.15s; }
+.gp-qr-box__link:hover { opacity: 0.8; }
+
+/* ── Table header ── */
+.gp-table-header {
+  padding: 0.875rem 1rem 0.875rem 1.25rem; border-bottom: 1px solid var(--gp-border-soft);
+  background: var(--gp-bg-header); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+}
+.gp-table-header__title { font-size: 0.875rem; font-weight: 700; color: var(--cb-navy); }
+.gp-table-header__sub   { font-size: 0.7rem; color: var(--cb-muted); margin-top: 0.125rem; }
+
+/* ── Entries table ── */
+.gp-table thead tr { border-bottom: 1.5px solid var(--gp-border); background: var(--gp-bg-accent); }
+.gp-table thead th { padding: 0.75rem 1rem; text-align: left; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gp-th-color); }
+.gp-table thead th.text-right { text-align: right; }
+.gp-table tbody tr { border-bottom: 1px solid var(--gp-border-soft); transition: background 0.12s; }
+.gp-table tbody tr:nth-child(even) { background: var(--gp-bg-even); }
+.gp-table tbody tr:hover { background: var(--gp-bg-hover); }
+.gp-table tbody td { padding: 0.75rem 1rem; color: var(--gp-td-color); font-size: 0.875rem; }
+.gp-table tfoot tr { border-top: 2px solid var(--gp-border-tfoot); background: var(--gp-bg-tfoot); }
+.gp-table tfoot td { padding: 0.75rem 1rem; font-weight: 700; }
+.gp-table tfoot td.gp-total-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gp-text); }
+.gp-table tfoot td.gp-total-value { text-align: right; font-size: 1rem; color: var(--gp-deep); font-variant-numeric: tabular-nums; }
+
+/* ── Orange button ── */
+.gp-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.5rem; border-radius: 0.75rem; padding: 0.625rem 1.25rem;
+  font-size: 0.875rem; font-weight: 700; color: var(--gp-btn-color);
+  background: var(--gp-btn-bg); text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s; border: none; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(249,115,22,0.25);
+}
+.gp-btn:hover { opacity: 0.9; color: var(--gp-btn-color); }
+.gp-btn:active { transform: scale(0.98); }
+.gp-btn--outline {
+  background: transparent; color: var(--gp-muted);
+  border: 1.5px solid var(--gp-border); box-shadow: none;
+}
+html.dark .gp-btn--outline { color: var(--gp-deep); border-color: var(--gp-border); background: var(--gp-bg-accent); }
+.gp-btn--outline:hover { background: var(--gp-bg-accent); color: var(--gp-text); }
+
+/* ── Page header ── */
+.gp-page-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gp-muted); }
+.gp-page-title { font-size: 1.35rem; font-weight: 700; color: var(--gp-deep); line-height: 1.25; }
+
+/* ── Payment method pills ── */
+.gp-method-label {
+  display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+  border-radius: 0.625rem; border: 1.5px solid var(--gp-stat-border);
+  padding: 0.5rem 0.75rem; font-size: 0.875rem; font-weight: 600;
+  color: var(--cb-muted); transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.gp-method-label:has(input:checked) { border-color: var(--gp-orange); background: var(--gp-bg-accent); color: var(--gp-text); }
+html.dark .gp-method-label { color: var(--cb-navy-soft); border-color: rgba(255,255,255,0.12); }
+html.dark .gp-method-label:has(input:checked) { border-color: var(--gp-orange); background: rgba(249,115,22,0.12); color: var(--gp-deep); }
+
+/* ── Cash notes section ── */
+.gp-cash-notes { border-radius: 0.75rem; border: 1.5px solid rgba(34,197,94,0.3); background: rgba(34,197,94,0.06); padding: 1rem; }
+html.dark .gp-cash-notes { border-color: rgba(34,197,94,0.2); background: rgba(20,83,45,0.12); }
+.gp-cash-notes__title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #166534; margin-bottom: 0.5rem; }
+html.dark .gp-cash-notes__title { color: #4ade80; }
+
+/* ── GPay section ── */
+.gp-gpay-section { border-radius: 0.75rem; border: 1.5px solid rgba(59,130,246,0.25); background: rgba(59,130,246,0.05); padding: 1rem; }
+html.dark .gp-gpay-section { border-color: rgba(59,130,246,0.2); background: rgba(30,58,138,0.12); }
+.gp-gpay-section__title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1e40af; margin-bottom: 0.25rem; }
+html.dark .gp-gpay-section__title { color: #60a5fa; }
+
+/* ── Scanner dropzone ── */
+.gp-dropzone { border-radius: 0.75rem; border: 2px dashed var(--gp-border); background: var(--gp-bg-accent); padding: 1.5rem; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.gp-dropzone:hover { border-color: var(--gp-orange); background: rgba(249,115,22,0.06); }
+html.dark .gp-dropzone { border-color: rgba(253,186,116,0.25); background: rgba(124,45,18,0.15); }
+html.dark .gp-dropzone:hover { border-color: rgba(249,115,22,0.5); background: rgba(249,115,22,0.1); }
+.gp-dropzone__icon { color: rgba(249,115,22,0.5); font-size: 1.5rem; margin-bottom: 0.5rem; }
+.gp-dropzone__text { font-size: 0.75rem; font-weight: 600; color: var(--cb-navy); }
+.gp-dropzone__sub  { font-size: 0.7rem; color: var(--cb-muted); margin-top: 0.125rem; }
+
+/* ── Back button ── */
+.gp-back-btn {
+  display: flex; align-items: center; justify-content: center; height: 2.25rem; width: 2.25rem;
+  border-radius: 0.5rem; border: 1px solid var(--gp-stat-border); color: var(--cb-muted);
+  background: var(--gp-bg-card); flex-shrink: 0; text-decoration: none; transition: background 0.15s, color 0.15s;
+}
+.gp-back-btn:hover { background: var(--gp-bg-accent); color: var(--gp-text); }
+
+/* ── Form card ── */
+.gp-form-card { background: var(--gp-bg-card); border: 1.5px solid var(--gp-border); border-radius: 1rem; padding: 1.25rem 1.5rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+html.dark .gp-form-card { box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+
+/* ── Nav item ── */
+.cb-nav-item--ganpati { color: #ea580c !important; }
+.cb-nav-item--ganpati.cb-nav-item--active, .cb-nav-item--ganpati:hover { background: rgba(249,115,22,0.1) !important; color: #c2410c !important; }
+html.dark .cb-nav-item--ganpati { color: #fb923c !important; }
+html.dark .cb-nav-item--ganpati.cb-nav-item--active, html.dark .cb-nav-item--ganpati:hover { background: rgba(249,115,22,0.12) !important; color: #fdba74 !important; }

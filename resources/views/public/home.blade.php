@@ -58,6 +58,17 @@
                         <i class="fab fa-whatsapp mr-2" aria-hidden="true"></i> Share on WhatsApp
                     </a>
                 </div>
+
+                {{-- App Download badges --}}
+                <div class="mt-6 flex flex-wrap justify-center items-center gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                    <span>Download Mobile App:</span>
+                    <a href="{{ config('chandlabook.play_store_url') }}" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-900 dark:text-white transition-colors border border-slate-300 dark:border-white/10">
+                        <i class="fab fa-google-play text-sm text-green-500"></i> Google Play
+                    </a>
+                    <a href="{{ config('chandlabook.app_store_url') }}" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-900 dark:text-white transition-colors border border-slate-300 dark:border-white/10">
+                        <i class="fab fa-apple text-sm"></i> App Store
+                    </a>
+                </div>
             </div>
 
             {{-- Live Snapshot Centered --}}

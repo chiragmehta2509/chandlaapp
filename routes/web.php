@@ -27,6 +27,8 @@ use App\Http\Controllers\Client\PackPurchaseController as ClientPackPurchaseCont
 use App\Http\Controllers\Client\SupportController as ClientSupportController;
 use App\Http\Controllers\Client\FamilyMemberController as ClientFamilyMemberController;
 use App\Http\Controllers\Client\TransactionHistoryController as ClientTransactionHistoryController;
+use App\Http\Controllers\Client\GanpatiController as ClientGanpatiController;
+use App\Http\Controllers\Client\ExpenseController as ClientExpenseController;
 use App\Http\Controllers\Public\PaymentController as PublicPaymentController;
 use App\Http\Controllers\Public\DirectGPayController as PublicDirectGPayController;
 use App\Http\Controllers\Public\SeoController as PublicSeoController;
@@ -291,5 +293,47 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/transactions/{txnNumber}', [\App\Http\Controllers\Client\TransactionHistoryController::class, 'show'])
             ->name('transactions.show')
             ->where('txnNumber', 'TXN-[0-9-]+');
+
+        // ── Ganpati Special ───────────────────────────────────────────────────
+        // Free & unlimited for ALL users — no plan restrictions
+        Route::prefix('ganpati')->name('ganpati.')->group(function () {
+            // Events
+            Route::get('/', [ClientGanpatiController::class, 'index'])->name('index');
+            Route::get('/create', [ClientGanpatiController::class, 'create'])->name('create');
+            Route::post('/', [ClientGanpatiController::class, 'store'])->name('store');
+            Route::get('/{id}', [ClientGanpatiController::class, 'show'])->name('show')->whereNumber('id');
+            Route::get('/{id}/edit', [ClientGanpatiController::class, 'edit'])->name('edit')->whereNumber('id');
+            Route::put('/{id}', [ClientGanpatiController::class, 'update'])->name('update')->whereNumber('id');
+            Route::delete('/{id}', [ClientGanpatiController::class, 'destroy'])->name('destroy')->whereNumber('id');
+
+            // Scanner / UPI QR
+            Route::get('/{id}/scanner', [ClientGanpatiController::class, 'scanner'])->name('scanner')->whereNumber('id');
+            Route::post('/{id}/scanner', [ClientGanpatiController::class, 'scannerSave'])->name('scanner.save')->whereNumber('id');
+            Route::get('/{id}/qr.svg', [ClientGanpatiController::class, 'qr'])->name('qr')->whereNumber('id');
+
+            // PDF download
+            Route::get('/{id}/pdf', [ClientGanpatiController::class, 'pdf'])->name('pdf')->whereNumber('id');
+
+            // Chandla (chanda) entries
+            Route::get('/{id}/chandlas/create', [ClientGanpatiController::class, 'chandlaCreate'])->name('chandla.create')->whereNumber('id');
+            Route::post('/{id}/chandlas', [ClientGanpatiController::class, 'chandlaStore'])->name('chandla.store')->whereNumber('id');
+            Route::get('/{id}/chandlas/{chandlaId}/edit', [ClientGanpatiController::class, 'chandlaEdit'])->name('chandla.edit')->whereNumber(['id', 'chandlaId']);
+            Route::put('/{id}/chandlas/{chandlaId}', [ClientGanpatiController::class, 'chandlaUpdate'])->name('chandla.update')->whereNumber(['id', 'chandlaId']);
+            Route::delete('/{id}/chandlas/{chandlaId}', [ClientGanpatiController::class, 'chandlaDestroy'])->name('chandla.destroy')->whereNumber(['id', 'chandlaId']);
+        });
+
+        // ── Expense Management ────────────────────────────────────────────────
+        Route::prefix('expenses')->name('expenses.')->group(function () {
+            Route::get('/',          [ClientExpenseController::class, 'index'])->name('index');
+            Route::get('/pdf',       [ClientExpenseController::class, 'pdf'])->name('pdf');
+            Route::get('/create',    [ClientExpenseController::class, 'create'])->name('create');
+            Route::post('/',         [ClientExpenseController::class, 'store'])->name('store');
+            Route::get('/{id}',      [ClientExpenseController::class, 'show'])->name('show')->whereNumber('id');
+            Route::get('/{id}/edit', [ClientExpenseController::class, 'edit'])->name('edit')->whereNumber('id');
+            Route::put('/{id}',      [ClientExpenseController::class, 'update'])->name('update')->whereNumber('id');
+            Route::delete('/{id}',   [ClientExpenseController::class, 'destroy'])->name('destroy')->whereNumber('id');
+        });
     });
 });
+
+require __DIR__ . '/vendor_web.php';

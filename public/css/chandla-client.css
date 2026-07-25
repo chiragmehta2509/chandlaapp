@@ -1141,6 +1141,17 @@ html.dark input[type="file"]:hover::-webkit-file-upload-button {
   background-color: #4338ca !important;
 }
 
+/* Global fix for Tailwind hover:bg-slate-50 classes in dark mode */
+html.dark .cb-app .hover\:bg-slate-50\/40:hover,
+html.dark .cb-app .hover\:bg-slate-50\/50:hover,
+html.dark .cb-app .hover\:bg-slate-50\/60:hover,
+html.dark .cb-app .hover\:bg-slate-50\/80:hover,
+html.dark .cb-app .hover\:bg-slate-50:hover,
+html.dark .cb-app .hover\:bg-slate-50\/50\/50:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+
 
 
 
