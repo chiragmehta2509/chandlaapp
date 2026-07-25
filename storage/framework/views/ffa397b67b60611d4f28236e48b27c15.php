@@ -12,22 +12,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#312e81">
-    @stack('head')
-    @include('public.partials.seo')
-    @include('public.partials.jsonld')
-    <link rel="stylesheet" href="{{ asset('css/tailwind.css') }}?v=2">
-    <link rel="stylesheet" href="{{ asset('css/cb-loader.css') }}?v=2">
+    <?php echo $__env->yieldPushContent('head'); ?>
+    <?php echo $__env->make('public.partials.seo', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php echo $__env->make('public.partials.jsonld', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('css/tailwind.css')); ?>?v=2">
+    <link rel="stylesheet" href="<?php echo e(asset('css/cb-loader.css')); ?>?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="{{ asset('js/cb-loader.js') }}?v=2" defer></script>
-    <link rel="icon" type="image/png" href="{{ asset('images/chandla-favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/chandla-app-icon.png') }}">
+    <script src="<?php echo e(asset('js/cb-loader.js')); ?>?v=2" defer></script>
+    <link rel="icon" type="image/png" href="<?php echo e(asset('images/chandla-favicon.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('images/chandla-app-icon.png')); ?>">
 </head>
 <body class="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-white dark:from-indigo-950 dark:via-purple-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors duration-200">
     <!-- Global Preloader -->
     <div id="cb-loader-overlay" class="cb-loader-overlay--visible" role="status" aria-live="polite" aria-hidden="false" style="position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 1rem; transition: opacity 0.18s ease, visibility 0.18s ease;">
         <div class="cb-loader-overlay__panel">
             <div class="cb-loader-logo-container">
-                <img src="{{ asset('images/chandla-favicon.png') }}" alt="Chandla Book" class="cb-loader-logo">
+                <img src="<?php echo e(asset('images/chandla-favicon.png')); ?>" alt="Chandla Book" class="cb-loader-logo">
                 <span class="cb-loader-overlay__spinner">
                     <svg class="cb-loader-spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
@@ -41,8 +41,8 @@
     </div>
 
     <header class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-4 flex items-center justify-between shrink-0">
-        <a href="{{ route('public.home') }}" class="flex items-center gap-2 sm:gap-3 group">
-            <img src="{{ asset('images/chandla-favicon.png') }}" alt="Chandla Book" class="h-10 sm:h-12 w-auto" width="48" height="48" decoding="async">
+        <a href="<?php echo e(route('public.home')); ?>" class="flex items-center gap-2 sm:gap-3 group">
+            <img src="<?php echo e(asset('images/chandla-favicon.png')); ?>" alt="Chandla Book" class="h-10 sm:h-12 w-auto" width="48" height="48" decoding="async">
             <span class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-white/90">Chandla Book</span>
         </a>
         <div class="flex items-center gap-4">
@@ -50,14 +50,14 @@
                 <i class="fa-solid fa-moon text-sm block dark:hidden"></i>
                 <i class="fa-solid fa-sun text-sm hidden dark:block"></i>
             </button>
-            <a href="{{ route('public.home') }}" class="text-sm text-slate-600 dark:text-white/80 hover:text-slate-900 dark:hover:text-white font-medium">
+            <a href="<?php echo e(route('public.home')); ?>" class="text-sm text-slate-600 dark:text-white/80 hover:text-slate-900 dark:hover:text-white font-medium">
                 ← Home
             </a>
         </div>
     </header>
 
     <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-10">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <footer class="shrink-0 border-t border-slate-200/90 dark:border-slate-800/90 bg-white/50 dark:bg-slate-900/50 backdrop-blur-[2px] pb-8 md:pb-10" role="contentinfo">
@@ -70,23 +70,23 @@
                     </p>
                 </div>
                 <nav class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm mt-2" aria-label="Footer">
-                    <a href="{{ route('client.dashboard') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Home</a>
-                    <a href="{{ route('client.plans') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Plans</a>
-                    <a href="{{ route('client.faq') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">FAQ</a>
-                    <a href="{{ Auth::check() ? route('client.about') : route('public.about') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">About Us</a>
-                    <a href="{{ route('public.contact') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contact us</a>
-                    @php
+                    <a href="<?php echo e(route('client.dashboard')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Home</a>
+                    <a href="<?php echo e(route('client.plans')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Plans</a>
+                    <a href="<?php echo e(route('client.faq')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">FAQ</a>
+                    <a href="<?php echo e(route('public.about')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">About Us</a>
+                    <a href="<?php echo e(route('public.contact')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contact us</a>
+                    <?php
                         $footerMail = trim((string) config('chandlabook.support_email', ''));
                         if ($footerMail === '') {
                             $footerMail = (string) config('mail.from.address', '');
                         }
-                    @endphp
-                    @if($footerMail !== '')
-                        <a href="mailto:{{ $footerMail }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Email</a>
-                    @endif
-                    <a href="{{ route('public.privacy') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Privacy Policy</a>
-                    <a href="{{ route('public.terms') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Terms of use</a>
-                    <a href="{{ route('public.refund') }}" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Refund policy</a>
+                    ?>
+                    <?php if($footerMail !== ''): ?>
+                        <a href="mailto:<?php echo e($footerMail); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Email</a>
+                    <?php endif; ?>
+                    <a href="<?php echo e(route('public.privacy')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Privacy Policy</a>
+                    <a href="<?php echo e(route('public.terms')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Terms of use</a>
+                    <a href="<?php echo e(route('public.refund')); ?>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Refund policy</a>
                 </nav>
             </div>
             <div class="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[0.7rem] text-slate-500 dark:text-slate-400">
@@ -110,6 +110,7 @@
             }
         });
     </script>
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+<?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/layouts/public-guest.blade.php ENDPATH**/ ?>

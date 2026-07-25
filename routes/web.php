@@ -57,8 +57,9 @@ Route::get('/storage/{path}', function (string $path) {
 })->where('path', '.*')->name('storage.fallback');
 
 Route::view('/privacy', 'public.privacy')->name('public.privacy');
-Route::view('/terms', 'public.terms')->name('public.terms');
-Route::view('/refund', 'public.refund')->name('public.refund');
+Route::view('/terms',   'public.terms')->name('public.terms');
+Route::view('/refund',  'public.refund')->name('public.refund');
+Route::view('/about',   'public.about')->name('public.about');
 Route::get('/contact', [PublicSeoController::class, 'contact'])->name('public.contact');
 Route::get('/robots.txt', [PublicSeoController::class, 'robots'])->name('public.robots');
 Route::get('/sitemap.xml', [PublicSeoController::class, 'sitemap'])->name('public.sitemap');
@@ -171,6 +172,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/plans', [ClientSupportController::class, 'plans'])->name('plans');
         Route::get('/faq', [ClientSupportController::class, 'faq'])->name('faq');
         Route::get('/contact', [ClientSupportController::class, 'contact'])->name('contact');
+        Route::view('/about', 'public.about')->name('about');
 
         // Family Members (read-only sub-accounts)
         Route::get('/family-members', [ClientFamilyMemberController::class, 'index'])->name('family-members.index');

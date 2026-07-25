@@ -227,6 +227,7 @@
                     <a href="<?php echo e(route('client.dashboard')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Home</a>
                     <a href="<?php echo e(route('client.plans')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Plans</a>
                     <a href="<?php echo e(route('client.faq')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">FAQ</a>
+                    <a href="<?php echo e(route('client.about')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">About Us</a>
                     <a href="<?php echo e(route('client.contact')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Contact us</a>
                     <?php
                         $footerMail = trim((string) config('chandlabook.support_email', ''));
