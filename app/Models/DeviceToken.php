@@ -9,31 +9,34 @@ class DeviceToken extends Model
 {
     use HasFactory;
 
+    protected $table = 'device_tokens';
+
     protected $fillable = [
         'user_id',
-        'token',
+        'device_token',
         'platform',
-        'device_id',
         'device_name',
+        'app_version',
         'is_active',
-        'last_used_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'last_used_at' => 'datetime',
     ];
 
-    // Relationships
+    /**
+     * Get the user that owns the device token.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Scopes
+    /**
+     * Scope a query to only include active tokens.
+     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 }
-

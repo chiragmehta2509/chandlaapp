@@ -76,3 +76,14 @@ This document outlines all the RESTful API endpoints that have been integrated i
 - `GET /reports/dashboard` - Fetch dashboard summary report.
 - `GET /reports/events` - Fetch events overview report.
 - `GET /reports/entries` - Fetch ledger entries summary report.
+
+### Push Notifications (New Module - Direct API)
+The base URL for these endpoints is `https://skylighttech.in/chandlaApp/api` (without the `/v1` prefix).
+- `POST /device-token` - Register or update a device FCM token (preventing duplicates).
+- `GET /notifications` - Fetch a paginated list of notifications received by the authenticated user.
+- `GET /notifications/unread-count` - Get count of unread notifications for the authenticated user.
+- `POST /notifications/{id}/read` - Mark a specific notification as read.
+- `POST /notifications/read-all` - Mark all notifications for the user as read.
+- `DELETE /notifications/{id}` - Delete a notification from the authenticated user's history.
+- `POST /admin/notifications/send` - Send FCM push notifications and log to database (Admin Only).
+

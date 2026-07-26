@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PushNotification\DeviceTokenController;
+use App\Http\Controllers\Api\PushNotification\PushNotificationController;
+use App\Http\Controllers\Api\PushNotification\AdminNotificationController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Notification\NotificationController;
@@ -348,6 +351,21 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/{id}',        [ExpenseController::class, 'update']);         // update (multipart fallback)
         Route::delete('/{id}',      [ExpenseController::class, 'destroy']);        // delete expense
     });
+});
+
+// Push Notification Module Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/device-token', [DeviceTokenController::class, 'register']);
+    
+    Route::get('/notifications', [PushNotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [PushNotificationController::class, 'unreadCount']);
+    Route::post('/notifications/{id}/read', [PushNotificationController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [PushNotificationController::class, 'markAllRead']);
+    Route::delete('/notifications/{id}', [PushNotificationController::class, 'destroy']);
+});
+
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::post('/admin/notifications/send', [AdminNotificationController::class, 'send']);
 });
 
 require __DIR__ . '/vendor_api.php';

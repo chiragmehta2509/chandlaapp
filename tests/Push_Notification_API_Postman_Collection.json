@@ -1,0 +1,421 @@
+{
+	"info": {
+		"_postman_id": "bc37ad75-b6a8-4c9b-b9f4-85ffea97a30c",
+		"name": "Chandla Book Push Notifications API",
+		"description": "API collection for the newly added Push Notification module in Chandla Book. Contains device token registration, administrative send endpoints, user history, and status updates.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Device Token",
+			"item": [
+				{
+					"name": "Register Device Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"device_token\": \"fcm_token_device_example_1234567890\",\n    \"platform\": \"android\",\n    \"device_name\": \"Google Pixel 8\",\n    \"app_version\": \"1.2.0\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/device-token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"device-token"
+							]
+						},
+						"description": "Registers or updates a device FCM token for the authenticated user. Prevents duplicate device token entries by updating details if the token already exists."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Notifications",
+			"item": [
+				{
+					"name": "Get Notification History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications?per_page=15&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Returns a paginated list of notifications received by the authenticated user, sorted latest first."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Count",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/unread-count",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"unread-count"
+							]
+						},
+						"description": "Returns the integer count of unread notifications for the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/{{notification_id}}/read",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"{{notification_id}}",
+								"read"
+							]
+						},
+						"description": "Marks a specific notification (by history ID or general notification ID) as read."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/read-all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"read-all"
+							]
+						},
+						"description": "Marks all unread notifications for the authenticated user as read."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/{{notification_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"{{notification_id}}"
+							]
+						},
+						"description": "Deletes a specific notification from the authenticated user's history."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Notifications",
+			"item": [
+				{
+					"name": "Send Notification (To All)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"New Feature Announcement\",\n    \"message\": \"Check out our brand new multi-ledger sync capability!\",\n    \"image\": \"https://example.com/assets/new_feature.png\",\n    \"action_type\": \"feature\",\n    \"action_value\": \"multi_ledger_sync\",\n    \"send_to\": \"all\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/notifications/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"notifications",
+								"send"
+							]
+						},
+						"description": "Send a push notification to all active devices and log it to the notifications log history. Admin credentials required."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Notification (To Selected Users)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Exclusive Premium Discount\",\n    \"message\": \"Get 50% off Premium upgrade today!\",\n    \"image\": \"https://example.com/assets/offer.png\",\n    \"action_type\": \"offer\",\n    \"action_value\": \"discount_50\",\n    \"send_to\": \"selected_users\",\n    \"user_ids\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/notifications/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"notifications",
+								"send"
+							]
+						},
+						"description": "Send a push notification targeting a specific array of user IDs. Admin credentials required."
+					},
+					"response": []
+				},
+				{
+					"name": "Schedule Notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Scheduled App Update\",\n    \"message\": \"A new version of Chandla Book is scheduled for rollout.\",\n    \"image\": null,\n    \"action_type\": \"none\",\n    \"action_value\": null,\n    \"send_to\": \"all\",\n    \"schedule_at\": \"2026-12-31 18:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/notifications/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"notifications",
+								"send"
+							]
+						},
+						"description": "Creates a scheduled notification with 'pending' status, to be run at a later time."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "your_user_bearer_token_here",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "your_admin_bearer_token_here",
+			"type": "string"
+		},
+		{
+			"key": "notification_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

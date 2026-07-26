@@ -38,6 +38,7 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class,
         'check.matrimonial.plan' => \App\Http\Middleware\EnsureActiveMatrimonialPlan::class,
         'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+        'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         'family.readonly' => \App\Http\Middleware\BlockFamilyViewerWrites::class,
         'force.password.change' => \App\Http\Middleware\ForcePasswordChange::class,
         'plan.feature'          => \App\Http\Middleware\CheckPlanFeature::class,

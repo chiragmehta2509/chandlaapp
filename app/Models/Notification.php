@@ -9,51 +9,46 @@ class Notification extends Model
 {
     use HasFactory;
 
+    protected $table = 'notifications';
+
     protected $fillable = [
-        'user_id',
         'title',
-        'body',
-        'type',
-        'notifiable_type',
-        'notifiable_id',
-        'data',
-        'is_read',
-        'read_at',
-        'sent_at',
+        'message',
+        'image',
+        'action_type',
+        'action_value',
+        'created_by',
+        'send_to',
+        'schedule_at',
+        'status',
     ];
 
     protected $casts = [
-        'data' => 'array',
-        'is_read' => 'boolean',
-        'read_at' => 'datetime',
-        'sent_at' => 'datetime',
+        'schedule_at' => 'datetime',
     ];
 
-    // Relationships
-    public function user()
+    /**
+     * Get the admin user who created/sent the notification.
+     */
+    public function creator()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function notifiable()
+    /**
+     * Get the individual user delivery statuses.
+     */
+    public function notificationUsers()
     {
-        return $this->morphTo();
+        return $this->hasMany(NotificationUser::class);
     }
 
-    // Scopes
-    public function scopeUnread($query)
+    /**
+     * Get users targeted by this notification.
+     */
+    public function users()
     {
-        return $query->where('is_read', false);
-    }
-
-    public function scopeRead($query)
-    {
-        return $query->where('is_read', true);
-    }
-
-    public function scopeByType($query, $type)
-    {
-        return $query->where('type', $type);
+        return $this->belongsToMany(User::class, 'notification_users')
+            ->withPivot('is_read', 'read_at', 'created_at');
     }
 }
-
