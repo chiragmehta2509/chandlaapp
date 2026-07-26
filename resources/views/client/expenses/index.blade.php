@@ -313,13 +313,29 @@
 {{-- ═══════════════════════════════════════════════════════════════════════
      CASH LEDGER — Cash In vs Cash Out
 ═══════════════════════════════════════════════════════════════════════ --}}
-<div class="mt-8 mb-6">
-    <div class="flex items-center gap-3 mb-4">
-        <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-            <i class="fas fa-book-open text-slate-500 text-sm"></i>
+<div id="cash-ledger-section" class="mt-8 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div class="flex items-center gap-3 flex-wrap">
+            <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                <i class="fas fa-book-open text-slate-500 text-sm"></i>
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-cb-navy inline">Cash Ledger</h2>
+                <span class="text-xs text-slate-400 font-normal ml-2">Cash In vs Cash Out — all cash transactions</span>
+            </div>
         </div>
-        <h2 class="text-base font-bold text-cb-navy">Cash Ledger</h2>
-        <span class="text-xs text-slate-400 font-normal">Cash In vs Cash Out — all cash transactions</span>
+        
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Filter Event:</span>
+            <select id="ledgerEventSelect" class="cb-field text-xs py-1.5 px-3 h-auto w-auto max-w-[220px]" style="padding-top: 0.375rem; padding-bottom: 0.375rem; font-size: 0.75rem;">
+                <option value="">All events</option>
+                @foreach($events as $event)
+                    <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>
+                        {{ $event->title }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -522,6 +538,21 @@ $(document).ready(function () {
         ],
         dom: '<"flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-6 py-4"lf>rt<"flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-4 border-t border-slate-100"ip>',
     });
+
+    // Ledger Event Select redirect with preserving other parameters & appending scroll anchor
+    const ledgerEventSelect = document.getElementById('ledgerEventSelect');
+    if (ledgerEventSelect) {
+        ledgerEventSelect.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            if (this.value) {
+                url.searchParams.set('event_id', this.value);
+            } else {
+                url.searchParams.delete('event_id');
+            }
+            url.hash = 'cash-ledger-section';
+            window.location.href = url.toString();
+        });
+    }
 });
 </script>
 @endpush

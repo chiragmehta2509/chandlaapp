@@ -35,6 +35,41 @@ use App\Http\Controllers\Api\Subscription\SubscriptionController;
 // Public routes
 Route::prefix('v1')->group(function () {
     
+    // Route List Endpoint
+    Route::get('/routes', function () {
+        $routeCollection = Route::getRoutes();
+        $routes = [];
+        foreach ($routeCollection as $value) {
+            $uri = $value->uri();
+            if (str_contains($uri, 'api/')) {
+                $methods = array_filter($value->methods(), function ($m) {
+                    return in_array($m, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']);
+                });
+                
+                if (empty($methods)) {
+                    continue;
+                }
+                
+                $routes[] = [
+                    'method' => implode('|', $methods),
+                    'uri'    => $uri,
+                    'name'   => $value->getName(),
+                    'action' => $value->getActionName(),
+                ];
+            }
+        }
+        
+        usort($routes, function ($a, $b) {
+            return strcmp($a['uri'], $b['uri']);
+        });
+
+        return response()->json([
+            'success' => true,
+            'count'   => count($routes),
+            'routes'  => $routes
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    });
+    
     // Authentication Routes (Public)
     Route::prefix('auth')->group(function () {
         // Social Login
@@ -129,6 +164,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/collaborators', [EventController::class, 'addCollaborator']);
         Route::put('/{id}/collaborators/{userId}', [EventController::class, 'updateCollaborator']);
         Route::delete('/{id}/collaborators/{userId}', [EventController::class, 'removeCollaborator']);
+
+        // Event Pricing Plan & GPay unlocks
+        Route::post('/{id}/plan/razorpay-order', [EventController::class, 'createPlanRazorpayOrder']);
+        Route::post('/{id}/plan/razorpay-verify', [EventController::class, 'verifyPlanRazorpay']);
+        Route::post('/{id}/direct-gpay-unlock/razorpay-order', [EventController::class, 'createDirectGpayRazorpayOrder']);
+        Route::post('/{id}/direct-gpay-unlock/razorpay-verify', [EventController::class, 'verifyDirectGpayRazorpay']);
+        Route::post('/{id}/direct-gpay-unlock/redeem-guest-pay-pack', [EventController::class, 'redeemGuestPayPack']);
     });
     
     // Contact Routes
@@ -222,6 +264,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [ApiMarriageInvitationController::class, 'show']);
         Route::post('/', [ApiMarriageInvitationController::class, 'store']);
         Route::put('/{id}', [ApiMarriageInvitationController::class, 'update']);
+        Route::post('/{id}/payment/razorpay-order', [ApiMarriageInvitationController::class, 'createRazorpayOrder']);
+        Route::post('/{id}/payment/razorpay-verify', [ApiMarriageInvitationController::class, 'verifyRazorpay']);
     });
 
     // Pack Purchase / Subscription Routes

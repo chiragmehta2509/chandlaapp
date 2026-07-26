@@ -1,11 +1,9 @@
-@extends('layouts.client')
+<?php $__env->startSection('title', 'Edit Expense'); ?>
 
-@section('title', 'Edit Expense')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="w-full max-w-2xl mx-auto">
     <header class="mb-6 sm:mb-8">
-        <a href="{{ route('client.expenses.index') }}"
+        <a href="<?php echo e(route('client.expenses.index')); ?>"
            class="cb-link text-sm inline-flex items-center gap-2 py-2 -ml-0.5 sm:py-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cb-gold)]/40">
             <i class="fas fa-arrow-left text-xs" aria-hidden="true"></i>
             <span>Back to expenses</span>
@@ -15,60 +13,68 @@
     </header>
 
     <div class="cb-card overflow-hidden">
-        <form method="POST" action="{{ route('client.expenses.update', $expense->id) }}" enctype="multipart/form-data"
+        <form method="POST" action="<?php echo e(route('client.expenses.update', $expense->id)); ?>" enctype="multipart/form-data"
               class="p-4 sm:p-6 lg:p-8">
-            @csrf
-            @method('PUT')
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?>
 
-            @php
+            <?php
                 $tab1HasErrors = $errors->hasAny(['event_id', 'title', 'category', 'amount', 'expense_date', 'payment_method']);
                 $tab2HasErrors = $errors->hasAny([
                     'description', 'transaction_id', 'receipt_number', 'receipt_image',
                     'payee_name', 'payee_phone', 'payee_upi', 'notes'
                 ]);
-            @endphp
+            ?>
 
             <div class="space-y-6 sm:space-y-8">
 
-                {{-- Tabs Navigation --}}
+                
                 <div class="flex border-b border-slate-200 dark:border-slate-800 mb-6 bg-slate-50/50 dark:bg-slate-900/30 p-1.5 rounded-xl gap-2">
                     <button type="button" id="tab-basic-btn" 
                             class="flex-1 py-2 px-3 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all">
                         <i class="fas fa-circle-info text-cb-gold"></i> Basic Info
-                        @if($tab1HasErrors)
+                        <?php if($tab1HasErrors): ?>
                             <span class="h-2 w-2 rounded-full bg-red-500 inline-block animate-pulse"></span>
-                        @endif
+                        <?php endif; ?>
                     </button>
                     <button type="button" id="tab-advance-btn" 
                             class="flex-1 py-2 px-3 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all">
                         <i class="fas fa-folder-plus text-slate-400"></i> Advance Details
-                        @if($tab2HasErrors)
+                        <?php if($tab2HasErrors): ?>
                             <span class="h-2 w-2 rounded-full bg-red-500 inline-block animate-pulse"></span>
-                        @endif
+                        <?php endif; ?>
                     </button>
                 </div>
 
-                {{-- Pane 1: Basic Fields --}}
+                
                 <div id="pane-basic" class="space-y-6 sm:space-y-8">
-                    {{-- ── Section: Event ──────────────────────────────────── --}}
+                    
                     <section aria-labelledby="exp-event-heading">
                         <h2 id="exp-event-heading" class="cb-section-label">Event</h2>
                         <div>
                             <label class="cb-label cb-label--classic" for="exp-event-select">Event *</label>
                             <select id="exp-event-select" name="event_id" required class="cb-field min-h-[48px] w-full">
                                 <option value="">Select event</option>
-                                @foreach($events as $event)
-                                    <option value="{{ $event->id }}"
-                                        {{ old('event_id', $expense->event_id) == $event->id ? 'selected' : '' }}>
-                                        {{ $event->title }} — {{ $event->event_date?->format('d/m/Y') }}
+                                <?php $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($event->id); ?>"
+                                        <?php echo e(old('event_id', $expense->event_id) == $event->id ? 'selected' : ''); ?>>
+                                        <?php echo e($event->title); ?> — <?php echo e($event->event_date?->format('d/m/Y')); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
-                            @error('event_id') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                            <?php $__errorArgs = ['event_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </section>
 
-                    {{-- ── Section: Expense Details ─────────────────────────── --}}
+                    
                     <section aria-labelledby="exp-detail-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
                         <h2 id="exp-detail-heading" class="cb-section-label">Expense Details</h2>
                         <div class="space-y-4 sm:space-y-5">
@@ -76,24 +82,53 @@
                                 <div>
                                     <label class="cb-label cb-label--classic" for="exp-title">Title *</label>
                                     <input type="text" id="exp-title" name="title"
-                                           value="{{ old('title', $expense->title) }}" required maxlength="255"
+                                           value="<?php echo e(old('title', $expense->title)); ?>" required maxlength="255"
                                            placeholder="e.g. Stage Decoration"
-                                           class="cb-field min-h-[48px] w-full @error('title') border-red-400 @enderror">
-                                    @error('title') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                           class="cb-field min-h-[48px] w-full <?php $__errorArgs = ['title'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                    <?php $__errorArgs = ['title'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
                                 <div>
                                     <label class="cb-label cb-label--classic" for="exp-category">Category *</label>
                                     <select id="exp-category" name="category" required
-                                            class="cb-field min-h-[48px] w-full @error('category') border-red-400 @enderror">
+                                            class="cb-field min-h-[48px] w-full <?php $__errorArgs = ['category'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
                                         <option value="">Select category</option>
-                                        @foreach($categories as $cat)
-                                            <option value="{{ $cat }}"
-                                                {{ old('category', $expense->category) == $cat ? 'selected' : '' }}>
-                                                {{ ucfirst($cat) }}
+                                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($cat); ?>"
+                                                <?php echo e(old('category', $expense->category) == $cat ? 'selected' : ''); ?>>
+                                                <?php echo e(ucfirst($cat)); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
-                                    @error('category') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                    <?php $__errorArgs = ['category'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
@@ -101,23 +136,51 @@
                                 <div>
                                     <label class="cb-label cb-label--classic" for="exp-amount">Amount (₹) *</label>
                                     <input type="number" id="exp-amount" name="amount"
-                                           value="{{ old('amount', $expense->amount) }}" required min="0" step="0.01"
+                                           value="<?php echo e(old('amount', $expense->amount)); ?>" required min="0" step="0.01"
                                            placeholder="0.00"
-                                           class="cb-field min-h-[48px] w-full @error('amount') border-red-400 @enderror">
-                                    @error('amount') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                           class="cb-field min-h-[48px] w-full <?php $__errorArgs = ['amount'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                    <?php $__errorArgs = ['amount'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
                                 <div>
                                     <label class="cb-label cb-label--classic" for="exp-date">Expense Date *</label>
                                     <input type="date" id="exp-date" name="expense_date"
-                                           value="{{ old('expense_date', $expense->expense_date?->format('Y-m-d')) }}" required
-                                           class="cb-field min-h-[48px] w-full @error('expense_date') border-red-400 @enderror">
-                                    @error('expense_date') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                           value="<?php echo e(old('expense_date', $expense->expense_date?->format('Y-m-d'))); ?>" required
+                                           class="cb-field min-h-[48px] w-full <?php $__errorArgs = ['expense_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                    <?php $__errorArgs = ['expense_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
                         </div>
                     </section>
 
-                    {{-- ── Section: Payment ─────────────────────────────────── --}}
+                    
                     <section aria-labelledby="exp-payment-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
                         <h2 id="exp-payment-heading" class="cb-section-label">Payment</h2>
                         <div class="space-y-4 sm:space-y-5">
@@ -126,21 +189,29 @@
                                     Payment Method *
                                 </span>
                                 <div class="flex flex-wrap gap-2">
-                                    @foreach(['cash' => 'Cash', 'gpay' => 'GPay / UPI', 'bank_transfer' => 'Bank Transfer', 'cheque' => 'Cheque', 'other' => 'Other'] as $val => $lbl)
+                                    <?php $__currentLoopData = ['cash' => 'Cash', 'gpay' => 'GPay / UPI', 'bank_transfer' => 'Bank Transfer', 'cheque' => 'Cheque', 'other' => 'Other']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $lbl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <label class="gp-method-label">
-                                        <input type="radio" name="payment_method" value="{{ $val }}"
+                                        <input type="radio" name="payment_method" value="<?php echo e($val); ?>"
                                                class="sr-only"
-                                               {{ old('payment_method', $expense->payment_method) === $val ? 'checked' : '' }}>
-                                        {{ $lbl }}
+                                               <?php echo e(old('payment_method', $expense->payment_method) === $val ? 'checked' : ''); ?>>
+                                        <?php echo e($lbl); ?>
+
                                     </label>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
-                                @error('payment_method') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                <?php $__errorArgs = ['payment_method'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </section>
 
-                    {{-- Continue Button --}}
+                    
                     <div class="pt-4 border-t border-slate-200/80 flex justify-end">
                         <button type="button" id="go-to-advance-btn" class="cb-btn cb-btn-navy w-full sm:w-auto justify-center">
                             Continue to Advance Details <i class="fas fa-arrow-right ml-2"></i>
@@ -148,9 +219,9 @@
                     </div>
                 </div>
 
-                {{-- Pane 2: Advance Fields --}}
+                
                 <div id="pane-advance" class="hidden space-y-6 sm:space-y-8">
-                    {{-- ── Section: Description ─────────────────────────── --}}
+                    
                     <section aria-labelledby="exp-optional-desc-heading">
                         <h2 id="exp-optional-desc-heading" class="cb-section-label">Description</h2>
                         <div>
@@ -159,11 +230,11 @@
                             </label>
                             <textarea id="exp-description" name="description" rows="2"
                                       placeholder="Brief description of this expense"
-                                      class="cb-field w-full resize-none">{{ old('description', $expense->description) }}</textarea>
+                                      class="cb-field w-full resize-none"><?php echo e(old('description', $expense->description)); ?></textarea>
                         </div>
                     </section>
 
-                    {{-- ── Section: Extra Payment Info ───────────────────────── --}}
+                    
                     <section aria-labelledby="exp-payment-extra-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
                         <h2 id="exp-payment-extra-heading" class="cb-section-label">Transaction &amp; Receipt</h2>
                         <div class="space-y-4 sm:space-y-5">
@@ -173,7 +244,7 @@
                                         <span class="text-slate-400 font-normal normal-case">(optional)</span>
                                     </label>
                                     <input type="text" id="exp-txn" name="transaction_id"
-                                           value="{{ old('transaction_id', $expense->transaction_id) }}" maxlength="255"
+                                           value="<?php echo e(old('transaction_id', $expense->transaction_id)); ?>" maxlength="255"
                                            placeholder="Reference number"
                                            class="cb-field min-h-[48px] w-full">
                                 </div>
@@ -182,7 +253,7 @@
                                         <span class="text-slate-400 font-normal normal-case">(optional)</span>
                                     </label>
                                     <input type="text" id="exp-receipt-no" name="receipt_number"
-                                           value="{{ old('receipt_number', $expense->receipt_number) }}" maxlength="100"
+                                           value="<?php echo e(old('receipt_number', $expense->receipt_number)); ?>" maxlength="100"
                                            placeholder="Optional receipt number"
                                            class="cb-field min-h-[48px] w-full">
                                 </div>
@@ -192,25 +263,32 @@
                                 <label class="cb-label cb-label--classic" for="exp-receipt-img">Receipt Image
                                     <span class="text-slate-400 font-normal normal-case">(optional, max 5 MB)</span>
                                 </label>
-                                @if($expense->receipt_image)
+                                <?php if($expense->receipt_image): ?>
                                     <div class="mb-2 flex items-center gap-2">
-                                        <a href="{{ Storage::disk('public')->url($expense->receipt_image) }}" target="_blank"
+                                        <a href="<?php echo e(Storage::disk('public')->url($expense->receipt_image)); ?>" target="_blank"
                                            class="cb-link text-xs inline-flex items-center gap-1">
                                             <i class="fa-solid fa-image" aria-hidden="true"></i>
                                             View current receipt
                                         </a>
                                         <span class="text-xs text-slate-400">— upload a new one to replace it</span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 <input type="file" id="exp-receipt-img" name="receipt_image"
                                        accept="image/jpeg,image/png,image/jpg"
                                        class="cb-field w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-600 hover:file:bg-slate-200">
-                                @error('receipt_image') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                <?php $__errorArgs = ['receipt_image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </section>
 
-                    {{-- ── Section: Payee / Vendor ───────────────────────────── --}}
+                    
                     <section aria-labelledby="exp-payee-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
                         <h2 id="exp-payee-heading" class="cb-section-label">Payee / Vendor
                             <span class="text-slate-400 font-normal normal-case text-xs">(optional)</span>
@@ -220,14 +298,14 @@
                                 <div>
                                     <label class="cb-label cb-label--classic" for="exp-payee-name">Payee Name</label>
                                     <input type="text" id="exp-payee-name" name="payee_name"
-                                           value="{{ old('payee_name', $expense->payee_name) }}" maxlength="255"
+                                           value="<?php echo e(old('payee_name', $expense->payee_name)); ?>" maxlength="255"
                                            placeholder="Vendor / person paid"
                                            class="cb-field min-h-[48px] w-full">
                                 </div>
                                 <div>
                                     <label class="cb-label cb-label--classic" for="exp-payee-phone">Payee Phone</label>
                                     <input type="tel" id="exp-payee-phone" name="payee_phone"
-                                           value="{{ old('payee_phone', $expense->payee_phone) }}" maxlength="30"
+                                           value="<?php echo e(old('payee_phone', $expense->payee_phone)); ?>" maxlength="30"
                                            placeholder="e.g. 98765 43210"
                                            class="cb-field min-h-[48px] w-full">
                                 </div>
@@ -235,30 +313,30 @@
                             <div>
                                 <label class="cb-label cb-label--classic" for="exp-payee-upi">Payee UPI ID</label>
                                 <input type="text" id="exp-payee-upi" name="payee_upi"
-                                       value="{{ old('payee_upi', $expense->payee_upi) }}" maxlength="255"
+                                       value="<?php echo e(old('payee_upi', $expense->payee_upi)); ?>" maxlength="255"
                                        placeholder="e.g. vendor@upi"
                                        class="cb-field min-h-[48px] w-full">
                             </div>
                         </div>
                     </section>
 
-                    {{-- ── Section: Notes ───────────────────────────────────── --}}
+                    
                     <section aria-labelledby="exp-notes-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
                         <h2 id="exp-notes-heading" class="cb-section-label">Notes
                             <span class="text-slate-400 font-normal normal-case text-xs">(optional)</span>
                         </h2>
                         <textarea id="exp-notes" name="notes" rows="3"
                                   placeholder="Any extra details…"
-                                  class="cb-field w-full resize-none">{{ old('notes', $expense->notes) }}</textarea>
+                                  class="cb-field w-full resize-none"><?php echo e(old('notes', $expense->notes)); ?></textarea>
                     </section>
                 </div>
 
-                {{-- ── Submit ───────────────────────────────────────────── --}}
+                
                 <div class="pt-2 sm:pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row gap-3">
                     <button type="submit" class="cb-btn cb-btn--navy flex-1 justify-center">
                         <i class="fa-solid fa-save mr-2" aria-hidden="true"></i> Update Expense
                     </button>
-                    <a href="{{ route('client.expenses.index') }}"
+                    <a href="<?php echo e(route('client.expenses.index')); ?>"
                        class="cb-btn cb-btn--outline flex-1 justify-center text-center">
                         Cancel
                     </a>
@@ -269,7 +347,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tabBasicBtn = document.getElementById('tab-basic-btn');
@@ -323,12 +401,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Default to the tab with errors
-    @if($tab2HasErrors && !$tab1HasErrors)
+    <?php if($tab2HasErrors && !$tab1HasErrors): ?>
         showTab('advance');
-    @else
+    <?php else: ?>
         showTab('basic');
-    @endif
+    <?php endif; ?>
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.client', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/client/expenses/edit.blade.php ENDPATH**/ ?>

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use App\Models\PaymentTransaction;
+use App\Services\RazorpayService;
 
 class MarriageInvitationController extends Controller
 {
@@ -243,6 +245,183 @@ class MarriageInvitationController extends Controller
             'success' => true,
             'message' => 'Marriage invitation updated successfully',
             'data' => $invitation
+        ]);
+    }
+
+    public function createRazorpayOrder(Request $request, $id)
+    {
+        $userId = $request->user()->dataOwnerId();
+        $invitation = MarriageInvitation::where('user_id', $userId)->findOrFail($id);
+        $ownerId = $invitation->user_id;
+
+        if ($invitation->isUnlocked()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invitation is already unlocked.'
+            ], 400);
+        }
+
+        $razorpay = RazorpayService::make();
+        if (!$razorpay) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay is not configured.'
+            ], 503);
+        }
+
+        $amount = (float) config('marriage_invitations.amount', 300);
+        $amountPaise = (int) round($amount * 100);
+        $packageKey = PaymentTransaction::PKG_MARRIAGE_INVITATION;
+        $receipt = RazorpayService::generateReceipt($packageKey, $ownerId);
+
+        try {
+            $order = $razorpay->createOrder($amountPaise, $receipt, [
+                'chandla_type' => 'marriage_inv',
+                'invitation_id' => (string) $invitation->id,
+                'user_id' => (string) $ownerId,
+            ]);
+
+            // Save pending transaction
+            $razorpay->createPendingTransaction(
+                userId:          $ownerId,
+                packageKey:      $packageKey,
+                amountInr:       $amount,
+                razorpayOrderId: $order['id'],
+                referenceId:     (string) $invitation->id,
+                metadata:        ['invitation_id' => $invitation->id]
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'order_id' => $order['id'],
+                    'amount' => $razorpay->resolveTestAmount($amountPaise),
+                    'key_id' => $razorpay->getKeyId(),
+                    'name' => 'Chandla Book',
+                    'description' => 'Marriage Invitation Unlock',
+                    'prefill' => [
+                        'email' => $request->user()?->email,
+                    ],
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not create payment order.'
+            ], 500);
+        }
+    }
+
+    public function verifyRazorpay(Request $request, $id)
+    {
+        $userId = $request->user()->dataOwnerId();
+        $invitation = MarriageInvitation::where('user_id', $userId)->findOrFail($id);
+        $ownerId = $invitation->user_id;
+
+        $validator = Validator::make($request->all(), [
+            'razorpay_order_id' => 'required|string|max:64',
+            'razorpay_payment_id' => 'required|string|max:64',
+            'razorpay_signature' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
+        $razorpay = RazorpayService::make();
+        if (!$razorpay) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay verification is not configured.'
+            ], 503);
+        }
+
+        // Find the pending transaction
+        $packageKey = PaymentTransaction::PKG_MARRIAGE_INVITATION;
+        $txn = PaymentTransaction::where('razorpay_order_id', $validated['razorpay_order_id'])
+            ->where('user_id', $ownerId)
+            ->first();
+
+        try {
+            $razorpay->verifySignature(
+                $validated['razorpay_order_id'],
+                $validated['razorpay_payment_id'],
+                $validated['razorpay_signature']
+            );
+        } catch (\Throwable $e) {
+            if ($txn) {
+                $razorpay->markFailed($txn, 'Signature verification failed: ' . $e->getMessage());
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment signature verification failed.'
+            ], 400);
+        }
+
+        try {
+            $fetched = $razorpay->fetchOrder($validated['razorpay_order_id']);
+            $expectedPaise = $razorpay->resolveTestAmount((int) round((float) config('marriage_invitations.amount', 300) * 100));
+            
+            if (isset($fetched['amount']) && (int) $fetched['amount'] !== $expectedPaise) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Amount does not match this invitation.'
+                ], 400);
+            }
+
+            $notes = $fetched['notes'] ?? [];
+            if (($notes['chandla_type'] ?? '') !== 'marriage_inv' || (int) ($notes['invitation_id'] ?? 0) !== (int) $invitation->id
+                || (int) ($notes['user_id'] ?? 0) !== (int) $ownerId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This payment does not belong to this invitation order.'
+                ], 400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not confirm order details with the gateway.'
+            ], 500);
+        }
+
+        // Fetch payment to get method
+        $paymentData = [];
+        $paymentMethod = null;
+        try {
+            $paymentData = $razorpay->fetchPayment($validated['razorpay_payment_id']);
+            $paymentMethod = $paymentData['method'] ?? null;
+        } catch (\Throwable) {}
+
+        if (!$txn) {
+            $txn = PaymentTransaction::create([
+                'user_id' => $ownerId,
+                'package_key' => $packageKey,
+                'package_name' => PaymentTransaction::packageName($packageKey) . ' ₹' . number_format(config('marriage_invitations.amount', 300), 0),
+                'amount_inr' => (float) config('marriage_invitations.amount', 300),
+                'currency' => 'INR',
+                'razorpay_order_id' => $validated['razorpay_order_id'],
+                'status' => PaymentTransaction::STATUS_PENDING,
+                'reference_id' => (string) $invitation->id,
+            ]);
+        }
+
+        $razorpay->markSuccess($txn, $validated['razorpay_payment_id'], $validated['razorpay_signature'], $paymentMethod, $paymentData);
+
+        // Mark as paid
+        if (!$invitation->paid_at) {
+            $invitation->paid_at = now();
+            $invitation->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment successful! Your invitation is now unlocked.'
         ]);
     }
 }

@@ -17,75 +17,138 @@
     <div class="cb-card overflow-hidden">
         <form method="POST" action="{{ route('client.expenses.store') }}" enctype="multipart/form-data"
               class="p-4 sm:p-6 lg:p-8">
-            @csrf
+            @php
+                $tab1HasErrors = $errors->hasAny(['event_id', 'title', 'category', 'amount', 'expense_date', 'payment_method']);
+                $tab2HasErrors = $errors->hasAny([
+                    'description', 'transaction_id', 'receipt_number', 'receipt_image',
+                    'payee_name', 'payee_phone', 'payee_upi', 'notes'
+                ]);
+            @endphp
 
             <div class="space-y-6 sm:space-y-8">
 
-                {{-- ── Section: Event ──────────────────────────────────── --}}
-                <section aria-labelledby="exp-event-heading">
-                    <h2 id="exp-event-heading" class="cb-section-label">Event</h2>
-                    <div>
-                        <label class="cb-label cb-label--classic" for="exp-event-select">Event *</label>
-                        <select id="exp-event-select" name="event_id" required class="cb-field min-h-[48px] w-full">
-                            <option value="">Select event</option>
-                            @foreach($events as $event)
-                                <option value="{{ $event->id }}"
-                                    {{ old('event_id', $selectedEventId) == $event->id ? 'selected' : '' }}>
-                                    {{ $event->title }} — {{ $event->event_date?->format('d/m/Y') }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('event_id') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                    </div>
-                </section>
+                {{-- Tabs Navigation --}}
+                <div class="flex border-b border-slate-200 dark:border-slate-800 mb-6 bg-slate-50/50 dark:bg-slate-900/30 p-1.5 rounded-xl gap-2">
+                    <button type="button" id="tab-basic-btn" 
+                            class="flex-1 py-2 px-3 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all">
+                        <i class="fas fa-circle-info text-cb-gold"></i> Basic Info
+                        @if($tab1HasErrors)
+                            <span class="h-2 w-2 rounded-full bg-red-500 inline-block animate-pulse"></span>
+                        @endif
+                    </button>
+                    <button type="button" id="tab-advance-btn" 
+                            class="flex-1 py-2 px-3 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all">
+                        <i class="fas fa-folder-plus text-slate-400"></i> Advance Details
+                        @if($tab2HasErrors)
+                            <span class="h-2 w-2 rounded-full bg-red-500 inline-block animate-pulse"></span>
+                        @endif
+                    </button>
+                </div>
 
-                {{-- ── Section: Expense Details ─────────────────────────── --}}
-                <section aria-labelledby="exp-detail-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
-                    <h2 id="exp-detail-heading" class="cb-section-label">Expense Details</h2>
-                    <div class="space-y-4 sm:space-y-5">
+                {{-- Pane 1: Basic Fields --}}
+                <div id="pane-basic" class="space-y-6 sm:space-y-8">
+                    {{-- ── Section: Event ──────────────────────────────────── --}}
+                    <section aria-labelledby="exp-event-heading">
+                        <h2 id="exp-event-heading" class="cb-section-label">Event</h2>
+                        <div>
+                            <label class="cb-label cb-label--classic" for="exp-event-select">Event *</label>
+                            <select id="exp-event-select" name="event_id" required class="cb-field min-h-[48px] w-full">
+                                <option value="">Select event</option>
+                                @foreach($events as $event)
+                                    <option value="{{ $event->id }}"
+                                        {{ old('event_id', $selectedEventId) == $event->id ? 'selected' : '' }}>
+                                        {{ $event->title }} — {{ $event->event_date?->format('d/m/Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('event_id') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        </div>
+                    </section>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="cb-label cb-label--classic" for="exp-title">Title *</label>
-                                <input type="text" id="exp-title" name="title"
-                                       value="{{ old('title') }}" required maxlength="255"
-                                       placeholder="e.g. Stage Decoration"
-                                       class="cb-field min-h-[48px] w-full @error('title') border-red-400 @enderror">
-                                @error('title') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                    {{-- ── Section: Expense Details ─────────────────────────── --}}
+                    <section aria-labelledby="exp-detail-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
+                        <h2 id="exp-detail-heading" class="cb-section-label">Expense Details</h2>
+                        <div class="space-y-4 sm:space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-title">Title *</label>
+                                    <input type="text" id="exp-title" name="title"
+                                           value="{{ old('title') }}" required maxlength="255"
+                                           placeholder="e.g. Stage Decoration"
+                                           class="cb-field min-h-[48px] w-full @error('title') border-red-400 @enderror">
+                                    @error('title') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-category">Category *</label>
+                                    <select id="exp-category" name="category" required
+                                            class="cb-field min-h-[48px] w-full @error('category') border-red-400 @enderror">
+                                        <option value="">Select category</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>
+                                                {{ ucfirst($cat) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('category') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                </div>
                             </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-amount">Amount (₹) *</label>
+                                    <input type="number" id="exp-amount" name="amount"
+                                           value="{{ old('amount') }}" required min="0" step="0.01"
+                                           placeholder="0.00"
+                                           class="cb-field min-h-[48px] w-full @error('amount') border-red-400 @enderror">
+                                    @error('amount') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-date">Expense Date *</label>
+                                    <input type="date" id="exp-date" name="expense_date"
+                                           value="{{ old('expense_date', date('Y-m-d')) }}" required
+                                           class="cb-field min-h-[48px] w-full @error('expense_date') border-red-400 @enderror">
+                                    @error('expense_date') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- ── Section: Payment ─────────────────────────────────── --}}
+                    <section aria-labelledby="exp-payment-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
+                        <h2 id="exp-payment-heading" class="cb-section-label">Payment</h2>
+                        <div class="space-y-4 sm:space-y-5">
                             <div>
-                                <label class="cb-label cb-label--classic" for="exp-category">Category *</label>
-                                <select id="exp-category" name="category" required
-                                        class="cb-field min-h-[48px] w-full @error('category') border-red-400 @enderror">
-                                    <option value="">Select category</option>
-                                    @foreach($categories as $cat)
-                                        <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>
-                                            {{ ucfirst($cat) }}
-                                        </option>
+                                <span class="block text-xs font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 mb-1.5">
+                                    Payment Method *
+                                </span>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach(['cash' => 'Cash', 'gpay' => 'GPay / UPI', 'bank_transfer' => 'Bank Transfer', 'cheque' => 'Cheque', 'other' => 'Other'] as $val => $lbl)
+                                    <label class="gp-method-label">
+                                        <input type="radio" name="payment_method" value="{{ $val }}"
+                                               class="sr-only"
+                                               {{ old('payment_method', 'cash') === $val ? 'checked' : '' }}>
+                                        {{ $lbl }}
+                                    </label>
                                     @endforeach
-                                </select>
-                                @error('category') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                                </div>
+                                @error('payment_method') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
                             </div>
                         </div>
+                    </section>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="cb-label cb-label--classic" for="exp-amount">Amount (₹) *</label>
-                                <input type="number" id="exp-amount" name="amount"
-                                       value="{{ old('amount') }}" required min="0" step="0.01"
-                                       placeholder="0.00"
-                                       class="cb-field min-h-[48px] w-full @error('amount') border-red-400 @enderror">
-                                @error('amount') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label class="cb-label cb-label--classic" for="exp-date">Expense Date *</label>
-                                <input type="date" id="exp-date" name="expense_date"
-                                       value="{{ old('expense_date', date('Y-m-d')) }}" required
-                                       class="cb-field min-h-[48px] w-full @error('expense_date') border-red-400 @enderror">
-                                @error('expense_date') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
+                    {{-- Continue Button --}}
+                    <div class="pt-4 border-t border-slate-200/80 flex justify-end">
+                        <button type="button" id="go-to-advance-btn" class="cb-btn cb-btn-navy w-full sm:w-auto justify-center">
+                            Continue to Advance Details <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
 
+                {{-- Pane 2: Advance Fields --}}
+                <div id="pane-advance" class="hidden space-y-6 sm:space-y-8">
+                    {{-- ── Section: Description ─────────────────────────── --}}
+                    <section aria-labelledby="exp-optional-desc-heading">
+                        <h2 id="exp-optional-desc-heading" class="cb-section-label">Description</h2>
                         <div>
                             <label class="cb-label cb-label--classic" for="exp-description">Description
                                 <span class="text-slate-400 font-normal normal-case">(optional)</span>
@@ -94,105 +157,87 @@
                                       placeholder="Brief description of this expense"
                                       class="cb-field w-full resize-none">{{ old('description') }}</textarea>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                {{-- ── Section: Payment ─────────────────────────────────── --}}
-                <section aria-labelledby="exp-payment-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
-                    <h2 id="exp-payment-heading" class="cb-section-label">Payment</h2>
-                    <div class="space-y-4 sm:space-y-5">
+                    {{-- ── Section: Extra Payment Info ───────────────────────── --}}
+                    <section aria-labelledby="exp-payment-extra-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
+                        <h2 id="exp-payment-extra-heading" class="cb-section-label">Transaction &amp; Receipt</h2>
+                        <div class="space-y-4 sm:space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-txn">Transaction / Cheque No.
+                                        <span class="text-slate-400 font-normal normal-case">(optional)</span>
+                                    </label>
+                                    <input type="text" id="exp-txn" name="transaction_id"
+                                           value="{{ old('transaction_id') }}" maxlength="255"
+                                           placeholder="Reference number"
+                                           class="cb-field min-h-[48px] w-full">
+                                </div>
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-receipt-no">Receipt No.
+                                        <span class="text-slate-400 font-normal normal-case">(optional)</span>
+                                    </label>
+                                    <input type="text" id="exp-receipt-no" name="receipt_number"
+                                           value="{{ old('receipt_number') }}" maxlength="100"
+                                           placeholder="Optional receipt number"
+                                           class="cb-field min-h-[48px] w-full">
+                                </div>
+                            </div>
 
-                        <div>
-                            <span class="block text-xs font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 mb-1.5">
-                                Payment Method *
-                            </span>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach(['cash' => 'Cash', 'gpay' => 'GPay / UPI', 'bank_transfer' => 'Bank Transfer', 'cheque' => 'Cheque', 'other' => 'Other'] as $val => $lbl)
-                                <label class="gp-method-label">
-                                    <input type="radio" name="payment_method" value="{{ $val }}"
-                                           class="sr-only"
-                                           {{ old('payment_method', 'cash') === $val ? 'checked' : '' }}>
-                                    {{ $lbl }}
+                            <div>
+                                <label class="cb-label cb-label--classic" for="exp-receipt-img">Receipt Image
+                                    <span class="text-slate-400 font-normal normal-case">(optional, max 5 MB)</span>
                                 </label>
-                                @endforeach
-                            </div>
-                            @error('payment_method') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="cb-label cb-label--classic" for="exp-txn">Transaction / Cheque No.
-                                    <span class="text-slate-400 font-normal normal-case">(optional)</span>
-                                </label>
-                                <input type="text" id="exp-txn" name="transaction_id"
-                                       value="{{ old('transaction_id') }}" maxlength="255"
-                                       placeholder="Reference number"
-                                       class="cb-field min-h-[48px] w-full">
-                            </div>
-                            <div>
-                                <label class="cb-label cb-label--classic" for="exp-receipt-no">Receipt No.
-                                    <span class="text-slate-400 font-normal normal-case">(optional)</span>
-                                </label>
-                                <input type="text" id="exp-receipt-no" name="receipt_number"
-                                       value="{{ old('receipt_number') }}" maxlength="100"
-                                       placeholder="Optional receipt number"
-                                       class="cb-field min-h-[48px] w-full">
+                                <input type="file" id="exp-receipt-img" name="receipt_image"
+                                       accept="image/jpeg,image/png,image/jpg"
+                                       class="cb-field w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-600 hover:file:bg-slate-200">
+                                @error('receipt_image') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
                             </div>
                         </div>
+                    </section>
 
-                        <div>
-                            <label class="cb-label cb-label--classic" for="exp-receipt-img">Receipt Image
-                                <span class="text-slate-400 font-normal normal-case">(optional, max 5 MB)</span>
-                            </label>
-                            <input type="file" id="exp-receipt-img" name="receipt_image"
-                                   accept="image/jpeg,image/png,image/jpg"
-                                   class="cb-field w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-600 hover:file:bg-slate-200">
-                            @error('receipt_image') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-                </section>
-
-                {{-- ── Section: Payee / Vendor ───────────────────────────── --}}
-                <section aria-labelledby="exp-payee-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
-                    <h2 id="exp-payee-heading" class="cb-section-label">Payee / Vendor
-                        <span class="text-slate-400 font-normal normal-case text-xs">(optional)</span>
-                    </h2>
-                    <div class="space-y-4 sm:space-y-5">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="cb-label cb-label--classic" for="exp-payee-name">Payee Name</label>
-                                <input type="text" id="exp-payee-name" name="payee_name"
-                                       value="{{ old('payee_name') }}" maxlength="255"
-                                       placeholder="Vendor / person paid"
-                                       class="cb-field min-h-[48px] w-full">
+                    {{-- ── Section: Payee / Vendor ───────────────────────────── --}}
+                    <section aria-labelledby="exp-payee-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
+                        <h2 id="exp-payee-heading" class="cb-section-label">Payee / Vendor
+                            <span class="text-slate-400 font-normal normal-case text-xs">(optional)</span>
+                        </h2>
+                        <div class="space-y-4 sm:space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-payee-name">Payee Name</label>
+                                    <input type="text" id="exp-payee-name" name="payee_name"
+                                           value="{{ old('payee_name') }}" maxlength="255"
+                                           placeholder="Vendor / person paid"
+                                           class="cb-field min-h-[48px] w-full">
+                                </div>
+                                <div>
+                                    <label class="cb-label cb-label--classic" for="exp-payee-phone">Payee Phone</label>
+                                    <input type="tel" id="exp-payee-phone" name="payee_phone"
+                                           value="{{ old('payee_phone') }}" maxlength="30"
+                                           placeholder="e.g. 98765 43210"
+                                           class="cb-field min-h-[48px] w-full">
+                                </div>
                             </div>
                             <div>
-                                <label class="cb-label cb-label--classic" for="exp-payee-phone">Payee Phone</label>
-                                <input type="tel" id="exp-payee-phone" name="payee_phone"
-                                       value="{{ old('payee_phone') }}" maxlength="30"
-                                       placeholder="e.g. 98765 43210"
+                                <label class="cb-label cb-label--classic" for="exp-payee-upi">Payee UPI ID</label>
+                                <input type="text" id="exp-payee-upi" name="payee_upi"
+                                       value="{{ old('payee_upi') }}" maxlength="255"
+                                       placeholder="e.g. vendor@upi"
                                        class="cb-field min-h-[48px] w-full">
                             </div>
                         </div>
-                        <div>
-                            <label class="cb-label cb-label--classic" for="exp-payee-upi">Payee UPI ID</label>
-                            <input type="text" id="exp-payee-upi" name="payee_upi"
-                                   value="{{ old('payee_upi') }}" maxlength="255"
-                                   placeholder="e.g. vendor@upi"
-                                   class="cb-field min-h-[48px] w-full">
-                        </div>
-                    </div>
-                </section>
+                    </section>
 
-                {{-- ── Section: Notes ───────────────────────────────────── --}}
-                <section aria-labelledby="exp-notes-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
-                    <h2 id="exp-notes-heading" class="cb-section-label">Notes
-                        <span class="text-slate-400 font-normal normal-case text-xs">(optional)</span>
-                    </h2>
-                    <textarea id="exp-notes" name="notes" rows="3"
-                              placeholder="Any extra details…"
-                              class="cb-field w-full resize-none">{{ old('notes') }}</textarea>
-                </section>
+                    {{-- ── Section: Notes ───────────────────────────────────── --}}
+                    <section aria-labelledby="exp-notes-heading" class="pt-2 sm:pt-4 border-t border-slate-200/80">
+                        <h2 id="exp-notes-heading" class="cb-section-label">Notes
+                            <span class="text-slate-400 font-normal normal-case text-xs">(optional)</span>
+                        </h2>
+                        <textarea id="exp-notes" name="notes" rows="3"
+                                  placeholder="Any extra details…"
+                                  class="cb-field w-full resize-none">{{ old('notes') }}</textarea>
+                    </section>
+                </div>
 
                 {{-- ── Submit ───────────────────────────────────────────── --}}
                 <div class="pt-2 sm:pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row gap-3">
@@ -209,4 +254,67 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabBasicBtn = document.getElementById('tab-basic-btn');
+    const tabAdvanceBtn = document.getElementById('tab-advance-btn');
+    const paneBasic = document.getElementById('pane-basic');
+    const paneAdvance = document.getElementById('pane-advance');
+    const goToAdvanceBtn = document.getElementById('go-to-advance-btn');
+
+    const activeClasses = ['bg-white', 'dark:bg-slate-800', 'text-slate-800', 'dark:text-white', 'shadow-sm', 'border', 'border-slate-200/80', 'dark:border-slate-700'];
+    const inactiveClasses = ['text-slate-500', 'hover:text-slate-700', 'dark:text-slate-400', 'dark:hover:text-slate-200', 'border', 'border-transparent'];
+
+    function showTab(tabName) {
+        if (tabName === 'basic') {
+            // Buttons
+            tabBasicBtn.classList.add(...activeClasses);
+            tabBasicBtn.classList.remove(...inactiveClasses);
+            tabAdvanceBtn.classList.add(...inactiveClasses);
+            tabAdvanceBtn.classList.remove(...activeClasses);
+            
+            // Icon colors
+            tabBasicBtn.querySelector('i').className = 'fas fa-circle-info text-cb-gold';
+            tabAdvanceBtn.querySelector('i').className = 'fas fa-folder-plus text-slate-400';
+
+            // Panes
+            paneBasic.classList.remove('hidden');
+            paneAdvance.classList.add('hidden');
+        } else {
+            // Buttons
+            tabAdvanceBtn.classList.add(...activeClasses);
+            tabAdvanceBtn.classList.remove(...inactiveClasses);
+            tabBasicBtn.classList.add(...inactiveClasses);
+            tabBasicBtn.classList.remove(...activeClasses);
+
+            // Icon colors
+            tabAdvanceBtn.querySelector('i').className = 'fas fa-folder-plus text-cb-gold';
+            tabBasicBtn.querySelector('i').className = 'fas fa-circle-info text-slate-400';
+
+            // Panes
+            paneAdvance.classList.remove('hidden');
+            paneBasic.classList.add('hidden');
+        }
+    }
+
+    if (tabBasicBtn && tabAdvanceBtn) {
+        tabBasicBtn.addEventListener('click', () => showTab('basic'));
+        tabAdvanceBtn.addEventListener('click', () => showTab('advance'));
+    }
+
+    if (goToAdvanceBtn) {
+        goToAdvanceBtn.addEventListener('click', () => showTab('advance'));
+    }
+
+    // Default to the tab with errors
+    @if($tab2HasErrors && !$tab1HasErrors)
+        showTab('advance');
+    @else
+        showTab('basic');
+    @endif
+});
+</script>
+@endpush
 @endsection

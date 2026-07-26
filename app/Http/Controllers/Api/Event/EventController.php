@@ -8,6 +8,16 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Models\PaymentTransaction;
+use App\Models\User;
+use App\Services\EventUnlimitedRazorpayCompletion;
+use App\Services\DirectGpayUnlockRazorpayCompletion;
+use App\Services\GuestPayPackUnlock;
+use App\Services\RazorpayService;
+use App\Support\RazorpayTestAmount;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Razorpay\Api\Api;
 
 class EventController extends Controller
 {
@@ -410,6 +420,380 @@ class EventController extends Controller
             'success' => true,
             'message' => 'Events synced successfully',
             'data' => $synced
+        ]);
+    }
+
+    public function createPlanRazorpayOrder(Request $request, $id)
+    {
+        $event = $this->userEvents($request)->findOrFail($id);
+
+        if ($event->pricing_plan === 'unlimited' || $event->unlimited_purchased_at) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This event is already on the Unlimited plan.'
+            ], 400);
+        }
+
+        $key = config('services.razorpay.key_id');
+        $secret = config('services.razorpay.key_secret');
+        if (empty($key) || empty($secret)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay is not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.'
+            ], 503);
+        }
+
+        $amount = (float) ($event->unlimited_price ?? 500);
+        $amountPaise = RazorpayTestAmount::resolve((int) round($amount * 100));
+
+        try {
+            $api = new Api($key, $secret);
+            $receipt = 'evt_' . $event->id . '_' . Str::lower(Str::random(6));
+            $order = $api->order->create([
+                'receipt' => $receipt,
+                'amount' => $amountPaise,
+                'currency' => 'INR',
+                'payment_capture' => 1,
+                'notes' => [
+                    'chandla_type' => 'event_unlimited',
+                    'event_id' => (string) $event->id,
+                    'user_id' => (string) $event->user_id,
+                ],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'order_id' => $order['id'],
+                    'amount' => $amountPaise,
+                    'key_id' => $key,
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not create payment order.'
+            ], 500);
+        }
+    }
+
+    public function verifyPlanRazorpay(Request $request, $id)
+    {
+        $event = $this->userEvents($request)->findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'razorpay_order_id' => 'required|string|max:64',
+            'razorpay_payment_id' => 'required|string|max:64',
+            'razorpay_signature' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
+        $key = config('services.razorpay.key_id');
+        $secret = config('services.razorpay.key_secret');
+        if (empty($secret)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay verification is not configured.'
+            ], 503);
+        }
+
+        try {
+            $api = new Api($key, $secret);
+            $api->utility->verifyPaymentSignature([
+                'razorpay_order_id' => $validated['razorpay_order_id'],
+                'razorpay_payment_id' => $validated['razorpay_payment_id'],
+                'razorpay_signature' => $validated['razorpay_signature'],
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment signature verification failed.'
+            ], 400);
+        }
+
+        try {
+            $fetched = $api->order->fetch($validated['razorpay_order_id']);
+            $expectedPaise = RazorpayTestAmount::resolve((int) round((float) ($event->unlimited_price ?? 500) * 100));
+            if (isset($fetched['amount']) && (int) $fetched['amount'] !== $expectedPaise) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Amount does not match this event.'
+                ], 400);
+            }
+
+            $notes = $fetched['notes'] ?? [];
+            if (($notes['chandla_type'] ?? '') !== 'event_unlimited' || (int) ($notes['event_id'] ?? 0) !== (int) $event->id
+                || (int) ($notes['user_id'] ?? 0) !== (int) $event->user_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This payment does not belong to this event order.'
+                ], 400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not confirm order details with the gateway.'
+            ], 500);
+        }
+
+        $ok = EventUnlimitedRazorpayCompletion::applyIfNeeded(
+            $event,
+            $event->user_id,
+            $validated['razorpay_payment_id'],
+            $validated['razorpay_order_id']
+        );
+        if (! $ok) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not complete upgrade.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment successful. Your event is now on the Unlimited plan.'
+        ]);
+    }
+
+    public function createDirectGpayRazorpayOrder(Request $request, $id)
+    {
+        $event = $this->userEvents($request)->findOrFail($id);
+
+        if ($event->hasDirectGpayQrUnlocked()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Direct GPay is already unlocked for this event.'
+            ], 409);
+        }
+
+        $razorpay = RazorpayService::make();
+        if (!$razorpay) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay is not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.'
+            ], 503);
+        }
+
+        $amount = (float) config('services.direct_gpay_unlock.amount', 400);
+        $amountPaise = (int) round($amount * 100);
+        $packageKey = PaymentTransaction::PKG_DIRECT_GPAY;
+        $receipt = RazorpayService::generateReceipt($packageKey, $event->user_id);
+
+        try {
+            $order = $razorpay->createOrder($amountPaise, $receipt, [
+                'chandla_type' => 'direct_gpay_unlock',
+                'event_id' => (string) $event->id,
+                'user_id' => (string) $event->user_id,
+            ]);
+
+            // Save pending transaction
+            $razorpay->createPendingTransaction(
+                userId:          $event->user_id,
+                packageKey:      $packageKey,
+                amountInr:       $amount,
+                razorpayOrderId: $order['id'],
+                referenceId:     (string) $event->id,
+                metadata:        ['event_id' => $event->id]
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'order_id' => $order['id'],
+                    'amount' => $razorpay->resolveTestAmount($amountPaise),
+                    'key_id' => $razorpay->getKeyId(),
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not create payment order.'
+            ], 500);
+        }
+    }
+
+    public function verifyDirectGpayRazorpay(Request $request, $id)
+    {
+        $event = $this->userEvents($request)->findOrFail($id);
+
+        if ($event->hasDirectGpayQrUnlocked()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Direct GPay QR is already unlocked for ' . $event->title . '.'
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'razorpay_order_id' => 'required|string|max:64',
+            'razorpay_payment_id' => 'required|string|max:64',
+            'razorpay_signature' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
+        $razorpay = RazorpayService::make();
+        if (!$razorpay) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay verification is not configured.'
+            ], 503);
+        }
+
+        // Find the pending transaction
+        $packageKey = PaymentTransaction::PKG_DIRECT_GPAY;
+        $txn = PaymentTransaction::where('razorpay_order_id', $validated['razorpay_order_id'])
+            ->where('user_id', $event->user_id)
+            ->first();
+
+        try {
+            $razorpay->verifySignature(
+                $validated['razorpay_order_id'],
+                $validated['razorpay_payment_id'],
+                $validated['razorpay_signature']
+            );
+        } catch (\Throwable $e) {
+            if ($txn) {
+                $razorpay->markFailed($txn, 'Signature verification failed: ' . $e->getMessage());
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment verification failed.'
+            ], 400);
+        }
+
+        try {
+            $fetched = $razorpay->fetchOrder($validated['razorpay_order_id']);
+            $expectedPaise = $razorpay->resolveTestAmount((int) round((float) config('services.direct_gpay_unlock.amount', 400) * 100));
+            if (isset($fetched['amount']) && (int) $fetched['amount'] !== $expectedPaise) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Amount does not match this unlock price.'
+                ], 400);
+            }
+
+            $notes = $fetched['notes'] ?? [];
+            if (($notes['chandla_type'] ?? '') !== 'direct_gpay_unlock' || (int) ($notes['event_id'] ?? 0) !== (int) $event->id
+                || (int) ($notes['user_id'] ?? 0) !== (int) $event->user_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This payment does not belong to this event order.'
+                ], 400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not confirm order details with the gateway.'
+            ], 500);
+        }
+
+        // Fetch payment to get method
+        $paymentData = [];
+        $paymentMethod = null;
+        try {
+            $paymentData = $razorpay->fetchPayment($validated['razorpay_payment_id']);
+            $paymentMethod = $paymentData['method'] ?? null;
+        } catch (\Throwable) {}
+
+        if (!$txn) {
+            $txn = PaymentTransaction::create([
+                'user_id' => $event->user_id,
+                'package_key' => $packageKey,
+                'package_name' => PaymentTransaction::packageName($packageKey) . ' ₹' . number_format(config('services.direct_gpay_unlock.amount', 400), 0),
+                'amount_inr' => (float) config('services.direct_gpay_unlock.amount', 400),
+                'currency' => 'INR',
+                'razorpay_order_id' => $validated['razorpay_order_id'],
+                'status' => PaymentTransaction::STATUS_PENDING,
+                'reference_id' => (string) $event->id,
+            ]);
+        }
+
+        $razorpay->markSuccess($txn, $validated['razorpay_payment_id'], $validated['razorpay_signature'], $paymentMethod, $paymentData);
+
+        $ok = DirectGpayUnlockRazorpayCompletion::applyIfNeeded(
+            $event,
+            $event->user_id,
+            $validated['razorpay_payment_id'],
+            $validated['razorpay_order_id']
+        );
+        if (! $ok) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not complete unlock.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Direct GPay QR is unlocked for ' . $event->title . '.'
+        ]);
+    }
+
+    public function redeemGuestPayPack(Request $request, $id)
+    {
+        $event = $this->userEvents($request)->findOrFail($id);
+
+        if ($event->hasDirectGpayQrUnlocked()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Direct GPay QR is already unlocked for ' . $event->title . '.'
+            ]);
+        }
+
+        $user = $request->user();
+        if ((int) ($user->guest_pay_single_event_credits ?? 0) < 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No Guest Contribution credit on your account.'
+            ], 400);
+        }
+
+        try {
+            DB::transaction(function () use ($event, $user) {
+                $locked = User::whereKey($user->id)->lockForUpdate()->first();
+                if ($locked === null || (int) ($locked->guest_pay_single_event_credits ?? 0) < 1) {
+                    throw new \RuntimeException('no_credits');
+                }
+                $locked->guest_pay_single_event_credits = (int) $locked->guest_pay_single_event_credits - 1;
+                $locked->save();
+                if (! GuestPayPackUnlock::applyFromPackCredit($event, $locked)) {
+                    throw new \RuntimeException('unlock_failed');
+                }
+            });
+        } catch (\RuntimeException $e) {
+            $msg = $e->getMessage();
+            if ($msg === 'no_credits') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No credits left.'
+                ], 400);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not apply pack credit.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Guest Contribution applied to ' . $event->title . '.'
         ]);
     }
 }
