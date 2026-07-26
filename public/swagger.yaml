@@ -50,6 +50,8 @@ tags:
     description: Contact management and organization
   - name: Entries
     description: Guest list and RSVP management
+  - name: Expenses
+    description: Expense tracking and management
   - name: Invitations
     description: Digital invitation creation and sending
   - name: Payments
@@ -1816,6 +1818,390 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
+
+  # --- Expenses ---
+  /expenses:
+    get:
+      tags: [Expenses]
+      summary: List all expenses
+      description: Returns a paginated list of expenses with optional filtering.
+      parameters:
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 15
+        - name: event_id
+          in: query
+          schema:
+            type: integer
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: payment_method
+          in: query
+          schema:
+            type: string
+            enum: [cash, gpay, bank_transfer, cheque, other]
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expenses retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+    post:
+      tags: [Expenses]
+      summary: Create expense
+      description: Adds a new expense entry. Supports uploading a receipt image.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [event_id, title, category, amount, expense_date, payment_method]
+              properties:
+                event_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                amount:
+                  type: number
+                expense_date:
+                  type: string
+                  format: date
+                payee_name:
+                  type: string
+                payee_phone:
+                  type: string
+                payee_upi:
+                  type: string
+                payment_method:
+                  type: string
+                  enum: [cash, gpay, bank_transfer, cheque, other]
+                transaction_id:
+                  type: string
+                receipt_number:
+                  type: string
+                receipt_image:
+                  type: string
+                  format: binary
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Expense created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /expenses/categories:
+    get:
+      tags: [Expenses]
+      summary: List expense categories
+      description: Returns list of available expense categories.
+      responses:
+        '200':
+          description: Categories retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: string
+
+  /expenses/stats:
+    get:
+      tags: [Expenses]
+      summary: Expense statistics
+      description: Overall expense statistics, optionally filtered by event_id.
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stats retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /expenses/cash-ledger:
+    get:
+      tags: [Expenses]
+      summary: Cash Ledger flow
+      description: Summary of Cash In (cash ledger receipts) vs Cash Out (cash expenses).
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: integer
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Cash ledger data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /expenses/pdf:
+    get:
+      tags: [Expenses]
+      summary: Generate PDF register
+      description: Generates or downloads the PDF register.
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: integer
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: payment_method
+          in: query
+          schema:
+            type: string
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: response_type
+          in: query
+          schema:
+            type: string
+            enum: [json]
+      responses:
+        '200':
+          description: PDF retrieved successfully
+
+  /expenses/event/{eventId}:
+    get:
+      tags: [Expenses]
+      summary: Get expenses by event
+      description: Returns all expenses for a specific event with summaries.
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Event expenses retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /expenses/{id}:
+    get:
+      tags: [Expenses]
+      summary: Show single expense
+      description: Retrieve detail of a single expense.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Expense retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      tags: [Expenses]
+      summary: Update expense (multipart fallback)
+      description: Update an expense. Use post method with `_method=PUT` parameter if uploading files.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                _method:
+                  type: string
+                  default: PUT
+                event_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                amount:
+                  type: number
+                expense_date:
+                  type: string
+                  format: date
+                payee_name:
+                  type: string
+                payee_phone:
+                  type: string
+                payee_upi:
+                  type: string
+                payment_method:
+                  type: string
+                  enum: [cash, gpay, bank_transfer, cheque, other]
+                transaction_id:
+                  type: string
+                receipt_number:
+                  type: string
+                receipt_image:
+                  type: string
+                  format: binary
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Expense updated
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags: [Expenses]
+      summary: Update expense
+      description: Update an expense.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Expense updated
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags: [Expenses]
+      summary: Delete expense
+      description: Removes an expense.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Expense deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /sync/expenses:
+    post:
+      tags: [Sync]
+      summary: Sync offline expenses
+      description: Synchronize multiple offline expense records from the mobile application.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [expenses]
+              properties:
+                expenses:
+                  type: array
+                  items:
+                    type: object
+                    required: [event_id, title, category, amount, expense_date, payment_method]
+                    properties:
+                      id:
+                        type: integer
+                      event_id:
+                        type: integer
+                      title:
+                        type: string
+                      category:
+                        type: string
+                      amount:
+                        type: number
+                      expense_date:
+                        type: string
+                        format: date
+                      payment_method:
+                        type: string
+                        enum: [cash, gpay, bank_transfer, cheque, other]
+      responses:
+        '200':
+          description: Expenses synced successfully
+          content:
+            application/json:
+              schema:
+                type: object
 
   # --- Payments ---
   /payments/history:
