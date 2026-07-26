@@ -60,6 +60,38 @@ tags:
     description: Offline data synchronization
 
 paths:
+  /routes:
+    get:
+      tags: [Reports]
+      summary: List all API endpoints
+      description: Dynamically outputs a list of all GET/POST/PUT/DELETE endpoints inside the v1 API namespace.
+      security: []
+      responses:
+        '200':
+          description: Endpoints directory retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  routes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        method:
+                          type: string
+                        uri:
+                          type: string
+                        name:
+                          type: string
+                        action:
+                          type: string
+
   # --- Authentication ---
   /auth/google/login:
     post:
@@ -1034,6 +1066,153 @@ paths:
                   data:
                     type: object
 
+  /events/{id}/plan/razorpay-order:
+    post:
+      tags: [Events]
+      summary: Create Razorpay Order for Event Unlimited Upgrade
+      description: Initiates the process to upgrade the pricing plan of a single event to the Unlimited tier.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      order_id:
+                        type: string
+                      amount:
+                        type: integer
+                      key_id:
+                        type: string
+
+  /events/{id}/plan/razorpay-verify:
+    post:
+      tags: [Events]
+      summary: Verify Razorpay Payment for Event Upgrade
+      description: Verifies signature and activates the Unlimited tier upgrade.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [razorpay_order_id, razorpay_payment_id, razorpay_signature]
+              properties:
+                razorpay_order_id:
+                  type: string
+                razorpay_payment_id:
+                  type: string
+                razorpay_signature:
+                  type: string
+      responses:
+        '200':
+          description: Event successfully upgraded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /events/{id}/direct-gpay-unlock/razorpay-order:
+    post:
+      tags: [Events]
+      summary: Create Razorpay Order for Direct GPay Unlock
+      description: Initiates the order for guest contribution QR direct GPay unlock.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      order_id:
+                        type: string
+                      amount:
+                        type: integer
+                      key_id:
+                        type: string
+
+  /events/{id}/direct-gpay-unlock/razorpay-verify:
+    post:
+      tags: [Events]
+      summary: Verify Razorpay Payment for Direct GPay Unlock
+      description: Verifies signature and unlocks the Direct GPay QR.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [razorpay_order_id, razorpay_payment_id, razorpay_signature]
+              properties:
+                razorpay_order_id:
+                  type: string
+                razorpay_payment_id:
+                  type: string
+                razorpay_signature:
+                  type: string
+      responses:
+        '200':
+          description: Direct GPay unlocked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /events/{id}/direct-gpay-unlock/redeem-guest-pay-pack:
+    post:
+      tags: [Events]
+      summary: Redeem Guest Pay Pack Credit for GPay Unlock
+      description: Deducts 1 guest pay credit from the user's account to unlock the Direct GPay QR for this event.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Credit applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
   # --- Contacts ---
   /contacts:
     get:
@@ -1490,6 +1669,153 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
         '422':
           $ref: '#/components/responses/ValidationError'
+
+  # --- Marriage Invitations ---
+  /marriage-invitations:
+    get:
+      tags: [Invitations]
+      summary: List user's marriage invitations
+      description: Returns the user's marriage invitation.
+      parameters:
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Invitations retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+    post:
+      tags: [Invitations]
+      summary: Create marriage invitation
+      description: Stores marriage details under a selected template.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                template_key:
+                  type: string
+                  default: heritage
+                data:
+                  type: object
+      responses:
+        '201':
+          description: Invitation created
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /marriage-invitations/{id}:
+    get:
+      tags: [Invitations]
+      summary: Show single marriage invitation
+      description: Returns invitation details along with UPI transactions.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Invitation details retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags: [Invitations]
+      summary: Update marriage invitation
+      description: Edits fields of an invitation before payment.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                template_key:
+                  type: string
+                data:
+                  type: object
+      responses:
+        '200':
+          description: Invitation updated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /marriage-invitations/{id}/payment/razorpay-order:
+    post:
+      tags: [Invitations]
+      summary: Create Razorpay Order to unlock marriage card
+      description: Creates order for unlocking exports.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Razorpay order generated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /marriage-invitations/{id}/payment/razorpay-verify:
+    post:
+      tags: [Invitations]
+      summary: Verify Razorpay Payment for marriage card
+      description: Validates transaction signature and unlocks invitation download.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [razorpay_order_id, razorpay_payment_id, razorpay_signature]
+              properties:
+                razorpay_order_id:
+                  type: string
+                razorpay_payment_id:
+                  type: string
+                razorpay_signature:
+                  type: string
+      responses:
+        '200':
+          description: Unlock successfully activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
 
   # --- Payments ---
   /payments/history:
