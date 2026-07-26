@@ -31,7 +31,7 @@
     {{-- Cash In --}}
     <div class="cb-card p-5 flex items-center gap-4 border-l-4 border-emerald-500">
         <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
-            <i class="fas fa-arrow-down-to-line text-xl text-emerald-600"></i>
+            <i class="fas fa-arrow-down text-xl text-emerald-600"></i>
         </div>
         <div class="min-w-0">
             <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-0.5">Cash In</p>
@@ -42,7 +42,7 @@
     {{-- Cash Out --}}
     <div class="cb-card p-5 flex items-center gap-4 border-l-4 border-red-500">
         <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center">
-            <i class="fas fa-arrow-up-from-line text-xl text-red-500"></i>
+            <i class="fas fa-arrow-up text-xl text-red-500"></i>
         </div>
         <div class="min-w-0">
             <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-0.5">Cash Out</p>
