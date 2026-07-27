@@ -67,13 +67,17 @@ class PlanController extends Controller
                     ->sum('amount_inr');
             }
 
+            $packRecord = \App\Models\SubscriptionPack::where('min_level', $level)->first();
+
             $plans[] = [
+                'id'              => $packRecord ? $packRecord->id : null,
                 'level'           => $level,
                 'name'            => $levelNames[$level] ?? "Level {$level}",
                 'config_key'      => $configKey,
                 'column'          => $column,
                 'amount_inr'      => $configKey ? (float) ($packsConfig[$configKey]['amount_inr'] ?? 0) : 0,
                 'description'     => $configKey ? ($packsConfig[$configKey]['description'] ?? '') : 'Free starter plan',
+                'badge'           => $configKey ? ($packsConfig[$configKey]['badge'] ?? '') : 'Starter',
                 'subscriber_count' => $subscriberCount,
                 'revenue'         => $revenue,
             ];
@@ -83,6 +87,112 @@ class PlanController extends Controller
 
         return view('admin.plans.index', compact('plans', 'totalRevenue'));
     }
+
+    /**
+     * GET /admin/plans/create
+     */
+    public function createPack()
+    {
+        return view('admin.plans.create');
+    }
+
+    /**
+     * POST /admin/plans
+     */
+    public function storePack(Request $request)
+    {
+        $validated = $request->validate([
+            'name'             => 'required|string|max:255',
+            'slug'             => 'required|string|max:100|unique:subscription_packs,slug',
+            'amount_inr'       => 'required|numeric|min:0',
+            'min_level'        => 'required|integer|min:0|max:10',
+            'badge'            => 'nullable|string|max:100',
+            'description'      => 'nullable|string',
+            'is_popular'       => 'nullable|boolean',
+            'features'         => 'nullable|string',
+            'live_payment_url' => 'nullable|url',
+            'test_payment_url' => 'nullable|url',
+        ]);
+
+        $featuresArray = [];
+        if (!empty($validated['features'])) {
+            $featuresArray = array_filter(array_map('trim', explode("\n", $validated['features'])));
+        }
+
+        $pack = \App\Models\SubscriptionPack::create([
+            'slug'             => \Illuminate\Support\Str::slug($validated['slug'], '_'),
+            'name'             => $validated['name'],
+            'amount_inr'       => $validated['amount_inr'],
+            'min_level'        => $validated['min_level'],
+            'badge'            => $validated['badge'] ?? 'New Plan',
+            'description'      => $validated['description'],
+            'is_popular'       => $request->has('is_popular'),
+            'features'         => array_values($featuresArray),
+            'limits'           => ['events' => 1, 'entries' => 999999, 'qrCollection' => true, 'editors' => 0],
+            'live_payment_url' => $validated['live_payment_url'],
+            'test_payment_url' => $validated['test_payment_url'],
+        ]);
+
+        return redirect()->route('admin.plans.index')->with('success', "New Plan '{$pack->name}' created successfully.");
+    }
+
+    /**
+     * DELETE /admin/plans/{id}
+     */
+    public function destroyPack($id)
+    {
+        $pack = \App\Models\SubscriptionPack::findOrFail($id);
+        $pack->delete();
+
+        return redirect()->route('admin.plans.index')->with('success', "Plan deleted successfully.");
+    }
+
+    /**
+     * GET /admin/plans/{id}/edit
+     */
+    public function editPack($id)
+    {
+        $pack = \App\Models\SubscriptionPack::findOrFail($id);
+        return view('admin.plans.edit', compact('pack'));
+    }
+
+    /**
+     * PUT /admin/plans/{id}
+     */
+    public function updatePack(Request $request, $id)
+    {
+        $pack = \App\Models\SubscriptionPack::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'             => 'required|string|max:255',
+            'amount_inr'       => 'required|numeric|min:0',
+            'badge'            => 'nullable|string|max:100',
+            'description'      => 'nullable|string',
+            'is_popular'       => 'nullable|boolean',
+            'features'         => 'nullable|string', // newline-separated features string
+            'live_payment_url' => 'nullable|url',
+            'test_payment_url' => 'nullable|url',
+        ]);
+
+        $featuresArray = [];
+        if (!empty($validated['features'])) {
+            $featuresArray = array_filter(array_map('trim', explode("\n", $validated['features'])));
+        }
+
+        $pack->update([
+            'name'             => $validated['name'],
+            'amount_inr'       => $validated['amount_inr'],
+            'badge'            => $validated['badge'],
+            'description'      => $validated['description'],
+            'is_popular'       => $request->has('is_popular'),
+            'features'         => array_values($featuresArray),
+            'live_payment_url' => $validated['live_payment_url'],
+            'test_payment_url' => $validated['test_payment_url'],
+        ]);
+
+        return redirect()->route('admin.plans.index')->with('success', "Plan '{$pack->name}' updated successfully.");
+    }
+
 
     /**
      * GET /admin/plans/{level}/subscribers

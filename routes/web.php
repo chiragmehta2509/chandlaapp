@@ -150,6 +150,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Plan Management
         Route::get('/plans', [AdminPlanController::class, 'index'])->name('plans.index');
+        Route::get('/plans/create', [AdminPlanController::class, 'createPack'])->name('plans.create');
+        Route::post('/plans', [AdminPlanController::class, 'storePack'])->name('plans.store');
+        Route::get('/plans/{id}/edit', [AdminPlanController::class, 'editPack'])->name('plans.edit');
+        Route::put('/plans/{id}', [AdminPlanController::class, 'updatePack'])->name('plans.update');
+        Route::delete('/plans/{id}', [AdminPlanController::class, 'destroyPack'])->name('plans.destroy');
         Route::get('/plans/{level}/subscribers', [AdminPlanController::class, 'subscribers'])->name('plans.subscribers')->whereNumber('level');
         Route::post('/plans/grant', [AdminPlanController::class, 'grantPlan'])->name('plans.grant');
         Route::post('/plans/revoke', [AdminPlanController::class, 'revokePlan'])->name('plans.revoke');

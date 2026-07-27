@@ -1048,14 +1048,14 @@
 </div>
 
 <script>
-    @php
+    <?php
         $currentUserPlanLevel = Auth::check() ? Auth::user()->planLevel() : 0;
         $guestPayCredits = Auth::check() ? (int) (Auth::user()->guest_pay_single_event_credits ?? 0) : 0;
-    @endphp
-    const currentUserPlanLevel = {{ $currentUserPlanLevel }};
-    const guestPayCredits = {{ $guestPayCredits }};
+    ?>
+    const currentUserPlanLevel = <?php echo e($currentUserPlanLevel); ?>;
+    const guestPayCredits = <?php echo e($guestPayCredits); ?>;
 
-    @php
+    <?php
         $dbPacksList = [];
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('subscription_packs')) {
@@ -1213,10 +1213,10 @@
               ]
             ];
         }
-    @endphp
+    ?>
 
     // Data model representing the interconnected pricing structure
-    const PLANS = @json($plansData);
+    const PLANS = <?php echo json_encode($plansData, 15, 512) ?>;
 
     const FEATURE_MATRIX = {
       categories: [
@@ -1397,7 +1397,7 @@
 
           ${(
               (plan.id === 'guest_contribution' && guestPayCredits > 0)
-              || (plan.id === 'starter' && {{ Auth::check() ? 'true' : 'false' }})
+              || (plan.id === 'starter' && <?php echo e(Auth::check() ? 'true' : 'false'); ?>)
               || (plan.tier !== 0 && plan.id !== 'guest_contribution' && plan.tier <= currentUserPlanLevel)
             )
             ? `<button class="card-action-btn" disabled style="background: var(--bg); color: var(--text-muted); cursor: not-allowed; border: 1px solid var(--border);">
@@ -1642,14 +1642,14 @@
     
     function selectPlan(planId) {
       const planRoutes = {
-        'starter': '{{ route("client.dashboard") }}',
-        'celebration': '{{ route("client.packs.checkout", "celebration") }}',
-        'guest_contribution': '{{ route("client.packs.checkout", "guest-pay-single") }}',
-        'host_plus': '{{ route("client.packs.checkout", "host-duo") }}',
-        'family': '{{ route("client.packs.checkout", "family") }}',
-        'premium_host': '{{ route("client.packs.checkout", "bundle") }}',
-        'professional': '{{ route("client.packs.checkout", "professional") }}',
-        'enterprise': '{{ route("client.packs.checkout", "enterprise") }}'
+        'starter': '<?php echo e(route("client.dashboard")); ?>',
+        'celebration': '<?php echo e(route("client.packs.checkout", "celebration")); ?>',
+        'guest_contribution': '<?php echo e(route("client.packs.checkout", "guest-pay-single")); ?>',
+        'host_plus': '<?php echo e(route("client.packs.checkout", "host-duo")); ?>',
+        'family': '<?php echo e(route("client.packs.checkout", "family")); ?>',
+        'premium_host': '<?php echo e(route("client.packs.checkout", "bundle")); ?>',
+        'professional': '<?php echo e(route("client.packs.checkout", "professional")); ?>',
+        'enterprise': '<?php echo e(route("client.packs.checkout", "enterprise")); ?>'
       };
       
       const route = planRoutes[planId];
@@ -1667,3 +1667,4 @@
     });
   
 </script>
+<?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/partials/pricing-section.blade.php ENDPATH**/ ?>

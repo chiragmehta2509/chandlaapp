@@ -8,6 +8,9 @@
         <h1 class="text-3xl font-bold text-gray-800">Users Management</h1>
         <p class="text-gray-600 mt-1">Manage all users in the system</p>
     </div>
+    <a href="{{ route('admin.users.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-colors flex items-center gap-1.5">
+        <i class="fas fa-user-plus"></i> Add New User
+    </a>
 </div>
 
 <!-- Filters -->
