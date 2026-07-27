@@ -117,6 +117,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/subscription/history', [SubscriptionController::class, 'history']);
         Route::post('/subscription/purchase', [SubscriptionController::class, 'purchase']);
         Route::post('/subscription/verify', [SubscriptionController::class, 'verify']);
+        Route::post('/subscriptions/activate', [SubscriptionController::class, 'verify']);
         Route::post('/subscription/upgrade', [UserController::class, 'upgradeSubscription']);
         Route::post('/subscription/cancel', [UserController::class, 'cancelSubscription']);
         
@@ -291,6 +292,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/verify',   [SubscriptionController::class, 'verify']);    // verify & activate plan
         Route::post('/cancel',   [SubscriptionController::class, 'cancel']);    // cancel legacy subscription
     });
+
+    Route::post('/payments/razorpay/verify', [SubscriptionController::class, 'verify']);
 
     // Transactions Route
     Route::prefix('transactions')->group(function () {

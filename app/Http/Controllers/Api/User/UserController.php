@@ -317,38 +317,23 @@ class UserController extends Controller
 
     public function upgradeSubscription(Request $request)
     {
+        if ($request->has('razorpay_payment_id') || $request->has('payment_id') || $request->has('razorpay_order_id')) {
+            return app(\App\Http\Controllers\Api\Subscription\SubscriptionController::class)->verify($request);
+        }
+
         $validator = Validator::make($request->all(), [
-            'plan' => 'required|string|in:monthly,yearly',
+            'plan' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
-        // This would typically integrate with payment gateway
-        // For now, just update the subscription
-        $user = $request->user();
-        $expiresAt = $request->plan === 'yearly' 
-            ? now()->addYear() 
-            : now()->addMonth();
-
-        $user->update([
-            'subscription_status' => 'premium',
-            'subscription_expires_at' => $expiresAt,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Subscription upgraded successfully',
-            'data' => [
-                'status' => $user->subscription_status,
-                'expires_at' => $user->subscription_expires_at,
-            ]
-        ]);
+        return app(\App\Http\Controllers\Api\Subscription\SubscriptionController::class)->verify($request);
     }
 
     public function cancelSubscription(Request $request)
