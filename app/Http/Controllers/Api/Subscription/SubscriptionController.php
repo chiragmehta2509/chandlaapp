@@ -365,6 +365,13 @@ class SubscriptionController extends Controller
      */
     public function verify(Request $request)
     {
+        if (!$request->has('razorpay_payment_id') && $request->has('payment_id')) {
+            $request->merge(['razorpay_payment_id' => $request->payment_id]);
+        }
+        if (!$request->has('razorpay_order_id') && $request->has('order_id')) {
+            $request->merge(['razorpay_order_id' => $request->order_id]);
+        }
+
         $validator = Validator::make($request->all(), [
             'razorpay_order_id'   => 'required|string|max:64',
             'razorpay_payment_id' => 'required|string|max:64',

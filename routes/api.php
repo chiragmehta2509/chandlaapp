@@ -113,6 +113,10 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         
         // Subscription
         Route::get('/subscription', [UserController::class, 'getSubscription']);
+        Route::get('/subscription/plans', [SubscriptionController::class, 'plans']);
+        Route::get('/subscription/history', [SubscriptionController::class, 'history']);
+        Route::post('/subscription/purchase', [SubscriptionController::class, 'purchase']);
+        Route::post('/subscription/verify', [SubscriptionController::class, 'verify']);
         Route::post('/subscription/upgrade', [UserController::class, 'upgradeSubscription']);
         Route::post('/subscription/cancel', [UserController::class, 'cancelSubscription']);
         
