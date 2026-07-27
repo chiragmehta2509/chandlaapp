@@ -112,14 +112,82 @@ class SubscriptionController extends Controller
                             && $user->subscription_expires_at->isFuture(),
         ];
 
+        // Build Active Subscription Summary Cards (matching web client/plans view)
+        $activeSummary = [];
+        if ($user->enterprise_pack_paid_at !== null) {
+            $activeSummary[] = [
+                'name'         => 'Enterprise Plan',
+                'badge'        => 'ENTERPRISE',
+                'description'  => 'Unlimited events and enterprise management controls.',
+                'activated_at' => $user->enterprise_pack_paid_at ? \Carbon\Carbon::parse($user->enterprise_pack_paid_at)->format('d/m/Y') : null,
+                'key'          => 'enterprise',
+            ];
+        }
+        if ($user->professional_pack_paid_at !== null) {
+            $activeSummary[] = [
+                'name'         => 'Professional Plan',
+                'badge'        => 'PROFESSIONAL',
+                'description'  => 'Professional multi-event suite & collaborator access.',
+                'activated_at' => $user->professional_pack_paid_at ? \Carbon\Carbon::parse($user->professional_pack_paid_at)->format('d/m/Y') : null,
+                'key'          => 'professional',
+            ];
+        }
+        if ($user->premium_bundle_paid_at !== null) {
+            $activeSummary[] = [
+                'name'         => 'Premium Host Plan',
+                'badge'        => 'PREMIUM',
+                'description'  => 'Full site modules & host tools unlocked.',
+                'activated_at' => $user->premium_bundle_paid_at ? \Carbon\Carbon::parse($user->premium_bundle_paid_at)->format('d/m/Y') : null,
+                'key'          => 'premium_bundle',
+            ];
+        }
+        if ($user->family_pack_paid_at !== null) {
+            $activeSummary[] = [
+                'name'         => 'Family Plan',
+                'badge'        => 'FAMILY',
+                'description'  => 'Family editors and multi-device access enabled.',
+                'activated_at' => $user->family_pack_paid_at ? \Carbon\Carbon::parse($user->family_pack_paid_at)->format('d/m/Y') : null,
+                'key'          => 'family',
+            ];
+        }
+        if ($user->ledger_duo_pack_paid_at !== null) {
+            $activeSummary[] = [
+                'name'         => 'Host Plus / Ledger Duo',
+                'badge'        => 'HOST PLUS',
+                'description'  => 'Expanded event ledger and management controls.',
+                'activated_at' => $user->ledger_duo_pack_paid_at ? \Carbon\Carbon::parse($user->ledger_duo_pack_paid_at)->format('d/m/Y') : null,
+                'key'          => 'ledger_duo',
+            ];
+        }
+        if ($user->celebration_pack_paid_at !== null) {
+            $activeSummary[] = [
+                'name'         => 'Celebration Pack',
+                'badge'        => 'CELEBRATION',
+                'description'  => 'Marriage Invitations & pre-wedding studio unlocked.',
+                'activated_at' => $user->celebration_pack_paid_at ? \Carbon\Carbon::parse($user->celebration_pack_paid_at)->format('d/m/Y') : null,
+                'key'          => 'celebration',
+            ];
+        }
+        if (($user->guest_pay_single_event_credits ?? 0) > 0) {
+            $activeSummary[] = [
+                'name'         => 'Guest Contribution Credits',
+                'badge'        => $user->guest_pay_single_event_credits . ' Credits Left',
+                'description'  => 'Available single event upgrade credits to apply on any event.',
+                'activated_at' => null,
+                'key'          => 'guest_pay_single',
+            ];
+        }
+
         return response()->json([
             'success' => true,
             'data'    => [
                 'plan_level'          => $level,
                 'plan_name'           => $levelNames[$level] ?? 'Free',
+                'total_active_items'  => count($activeSummary) > 0 ? count($activeSummary) : 1,
                 'max_events'          => $user->maxEventsAllowed(),
                 'max_family_editors'  => $user->maxFamilyEditorsAllowed(),
                 'legacy_subscription' => $legacySub,
+                'active_summary'      => $activeSummary,
                 'features'            => [
                     'celebration_pack'       => $user->hasCelebrationPackAccess(),
                     'direct_gpay_qr'         => $user->hasDirectGpayQrUnlocked(),
