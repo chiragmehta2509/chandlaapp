@@ -19,7 +19,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::guard('web')->check()) {
-            return redirect()->route('client.dashboard');
+            return view('client.auth.already_logged_in');
         }
         return view('client.auth.login');
     }
@@ -33,7 +33,7 @@ class AuthController extends Controller
     public function showRegisterForm()
     {
         if (Auth::guard('web')->check()) {
-            return redirect()->route('client.dashboard');
+            return view('client.auth.already_logged_in');
         }
         return view('client.auth.register');
     }
