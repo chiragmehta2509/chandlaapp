@@ -224,6 +224,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
     // Ganpati Special Routes
     Route::prefix('ganpati')->group(function () {
+        Route::get('/check-exists', [GanpatiController::class, 'checkExists']);
         Route::get('/', [GanpatiController::class, 'index']);
         Route::post('/', [GanpatiController::class, 'store']);
         Route::get('/{id}', [GanpatiController::class, 'show']);

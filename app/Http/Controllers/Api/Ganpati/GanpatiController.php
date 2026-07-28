@@ -34,6 +34,43 @@ class GanpatiController extends Controller
             ->where('event_type_id', $this->ganpatiEventTypeId());
     }
 
+    /**
+     * Check if a Ganpati event already exists for the logged-in user.
+     * GET /api/v1/ganpati/check-exists
+     */
+    public function checkExists(Request $request)
+    {
+        $event = $this->userGanpatiEvents($request)->first();
+
+        if ($event) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'eventExists' => true,
+                    'eventId' => $event->id,
+                    'event' => [
+                        'id' => $event->id,
+                        'title' => $event->title,
+                        'event_date' => $event->event_date instanceof \Carbon\Carbon ? $event->event_date->format('Y-m-d') : $event->event_date,
+                        'venue' => $event->venue,
+                        'upi_id' => $event->upi_id,
+                        'status' => $event->status,
+                        'created_at' => $event->created_at,
+                    ]
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'eventExists' => false,
+                'eventId' => null,
+                'event' => null
+            ]
+        ]);
+    }
+
     private function denominations(): array
     {
         return [1, 2, 5, 10, 20, 50, 100, 200, 500];
