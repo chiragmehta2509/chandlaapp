@@ -9,6 +9,44 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::saving(function ($event) {
+            if ($event->event_type_id !== null) {
+                switch ($event->event_type_id) {
+                    case 1:
+                        $event->event_type = 'wedding';
+                        break;
+                    case 2:
+                        $event->event_type = 'birthday';
+                        break;
+                    case 3:
+                        $event->event_type = 'anniversary';
+                        break;
+                    default:
+                        $event->event_type = 'other';
+                        break;
+                }
+            } elseif ($event->event_type !== null) {
+                switch ($event->event_type) {
+                    case 'wedding':
+                        $event->event_type_id = 1;
+                        break;
+                    case 'birthday':
+                        $event->event_type_id = 2;
+                        break;
+                    case 'anniversary':
+                        $event->event_type_id = 3;
+                        break;
+                    case 'other':
+                    default:
+                        $event->event_type_id = 6;
+                        break;
+                }
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'title',

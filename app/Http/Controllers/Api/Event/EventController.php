@@ -134,6 +134,7 @@ class EventController extends Controller
             'venue' => 'nullable|string|max:255',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'event_type' => 'nullable|string|in:wedding,birthday,anniversary,other',
+            'event_type_id' => 'nullable|exists:event_types,id',
         ]);
 
         if ($validator->fails()) {
@@ -146,7 +147,7 @@ class EventController extends Controller
 
         $data = $request->only([
             'title', 'description', 'event_date', 'event_time', 
-            'venue', 'event_type'
+            'venue', 'event_type', 'event_type_id'
         ]);
 
         if ($request->hasFile('cover_image')) {
@@ -184,6 +185,7 @@ class EventController extends Controller
             'venue' => 'nullable|string|max:255',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'event_type' => 'nullable|string|in:wedding,birthday,anniversary,other',
+            'event_type_id' => 'nullable|exists:event_types,id',
         ]);
 
         if ($validator->fails()) {
@@ -197,7 +199,7 @@ class EventController extends Controller
         $oldValues = $event->toArray();
         $data = $request->only([
             'title', 'description', 'event_date', 'event_time', 
-            'venue', 'event_type'
+            'venue', 'event_type', 'event_type_id'
         ]);
 
         if ($request->hasFile('cover_image')) {
