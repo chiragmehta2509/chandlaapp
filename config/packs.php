@@ -28,6 +28,28 @@ $defaultLevelNames = [
 ];
 
 $defaultPacks = [
+    'starter' => [
+        'label'       => 'Starter Plan',
+        'amount_inr'  => 0.0,
+        'min_level'   => 0,
+        'description' => 'Perfect for small, intimate family events and basic ledger management.',
+        'features'    => [
+            '1 Event Limit',
+            'Up to 50 Gift/Chandla Entries',
+            'Basic Ledger Management',
+            'Standard PDF Export',
+            'Cash & Cover Tracking',
+            '3 Family Viewers (Read Only)',
+        ],
+        'limits' => [
+            'events'       => 1,
+            'entries'      => 50,
+            'qrCollection' => false,
+            'editors'      => 0,
+        ],
+        'live_payment_url' => '',
+        'test_payment_url' => '',
+    ],
     'celebration' => [
         'label'       => 'Celebration Pack',
         'amount_inr'  => (float) env('PACK_CELEBRATION_AMOUNT', 300),

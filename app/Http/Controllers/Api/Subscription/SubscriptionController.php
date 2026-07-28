@@ -30,6 +30,7 @@ class SubscriptionController extends Controller
 {
     // ── slug → internal config key map ───────────────────────────────────────
     private static array $packMap = [
+        'starter'          => 'starter',
         'celebration'      => 'celebration',
         'host-duo'         => 'ledger_duo',
         'family'           => 'family',
@@ -234,12 +235,13 @@ class SubscriptionController extends Controller
             }
 
             $tierMap = [
-                'celebration'    => 1,
-                'ledger_duo'     => 3,
-                'family'         => 4,
-                'premium_bundle' => 5,
-                'professional'   => 6,
-                'enterprise'     => 7,
+                'starter'          => 0,
+                'celebration'      => 1,
+                'ledger_duo'       => 3,
+                'family'           => 4,
+                'premium_bundle'   => 5,
+                'professional'     => 6,
+                'enterprise'       => 7,
                 'guest_pay_single' => 2,
             ];
 
@@ -642,11 +644,17 @@ class SubscriptionController extends Controller
 
     private function userHasPack(User $user, string $configKey): bool
     {
+        // Starter is the free base plan — everyone has it
+        if ($configKey === 'starter') {
+            return true;
+        }
+
         if ($configKey === 'guest_pay_single') {
             return $user->guest_pay_single_event_credits > 0;
         }
 
         $tierMap = [
+            'starter'        => 0,
             'celebration'    => 1,
             'ledger_duo'     => 3,
             'family'         => 4,

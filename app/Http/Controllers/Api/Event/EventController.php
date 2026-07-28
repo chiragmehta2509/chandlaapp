@@ -27,13 +27,27 @@ class EventController extends Controller
         $ownerId  = $authUser->dataOwnerId();
         $selfId   = $authUser->id;
 
+        // Resolve the ganpati_special event_type_id once and exclude those events
+        // from the regular events API (they are served by /api/v1/ganpati instead)
+        $ganpatiTypeId = \App\Models\EventType::where('slug', 'ganpati_special')
+            ->value('id');
+
         if ($authUser->isFamilyMember() && $selfId !== $ownerId) {
-            return Event::where(function ($q) use ($ownerId, $selfId) {
+            $query = Event::where(function ($q) use ($ownerId, $selfId) {
                 $q->where('user_id', $ownerId)->orWhere('user_id', $selfId);
+            });
+        } else {
+            $query = Event::where('user_id', $ownerId);
+        }
+
+        if ($ganpatiTypeId) {
+            $query->where(function ($q) use ($ganpatiTypeId) {
+                $q->whereNull('event_type_id')
+                  ->orWhere('event_type_id', '!=', $ganpatiTypeId);
             });
         }
 
-        return Event::where('user_id', $ownerId);
+        return $query;
     }
 
     public function index(Request $request)
