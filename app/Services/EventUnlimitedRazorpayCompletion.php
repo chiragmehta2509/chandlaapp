@@ -80,6 +80,34 @@ class EventUnlimitedRazorpayCompletion
             }
         }
 
+        if ($buyer && !empty($buyer->phone)) {
+            try {
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $buyer->phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'plan_purchase_confirmation',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($buyer->name ?? 'User'),
+                                \App\Services\WhatsAppService::formatTextParameter('Unlimited'),
+                                \App\Services\WhatsAppService::formatTextParameter((string) $amount),
+                                \App\Services\WhatsAppService::formatTextParameter('Lifetime')
+                            ]
+                        ]
+                    ]
+                );
+            } catch (\Throwable $e) {
+                Log::error('WhatsApp plan purchase confirmation failed', [
+                    'user_id' => $buyer->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         if ($buyer && $buyer->referred_by && $buyer->referral_rewarded_at === null) {
             $referrer = User::find($buyer->referred_by);
             if ($referrer) {

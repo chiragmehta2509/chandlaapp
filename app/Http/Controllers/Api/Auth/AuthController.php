@@ -297,6 +297,30 @@ class AuthController extends Controller
                 'phone_verified_at' => now(),
                 'is_active' => true,
             ]);
+
+            try {
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'welcome_first_login',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($user->name ?? 'User')
+                            ]
+                        ]
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Welcome WhatsApp failed during OTP registration', [
+                    'user_id' => $user->id,
+                    'phone' => $user->phone,
+                    'error' => $e->getMessage()
+                ]);
+            }
         } else {
             $user->update([
                 'phone_verified_at' => now(),

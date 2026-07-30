@@ -133,6 +133,32 @@ class AuthController extends Controller
             });
         }
 
+        if (!empty($user->phone)) {
+            try {
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone); // Remove +91 or 91 if it somehow exists
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone, // Prepend 91 for Indian numbers
+                    templateName: 'welcome_first_login',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($user->name ?? 'User')
+                            ]
+                        ]
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Welcome WhatsApp failed during web registration', [
+                    'user_id' => $user->id,
+                    'phone' => $user->phone,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         return redirect()->route('client.login')->with(
             'status',
             'Account created. Please sign in with your email or phone and password.'

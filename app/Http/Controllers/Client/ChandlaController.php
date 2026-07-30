@@ -422,6 +422,32 @@ class ChandlaController extends Controller
             return Chandla::create($validated);
         });
 
+        if (!empty($chandla->giver_phone)) {
+            try {
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $chandla->giver_phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'chandla_added',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($chandla->giver_name ?? 'Guest'),
+                                \App\Services\WhatsAppService::formatTextParameter((string) ($chandla->amount ?? 0))
+                            ]
+                        ]
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('WhatsApp chandla_added failed in web', [
+                    'chandla_id' => $chandla->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         $message = $coverToUpdate ? 'Cover data updated successfully' : 'Chandla record created successfully';
 
         $chandlaSavedSummary = [
