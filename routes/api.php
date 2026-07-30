@@ -158,6 +158,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/past', [EventController::class, 'past']);
         Route::get('/archived', [EventController::class, 'archived']);
         Route::get('/{id}', [EventController::class, 'show']);
+        Route::get('/{id}/pdf', [EventController::class, 'downloadPdf']);
         Route::post('/', [EventController::class, 'store']);
         Route::put('/{id}', [EventController::class, 'update']);
         Route::post('/{id}', [EventController::class, 'update']);

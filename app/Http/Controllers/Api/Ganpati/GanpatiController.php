@@ -541,6 +541,7 @@ class GanpatiController extends Controller
             'entries' => $entries,
             'cash'    => $entries->where('payment_method', 'cash'),
             'gpay'    => $entries->where('payment_method', 'gpay'),
+            'other'   => $entries->whereNotIn('payment_method', ['cash', 'gpay']),
         ])->setPaper('a4', 'portrait');
 
         $filename = 'ganpati_chanda_' . str_replace(' ', '_', strtolower($event->title)) . '.pdf';

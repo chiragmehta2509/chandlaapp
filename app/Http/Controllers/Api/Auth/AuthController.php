@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 use Google_Client;
@@ -354,6 +355,21 @@ class AuthController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        if (!empty($user->email)) {
+            try {
+                Mail::send('emails.welcome', ['user' => $user], function ($message) use ($user) {
+                    $message->to($user->email, $user->name)
+                        ->subject('Welcome to Chandla Book — your account is ready');
+                });
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Welcome email failed during API registration', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         return response()->json([
             'success' => true,

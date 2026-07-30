@@ -16,8 +16,13 @@ use App\Services\GuestPayPackUnlock;
 use App\Services\RazorpayService;
 use App\Support\RazorpayTestAmount;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Razorpay\Api\Api;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\EventCashInventory;
+use App\Models\Chandla;
 
 class EventController extends Controller
 {
@@ -812,4 +817,93 @@ class EventController extends Controller
             'message' => 'Guest Contribution applied to ' . $event->title . '.'
         ]);
     }
+
+    public function downloadPdf(Request $request, $id)
+    {
+        $event = $this->userEvents($request)->with('chandlas')->findOrFail($id);
+
+        $inventory = EventCashInventory::firstOrCreate(
+            ['event_id' => $event->id],
+            [
+                'note_1' => 0, 'note_2' => 0, 'note_5' => 0, 'note_10' => 0, 'note_20' => 0, 'note_50' => 0, 'note_100' => 0, 'note_200' => 0, 'note_500' => 0,
+            ]
+        );
+
+        $cash = $event->chandlas->where('category', 'chandla')->where('payment_method', '!=', 'gpay')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $gpay = $event->chandlas->where('payment_method', 'gpay')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $cover = $event->chandlas->where('category', 'cover')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $gift = $event->chandlas->where('category', 'gift')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $gujaratiFontPath = $this->resolvePdfGujaratiFontPath();
+
+        $pdf = Pdf::loadView('client.chandlas.pdf', [
+            'event'            => $event,
+            'inventory'        => $inventory,
+            'cash'             => $cash,
+            'gpay'             => $gpay,
+            'cover'            => $cover,
+            'gift'             => $gift,
+            'gujaratiFontPath' => $gujaratiFontPath,
+        ]);
+
+        $this->decorateEventChandlaPdf($pdf);
+
+        $filename = 'event-chandla-' . $event->id . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    private function decorateEventChandlaPdf(\Barryvdh\DomPDF\PDF $pdf): void
+    {
+        try {
+            $dompdf = $pdf->getDomPDF();
+            $canvas = $dompdf->getCanvas();
+            $fontMetrics = $dompdf->getFontMetrics();
+            $font = $fontMetrics->get_font('DejaVu Sans', 'normal');
+            if (!$font) {
+                return;
+            }
+
+            $muted = [0.38, 0.41, 0.45];
+            $canvas->page_text(34, 806, 'Chandla Book · '.config('app.name'), $font, 7.5, $muted);
+            $canvas->page_text(238, 806, 'Page {PAGE_NUM} of {PAGE_COUNT}', $font, 9, [0.18, 0.23, 0.29]);
+        } catch (\Throwable $e) {
+            Log::warning('Event PDF footer chrome skipped', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function resolvePdfGujaratiFontPath(): ?string
+    {
+        $fontDirectory = storage_path('fonts');
+        $projectFontPath = $fontDirectory . DIRECTORY_SEPARATOR . 'gujarati.ttf';
+
+        if (is_file($projectFontPath)) {
+            return $projectFontPath;
+        }
+
+        $sourceCandidates = [
+            'C:\\Windows\\Fonts\\shruti.ttf',
+            'C:\\Windows\\Fonts\\Nirmala.ttc',
+            '/usr/share/fonts/truetype/noto/NotoSansGujarati-Regular.ttf',
+            '/usr/share/fonts/noto/NotoSansGujarati-Regular.ttf',
+        ];
+
+        foreach ($sourceCandidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
 }
+

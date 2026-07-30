@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="{{ asset('images/chandla-favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/chandla-app-icon.png') }}">
+    <link rel="icon" type="image/png" href="<?php echo e(asset('images/chandla-favicon.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('images/chandla-app-icon.png')); ?>">
     <meta charset="utf-8">
-    <title>Ganpati Chanda Register — {{ $event->title }}</title>
-    @php
+    <title>Ganpati Chanda Register — <?php echo e($event->title); ?></title>
+    <?php
         $pdfFontUrl = null;
         if (!empty($gujaratiFontPath) && file_exists($gujaratiFontPath)) {
             $pdfFontUrl = 'file://' . str_replace('\\', '/', $gujaratiFontPath);
         }
         $logoPath = public_path('images/chandla-logo.png');
         $hasLogo = file_exists($logoPath);
-    @endphp
+    ?>
     <style>
-        @if($pdfFontUrl)
+        <?php if($pdfFontUrl): ?>
         @font-face {
             font-family: 'PdfGujarati';
             font-style: normal;
             font-weight: 400;
-            src: url('{{ $pdfFontUrl }}') format('truetype');
+            src: url('<?php echo e($pdfFontUrl); ?>') format('truetype');
         }
-        @endif
+        <?php endif; ?>
 
         @page {
             margin: 26mm 11mm 22mm 11mm;
@@ -32,7 +32,7 @@
         }
 
         body {
-            font-family: {{ $pdfFontUrl ? "'PdfGujarati', 'DejaVu Sans'" : "'DejaVu Sans'" }}, sans-serif;
+            font-family: <?php echo e($pdfFontUrl ? "'PdfGujarati', 'DejaVu Sans'" : "'DejaVu Sans'"); ?>, sans-serif;
             font-size: 10.5px;
             line-height: 1.45;
             color: #1f2937;
@@ -264,20 +264,20 @@
     </style>
 </head>
 <body>
-    @php
+    <?php
         $totalCollected = $entries->sum('amount');
         $cashTotal  = $cash->sum('amount');
         $gpayTotal  = $gpay->sum('amount');
         $otherTotal = $other->sum('amount');
         $gpayCount  = $gpay->count();
         $otherCount = $other->count();
-    @endphp
+    ?>
 
-    @if($hasLogo)
+    <?php if($hasLogo): ?>
         <div class="pdf-fixed-logo">
-            <img src="{{ $logoPath }}" alt="Chandla Book">
+            <img src="<?php echo e($logoPath); ?>" alt="Chandla Book">
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Cover -->
     <div class="cover-wrap">
@@ -292,33 +292,34 @@
                 <table class="cover-meta-table">
                     <tr>
                         <td class="lbl">Event</td>
-                        <td class="val">{{ $event->title }}</td>
+                        <td class="val"><?php echo e($event->title); ?></td>
                     </tr>
-                    @if($event->event_date)
+                    <?php if($event->event_date): ?>
                     <tr>
                         <td class="lbl">Event date</td>
-                        <td class="val">{{ $event->event_date->format('l, F j, Y') }}</td>
+                        <td class="val"><?php echo e($event->event_date->format('l, F j, Y')); ?></td>
                     </tr>
-                    @endif
-                    @if($event->venue)
+                    <?php endif; ?>
+                    <?php if($event->venue): ?>
                     <tr>
                         <td class="lbl">Venue</td>
-                        <td class="val">{{ $event->venue }}</td>
+                        <td class="val"><?php echo e($event->venue); ?></td>
                     </tr>
-                    @endif
+                    <?php endif; ?>
                     <tr>
                         <td class="lbl">Total Collected</td>
                         <td class="val" style="font-size:14px; font-weight:bold; color:#1a3646;">
-                            <span class="inr">₹</span> {{ number_format($totalCollected, 0) }}
+                            <span class="inr">₹</span> <?php echo e(number_format($totalCollected, 0)); ?>
+
                         </td>
                     </tr>
                     <tr>
                         <td class="lbl">Total Entries</td>
-                        <td class="val">{{ $entries->count() }} records</td>
+                        <td class="val"><?php echo e($entries->count()); ?> records</td>
                     </tr>
                     <tr>
                         <td class="lbl">Generated on</td>
-                        <td class="val">{{ now()->format('d M Y, h:i A') }}</td>
+                        <td class="val"><?php echo e(now()->format('d M Y, h:i A')); ?></td>
                     </tr>
                 </table>
                 </div>
@@ -338,27 +339,27 @@
             <tr>
                 <td>
                     <div class="summary-kicker">Cash Collected</div>
-                    <div class="summary-num"><span class="inr">₹</span>{{ number_format($cashTotal, 0) }}</div>
+                    <div class="summary-num"><span class="inr">₹</span><?php echo e(number_format($cashTotal, 0)); ?></div>
                 </td>
                 <td>
                     <div class="summary-kicker">Digital (GPay)</div>
-                    <div class="summary-num"><span class="inr">₹</span>{{ number_format($gpayTotal, 0) }}</div>
-                    <div class="summary-note">({{ $gpayCount }} transactions)</div>
+                    <div class="summary-num"><span class="inr">₹</span><?php echo e(number_format($gpayTotal, 0)); ?></div>
+                    <div class="summary-note">(<?php echo e($gpayCount); ?> transactions)</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Other Methods</div>
-                    <div class="summary-num"><span class="inr">₹</span>{{ number_format($otherTotal, 0) }}</div>
-                    <div class="summary-note">({{ $otherCount }} entries)</div>
+                    <div class="summary-num"><span class="inr">₹</span><?php echo e(number_format($otherTotal, 0)); ?></div>
+                    <div class="summary-note">(<?php echo e($otherCount); ?> entries)</div>
                 </td>
             </tr>
         </table>
     </div>
 
-    @if($entries->isEmpty())
+    <?php if($entries->isEmpty()): ?>
     <div class="page-shell">
         <p style="text-align:center; padding:30px; color:#6b7280; font-style:italic;">No entries recorded yet.</p>
     </div>
-    @else
+    <?php else: ?>
     
     <!-- All Entries Table -->
     <div class="page-shell">
@@ -375,24 +376,25 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($entries as $i => $row)
+                <?php $__currentLoopData = $entries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr>
-                    <td style="text-align:center; color:#9ca3af;">{{ $i + 1 }}</td>
-                    <td><strong>{{ $row->giver_name }}</strong><br><span style="font-size:8.5px; color:#6b7280;">{{ $row->giver_address }}</span></td>
-                    <td>{{ $row->giver_phone }}</td>
-                    <td>{{ strtoupper($row->payment_method ?? 'Other') }}</td>
-                    <td>{{ optional($row->received_date)->format('d/m/Y') }}</td>
-                    <td style="text-align:right; font-weight:bold;">{{ number_format((float)$row->amount, 0) }}</td>
+                    <td style="text-align:center; color:#9ca3af;"><?php echo e($i + 1); ?></td>
+                    <td><strong><?php echo e($row->giver_name); ?></strong><br><span style="font-size:8.5px; color:#6b7280;"><?php echo e($row->giver_address); ?></span></td>
+                    <td><?php echo e($row->giver_phone); ?></td>
+                    <td><?php echo e(strtoupper($row->payment_method ?? 'Other')); ?></td>
+                    <td><?php echo e(optional($row->received_date)->format('d/m/Y')); ?></td>
+                    <td style="text-align:right; font-weight:bold;"><?php echo e(number_format((float)$row->amount, 0)); ?></td>
                 </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <tr class="total-row">
                     <td colspan="5" style="text-align:right; font-size:10px;">GRAND TOTAL</td>
-                    <td style="text-align:right;"><span class="inr">₹</span> {{ number_format($totalCollected, 0) }}</td>
+                    <td style="text-align:right;"><span class="inr">₹</span> <?php echo e(number_format($totalCollected, 0)); ?></td>
                 </tr>
             </tbody>
         </table>
     </div>
-    @endif
+    <?php endif; ?>
 
 </body>
 </html>
+<?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/client/ganpati/pdf.blade.php ENDPATH**/ ?>
