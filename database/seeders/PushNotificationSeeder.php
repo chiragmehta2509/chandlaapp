@@ -116,7 +116,7 @@ class PushNotificationSeeder extends Seeder
                 'message' => 'A new version of Chandla Book is available on Play Store and App Store. Update now for a smoother experience.',
                 'image' => null,
                 'action_type' => 'url',
-                'action_value' => 'https://play.google.com/store/apps/details?id=com.chandlabook.app',
+                'action_value' => 'https://play.google.com/store/apps/details?id=com.skylighttech.chandla_book',
                 'send_to' => 'all',
                 'status' => 'sent',
             ]

@@ -11,65 +11,152 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
-use Google_Client;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Auth as FirebaseAuth;
+use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
 
 class AuthController extends Controller
 {
+    /**
+     * Shared Firebase Auth instance (lazy-initialised once per request lifecycle).
+     */
+    protected ?FirebaseAuth $firebaseAuth = null;
+
+    /**
+     * Build & cache the Firebase Auth instance using the service-account credentials.
+     */
+    protected function getFirebaseAuth(): ?FirebaseAuth
+    {
+        if ($this->firebaseAuth) {
+            return $this->firebaseAuth;
+        }
+
+        $credentialsPath = config('firebase.credentials_path');
+
+        // Resolve a relative path relative to the Laravel base path
+        if (!str_starts_with($credentialsPath, '/') && !str_contains($credentialsPath, ':')) {
+            $credentialsPath = base_path($credentialsPath);
+        }
+
+        if (!file_exists($credentialsPath)) {
+            \Illuminate\Support\Facades\Log::error("Firebase credentials not found at: {$credentialsPath}");
+            return null;
+        }
+
+        try {
+            $factory = (new Factory)->withServiceAccount($credentialsPath);
+            $this->firebaseAuth = $factory->createAuth();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Firebase Auth init failed: " . $e->getMessage());
+            return null;
+        }
+
+        return $this->firebaseAuth;
+    }
+
+    // -------------------------------------------------------------------------
+    // Firebase Google Sign-In
+    // -------------------------------------------------------------------------
+
+    /**
+     * POST /api/v1/auth/google/login
+     *
+     * Flutter sends the Firebase ID token obtained after Google Sign-In through
+     * firebase_auth. We verify it with the Firebase Admin SDK so we never blindly
+     * trust client-supplied data.
+     *
+     * Body params:
+     *   firebase_id_token  (required) – Firebase ID token from firebase_auth.currentUser.getIdToken()
+     *   name               (optional) – display name from Flutter (used only on first signup)
+     *   avatar             (optional) – photo URL from Flutter
+     */
     public function googleLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_token' => 'required|string',
-            'email' => 'required|email',
-            'name' => 'nullable|string',
-            'avatar' => 'nullable|url',
+            'firebase_id_token' => 'required|string',
+            'name'              => 'nullable|string|max:255',
+            'avatar'            => 'nullable|string|max:500',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
+        $auth = $this->getFirebaseAuth();
+        if (!$auth) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Firebase is not configured on the server.',
+            ], 503);
+        }
+
         try {
-            $client = new Google_Client(['client_id' => config('services.google.client_id')]);
-            $payload = $client->verifyIdToken($request->id_token);
+            $verifiedToken = $auth->verifyIdToken($request->firebase_id_token);
+        } catch (FailedToVerifyToken $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired Firebase token.',
+                'error'   => $e->getMessage(),
+            ], 401);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Firebase token verification failed.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
 
-            if (!$payload) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Google token'
-                ], 401);
-            }
+        $claims      = $verifiedToken->claims();
+        $firebaseUid = $claims->get('sub');           // Firebase UID
+        $email       = $claims->get('email');
+        $name        = $request->name  ?? $claims->get('name')    ?? 'User';
+        $avatar      = $request->avatar ?? $claims->get('picture') ?? null;
 
-            $user = User::where('email', $request->email)
-                ->orWhere('provider_id', $payload['sub'])
+        // Provider must be google.com (sign_in_provider inside firebase claim)
+        $firebaseClaim    = $claims->get('firebase');
+        $signInProvider   = is_array($firebaseClaim) ? ($firebaseClaim['sign_in_provider'] ?? '') : '';
+
+        if ($signInProvider !== 'google.com') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token was not issued via Google Sign-In.',
+            ], 401);
+        }
+
+        try {
+            $user = User::where('provider_id', $firebaseUid)
+                ->orWhere(function ($q) use ($email) {
+                    if ($email) $q->where('email', $email);
+                })
                 ->first();
 
             if (!$user) {
                 $user = User::create([
-                    'name' => $request->name ?? $payload['name'] ?? 'User',
-                    'email' => $request->email,
-                    'auth_provider' => 'google',
-                    'provider_id' => $payload['sub'],
-                    'avatar' => $request->avatar ?? $payload['picture'] ?? null,
+                    'name'              => $name,
+                    'email'             => $email,
+                    'auth_provider'     => 'google',
+                    'provider_id'       => $firebaseUid,
+                    'avatar'            => $avatar,
                     'email_verified_at' => now(),
-                    'is_active' => true,
+                    'is_active'         => true,
                 ]);
             } else {
                 $user->update([
                     'auth_provider' => 'google',
-                    'provider_id' => $payload['sub'],
-                    'avatar' => $request->avatar ?? $user->avatar,
+                    'provider_id'   => $firebaseUid,
+                    'avatar'        => $avatar ?? $user->avatar,
                 ]);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
             ActivityLog::create([
-                'user_id' => $user->id,
-                'action' => 'google_login',
+                'user_id'    => $user->id,
+                'action'     => 'google_login',
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
@@ -77,46 +164,178 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token,
+                'data'    => [
+                    'user'       => $user,
+                    'token'      => $token,
                     'token_type' => 'Bearer',
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Authentication failed',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function facebookLogin(Request $request)
+    // -------------------------------------------------------------------------
+    // Firebase Apple Sign-In
+    // -------------------------------------------------------------------------
+
+    /**
+     * POST /api/v1/auth/apple/login
+     *
+     * Flutter (sign_in_with_apple + firebase_auth) exchanges the Apple credential
+     * with Firebase and gives us a Firebase ID token. We verify that token here.
+     *
+     * Body params:
+     *   firebase_id_token  (required) – Firebase ID token from firebase_auth.currentUser.getIdToken()
+     *   name               (optional) – full name (only sent by Apple on FIRST login)
+     *   email              (optional) – email (only sent by Apple on FIRST login)
+     */
+    public function appleLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'access_token' => 'required|string',
-            'email' => 'required|email',
-            'name' => 'nullable|string',
-            'avatar' => 'nullable|url',
+            'firebase_id_token' => 'required|string',
+            'name'              => 'nullable|string|max:255',
+            'email'             => 'nullable|email|max:255',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $auth = $this->getFirebaseAuth();
+        if (!$auth) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Firebase is not configured on the server.',
+            ], 503);
+        }
+
+        try {
+            $verifiedToken = $auth->verifyIdToken($request->firebase_id_token);
+        } catch (FailedToVerifyToken $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired Firebase token.',
+                'error'   => $e->getMessage(),
+            ], 401);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Firebase token verification failed.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+
+        $claims      = $verifiedToken->claims();
+        $firebaseUid = $claims->get('sub');
+        $email       = $request->email ?? $claims->get('email');
+        $name        = $request->name  ?? $claims->get('name')    ?? 'User';
+
+        // Provider must be apple.com
+        $firebaseClaim  = $claims->get('firebase');
+        $signInProvider = is_array($firebaseClaim) ? ($firebaseClaim['sign_in_provider'] ?? '') : '';
+
+        if ($signInProvider !== 'apple.com') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token was not issued via Apple Sign-In.',
+            ], 401);
+        }
+
+        try {
+            $user = User::where('provider_id', $firebaseUid)
+                ->orWhere(function ($q) use ($email) {
+                    if ($email) $q->where('email', $email);
+                })
+                ->first();
+
+            if (!$user) {
+                $createData = [
+                    'name'              => $name,
+                    'auth_provider'     => 'apple',
+                    'provider_id'       => $firebaseUid,
+                    'email_verified_at' => now(),
+                    'is_active'         => true,
+                ];
+                if ($email) {
+                    $createData['email'] = $email;
+                }
+                $user = User::create($createData);
+            } else {
+                $updateData = [
+                    'auth_provider' => 'apple',
+                    'provider_id'   => $firebaseUid,
+                ];
+                if ($email && !$user->email) {
+                    $updateData['email'] = $email;
+                }
+                $user->update($updateData);
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            ActivityLog::create([
+                'user_id'    => $user->id,
+                'action'     => 'apple_login',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'data'    => [
+                    'user'       => $user,
+                    'token'      => $token,
+                    'token_type' => 'Bearer',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Authentication failed',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Facebook Login (unchanged)
+    // -------------------------------------------------------------------------
+
+    public function facebookLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'access_token' => 'required|string',
+            'email'        => 'required|email',
+            'name'         => 'nullable|string',
+            'avatar'       => 'nullable|url',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
         try {
             $fbResponse = file_get_contents("https://graph.facebook.com/me?access_token={$request->access_token}&fields=id,name,email,picture");
-            $fbUser = json_decode($fbResponse, true);
+            $fbUser     = json_decode($fbResponse, true);
 
             if (isset($fbUser['error'])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid Facebook token'
+                    'message' => 'Invalid Facebook token',
                 ], 401);
             }
 
@@ -126,27 +345,27 @@ class AuthController extends Controller
 
             if (!$user) {
                 $user = User::create([
-                    'name' => $request->name ?? $fbUser['name'] ?? 'User',
-                    'email' => $request->email,
-                    'auth_provider' => 'facebook',
-                    'provider_id' => $fbUser['id'],
-                    'avatar' => $request->avatar ?? $fbUser['picture']['data']['url'] ?? null,
+                    'name'              => $request->name ?? $fbUser['name'] ?? 'User',
+                    'email'             => $request->email,
+                    'auth_provider'     => 'facebook',
+                    'provider_id'       => $fbUser['id'],
+                    'avatar'            => $request->avatar ?? $fbUser['picture']['data']['url'] ?? null,
                     'email_verified_at' => now(),
-                    'is_active' => true,
+                    'is_active'         => true,
                 ]);
             } else {
                 $user->update([
                     'auth_provider' => 'facebook',
-                    'provider_id' => $fbUser['id'],
-                    'avatar' => $request->avatar ?? $user->avatar,
+                    'provider_id'   => $fbUser['id'],
+                    'avatar'        => $request->avatar ?? $user->avatar,
                 ]);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
             ActivityLog::create([
-                'user_id' => $user->id,
-                'action' => 'facebook_login',
+                'user_id'    => $user->id,
+                'action'     => 'facebook_login',
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
@@ -154,77 +373,24 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token,
+                'data'    => [
+                    'user'       => $user,
+                    'token'      => $token,
                     'token_type' => 'Bearer',
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Authentication failed',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function appleLogin(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'identity_token' => 'required|string',
-            'email' => 'nullable|email',
-            'name' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Apple Sign In verification would go here
-        // For now, simplified version
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user && $request->email) {
-            $user = User::create([
-                'name' => $request->name ?? 'User',
-                'email' => $request->email,
-                'auth_provider' => 'apple',
-                'email_verified_at' => now(),
-                'is_active' => true,
-            ]);
-        }
-
-        if ($user) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            ActivityLog::create([
-                'user_id' => $user->id,
-                'action' => 'apple_login',
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Login successful',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token,
-                    'token_type' => 'Bearer',
-                ]
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Authentication failed'
-        ], 401);
-    }
+    // -------------------------------------------------------------------------
+    // Phone OTP
+    // -------------------------------------------------------------------------
 
     public function sendOTP(Request $request)
     {
@@ -236,26 +402,20 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
-        // Generate OTP (6 digits)
         $otp = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-
-        // Store OTP in cache (expires in 5 minutes)
         cache()->put("otp_{$request->phone}", $otp, now()->addMinutes(5));
-
-        // Send OTP via SMS (integrate with MSG91 or similar)
-        // SMSService::send($request->phone, "Your OTP is: {$otp}");
 
         return response()->json([
             'success' => true,
             'message' => 'OTP sent successfully',
-            'data' => [
-                'otp' => $otp, // Remove in production
-                'expires_in' => 300
-            ]
+            'data'    => [
+                'otp'        => $otp, // Remove in production
+                'expires_in' => 300,
+            ],
         ]);
     }
 
@@ -263,15 +423,15 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|regex:/^[0-9]{10}$/',
-            'otp' => 'required|string|size:6',
-            'name' => 'nullable|string',
+            'otp'   => 'required|string|size:6',
+            'name'  => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
@@ -280,26 +440,25 @@ class AuthController extends Controller
         if (!$cachedOTP || $cachedOTP !== $request->otp) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired OTP'
+                'message' => 'Invalid or expired OTP',
             ], 401);
         }
 
-        // Clear OTP
         cache()->forget("otp_{$request->phone}");
 
         $user = User::where('phone', $request->phone)->first();
 
         if (!$user) {
             $user = User::create([
-                'name' => $request->name ?? 'User',
-                'phone' => $request->phone,
-                'auth_provider' => 'phone',
-                'phone_verified_at' => now(),
-                'is_active' => true,
+                'name'             => $request->name ?? 'User',
+                'phone'            => $request->phone,
+                'auth_provider'    => 'phone',
+                'phone_verified_at'=> now(),
+                'is_active'        => true,
             ]);
 
             try {
-                $waService = new \App\Services\WhatsAppService();
+                $waService  = new \App\Services\WhatsAppService();
                 $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
                 $waService->sendTemplateMessage(
                     to: '91' . $cleanPhone,
@@ -307,31 +466,29 @@ class AuthController extends Controller
                     languageCode: 'en',
                     components: [
                         [
-                            'type' => 'body',
+                            'type'       => 'body',
                             'parameters' => [
-                                \App\Services\WhatsAppService::formatTextParameter($user->name ?? 'User')
-                            ]
-                        ]
+                                \App\Services\WhatsAppService::formatTextParameter($user->name ?? 'User'),
+                            ],
+                        ],
                     ]
                 );
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Welcome WhatsApp failed during OTP registration', [
                     'user_id' => $user->id,
-                    'phone' => $user->phone,
-                    'error' => $e->getMessage()
+                    'phone'   => $user->phone,
+                    'error'   => $e->getMessage(),
                 ]);
             }
         } else {
-            $user->update([
-                'phone_verified_at' => now(),
-            ]);
+            $user->update(['phone_verified_at' => now()]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'phone_otp_login',
+            'user_id'    => $user->id,
+            'action'     => 'phone_otp_login',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
@@ -339,19 +496,23 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'OTP verified successfully',
-            'data' => [
-                'user' => $user,
-                'token' => $token,
+            'data'    => [
+                'user'       => $user,
+                'token'      => $token,
                 'token_type' => 'Bearer',
-            ]
+            ],
         ]);
     }
+
+    // -------------------------------------------------------------------------
+    // Email / Password
+    // -------------------------------------------------------------------------
 
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -359,23 +520,23 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
             'auth_provider' => 'email',
-            'is_active' => true,
+            'is_active'     => true,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'register',
+            'user_id'    => $user->id,
+            'action'     => 'register',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
@@ -389,8 +550,8 @@ class AuthController extends Controller
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Welcome email failed during API registration', [
                     'user_id' => $user->id,
-                    'email' => $user->email,
-                    'error' => $e->getMessage()
+                    'email'   => $user->email,
+                    'error'   => $e->getMessage(),
                 ]);
             }
         }
@@ -398,18 +559,18 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Registration successful',
-            'data' => [
-                'user' => $user,
-                'token' => $token,
+            'data'    => [
+                'user'       => $user,
+                'token'      => $token,
                 'token_type' => 'Bearer',
-            ]
+            ],
         ], 201);
     }
 
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required|string',
         ]);
 
@@ -417,7 +578,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
@@ -426,22 +587,22 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid credentials'
+                'message' => 'Invalid credentials',
             ], 401);
         }
 
         if (!$user->is_active || $user->is_deleted) {
             return response()->json([
                 'success' => false,
-                'message' => 'Account is inactive or deleted'
+                'message' => 'Account is inactive or deleted',
             ], 403);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'login',
+            'user_id'    => $user->id,
+            'action'     => 'login',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
@@ -449,11 +610,11 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
-            'data' => [
-                'user' => $user,
-                'token' => $token,
+            'data'    => [
+                'user'       => $user,
+                'token'      => $token,
                 'token_type' => 'Bearer',
-            ]
+            ],
         ]);
     }
 
@@ -462,15 +623,15 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         ActivityLog::create([
-            'user_id' => $request->user()->id,
-            'action' => 'logout',
+            'user_id'    => $request->user()->id,
+            'action'     => 'logout',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Logged out successfully'
+            'message' => 'Logged out successfully',
         ]);
     }
 
@@ -482,10 +643,10 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Token refreshed',
-            'data' => [
-                'token' => $token,
+            'data'    => [
+                'token'      => $token,
                 'token_type' => 'Bearer',
-            ]
+            ],
         ]);
     }
 
@@ -493,7 +654,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $request->user()->load('settings')
+            'data'    => $request->user()->load('settings'),
         ]);
     }
 
@@ -501,14 +662,14 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|string',
-            'password' => 'required|string|min:8|confirmed',
+            'password'         => 'required|string|min:8|confirmed',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
@@ -517,32 +678,30 @@ class AuthController extends Controller
         if (!Hash::check($request->current_password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Current password is incorrect'
+                'message' => 'Current password is incorrect',
             ], 401);
         }
 
-        $user->update([
-            'password' => Hash::make($request->password)
-        ]);
+        $user->update(['password' => Hash::make($request->password)]);
 
         ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'change_password',
+            'user_id'    => $user->id,
+            'action'     => 'change_password',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Password changed successfully'
+            'message' => 'Password changed successfully',
         ]);
     }
 
     public function updateProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|unique:users,phone,' . $request->user()->id,
+            'name'     => 'nullable|string|max:255',
+            'phone'    => 'nullable|string|unique:users,phone,' . $request->user()->id,
             'language' => 'nullable|string|in:en,hi,gu',
         ]);
 
@@ -550,7 +709,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
@@ -558,8 +717,8 @@ class AuthController extends Controller
         $user->update($request->only(['name', 'phone', 'language']));
 
         ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'update_profile',
+            'user_id'    => $user->id,
+            'action'     => 'update_profile',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
@@ -567,7 +726,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully',
-            'data' => $user
+            'data'    => $user,
         ]);
     }
 
@@ -581,28 +740,24 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
-        // Generate reset token
         $token = Str::random(64);
         cache()->put("password_reset_{$token}", $request->email, now()->addHours(1));
 
-        // Send reset email
-        // Mail::to($request->email)->send(new ResetPasswordMail($token));
-
         return response()->json([
             'success' => true,
-            'message' => 'Password reset link sent to your email'
+            'message' => 'Password reset link sent to your email',
         ]);
     }
 
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'token' => 'required|string',
-            'email' => 'required|email',
+            'token'    => 'required|string',
+            'email'    => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -610,7 +765,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
@@ -619,7 +774,7 @@ class AuthController extends Controller
         if (!$email || $email !== $request->email) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired reset token'
+                'message' => 'Invalid or expired reset token',
             ], 401);
         }
 
@@ -628,20 +783,16 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'User not found'
+                'message' => 'User not found',
             ], 404);
         }
 
-        $user->update([
-            'password' => Hash::make($request->password)
-        ]);
-
+        $user->update(['password' => Hash::make($request->password)]);
         cache()->forget("password_reset_{$request->token}");
 
         return response()->json([
             'success' => true,
-            'message' => 'Password reset successfully'
+            'message' => 'Password reset successfully',
         ]);
     }
 }
-

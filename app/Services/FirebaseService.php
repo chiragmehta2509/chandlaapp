@@ -21,7 +21,14 @@ class FirebaseService
 
     public function __construct()
     {
-        $this->credentialsPath = config('firebase.credentials_path');
+        $credentialsPath = config('firebase.credentials_path');
+
+        // Resolve relative paths (e.g. 'storage/app/firebase-credentials.json')
+        if (!str_starts_with($credentialsPath, '/') && !str_contains($credentialsPath, ':')) {
+            $credentialsPath = base_path($credentialsPath);
+        }
+
+        $this->credentialsPath = $credentialsPath;
         $this->projectId = config('firebase.project_id');
     }
 

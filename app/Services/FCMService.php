@@ -17,12 +17,17 @@ class FCMService
     public function __construct()
     {
         $credentialsPath = config('firebase.credentials_path');
+
+        // Resolve relative paths (e.g. 'storage/app/firebase-credentials.json')
+        if (!str_starts_with($credentialsPath, '/') && !str_contains($credentialsPath, ':')) {
+            $credentialsPath = base_path($credentialsPath);
+        }
         
         if (file_exists($credentialsPath)) {
             $factory = (new Factory)->withServiceAccount($credentialsPath);
             $this->messaging = $factory->createMessaging();
         } else {
-            Log::warning('Firebase credentials file not found');
+            Log::warning('Firebase credentials file not found at: ' . $credentialsPath);
         }
     }
 
