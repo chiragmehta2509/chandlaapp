@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="{{ asset('images/chandla-favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/chandla-app-icon.png') }}">
+    <link rel="icon" type="image/png" href="<?php echo e(asset('images/chandla-favicon.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('images/chandla-app-icon.png')); ?>">
     <meta charset="utf-8">
-    <title>Expense Register — {{ $filterLabel }}</title>
-    @php
+    <title>Ganpati Chanda Register — <?php echo e($event->title); ?></title>
+    <?php
+        $pdfFontUrl = null;
+        if (!empty($gujaratiFontPath) && file_exists($gujaratiFontPath)) {
+            $pdfFontUrl = 'file://' . str_replace('\\', '/', $gujaratiFontPath);
+        }
         $logoPath = null;
         foreach (['images/logo.jpeg', 'images/logo.png', 'images/chandla-logo.png', 'images/chandla-logo.jpg'] as $img) {
             $potentialPath = public_path($img);
@@ -15,8 +19,17 @@
             }
         }
         $hasLogo = !empty($logoPath);
-    @endphp
+    ?>
     <style>
+        <?php if($pdfFontUrl): ?>
+        @font-face {
+            font-family: 'PdfGujarati';
+            font-style: normal;
+            font-weight: 400;
+            src: url('<?php echo e($pdfFontUrl); ?>') format('truetype');
+        }
+        <?php endif; ?>
+
         @page {
             margin: 24mm 11mm 20mm 11mm;
         }
@@ -26,7 +39,7 @@
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: <?php echo e($pdfFontUrl ? "'PdfGujarati', 'DejaVu Sans'" : "'DejaVu Sans'"); ?>, sans-serif;
             font-size: 10.5px;
             line-height: 1.45;
             color: #1f2937;
@@ -58,6 +71,10 @@
 
         .page-break {
             page-break-before: always;
+        }
+
+        .page-break-after {
+            page-break-after: always;
         }
 
         /* ----- Ledger paper texture feel ----- */
@@ -130,7 +147,7 @@
         }
 
         table.cover-meta-table td.lbl {
-            width: 130px;
+            width: 120px;
             color: #7c6b52;
             font-weight: bold;
         }
@@ -344,6 +361,10 @@
             color: #faf7ef;
         }
 
+        table.data-table thead th .inr {
+            color: #faf7ef;
+        }
+
         table.data-table th {
             padding: 8px 7px;
             font-size: 9px;
@@ -463,57 +484,62 @@
     </style>
 </head>
 <body>
-    @php
-        $totalAmount   = $expenses->sum('amount');
-        $cashAmt       = $expenses->where('payment_method', 'cash')->sum('amount');
-        $gpayAmt       = $expenses->where('payment_method', 'gpay')->sum('amount');
-        $otherAmt      = $expenses->whereNotIn('payment_method', ['cash', 'gpay'])->sum('amount');
-        $totalEntries  = $expenses->count();
-        $cashCount     = $expenses->where('payment_method', 'cash')->count();
-        $gpayCount     = $expenses->where('payment_method', 'gpay')->count();
-        $otherCount    = $expenses->whereNotIn('payment_method', ['cash', 'gpay'])->count();
-    @endphp
+    <?php
+        $totalCollected = $entries->sum('amount');
+        $cashTotal  = $cash->sum('amount');
+        $gpayTotal  = $gpay->sum('amount');
+        $otherTotal = $other->sum('amount');
+        $gpayCount  = $gpay->count();
+        $otherCount = $other->count();
+    ?>
 
-    @if($hasLogo)
+    <?php if($hasLogo): ?>
         <div class="pdf-fixed-logo">
-            <img src="{{ $logoPath }}" alt="Chandla Book">
+            <img src="<?php echo e($logoPath); ?>" alt="Chandla Book">
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- ==================== PAGE 1: COVER ==================== -->
     <div class="cover-wrap">
         <div class="cover-frame">
             <div class="cover-frame-inner serif-title">
                 <div class="cover-band">
-                    <p class="cover-title-main">Event Expense Register</p>
+                    <p class="cover-title-main">Ganpati Chanda Register</p>
                 </div>
-                <p class="cover-title-sub">Financial ledger — event-wise expense report</p>
+                <p class="cover-title-sub">Traditional collection ledger — event summary</p>
 
                 <div class="cover-meta">
                 <table class="cover-meta-table">
                     <tr>
-                        <td class="lbl">Filter / Scope</td>
-                        <td class="val"><strong>{{ $filterLabel }}</strong></td>
+                        <td class="lbl">Event Title</td>
+                        <td class="val"><strong><?php echo e($event->title); ?></strong></td>
                     </tr>
-                    @if(!empty($selectedEvent))
+                    <?php if($event->event_date): ?>
                     <tr>
-                        <td class="lbl">Event Name</td>
-                        <td class="val">{{ $selectedEvent->title }}</td>
+                        <td class="lbl">Event Date</td>
+                        <td class="val"><?php echo e($event->event_date->format('l, F j, Y')); ?></td>
                     </tr>
-                    @endif
+                    <?php endif; ?>
+                    <?php if($event->venue): ?>
                     <tr>
-                        <td class="lbl">Total Expenses Paid</td>
+                        <td class="lbl">Venue / Address</td>
+                        <td class="val"><?php echo e($event->venue); ?></td>
+                    </tr>
+                    <?php endif; ?>
+                    <tr>
+                        <td class="lbl">Total Collected</td>
                         <td class="val" style="font-size:14px; font-weight:bold; color:#1a3646;">
-                            <span class="inr">Rs.</span> {{ number_format($totalAmount, 0) }}
+                            <span class="inr">Rs.</span> <?php echo e(number_format($totalCollected, 0)); ?>
+
                         </td>
                     </tr>
                     <tr>
-                        <td class="lbl">Total Expense Entries</td>
-                        <td class="val">{{ $totalEntries }} records</td>
+                        <td class="lbl">Total Entries</td>
+                        <td class="val"><?php echo e($entries->count()); ?> records</td>
                     </tr>
                     <tr>
                         <td class="lbl">Report Generated</td>
-                        <td class="val">{{ now()->format('d M Y, h:i A') }}</td>
+                        <td class="val"><?php echo e(now()->format('d M Y, h:i A')); ?></td>
                     </tr>
                 </table>
                 </div>
@@ -674,74 +700,71 @@
 
     <!-- ==================== PAGE 3+: SUMMARY & ENTRIES ==================== -->
     <div class="page-shell">
-        <h3 class="section-head"><span>Expense Summary</span></h3>
+        <h3 class="section-head"><span>Collection Summary</span></h3>
         <table class="summary-grid">
             <tr>
                 <td>
-                    <div class="summary-kicker">Cash Expenses</div>
-                    <div class="summary-num"><span class="inr">Rs.</span> {{ number_format($cashAmt, 0) }}</div>
-                    <div class="summary-note">({{ $cashCount }} entries)</div>
+                    <div class="summary-kicker">Cash Collected</div>
+                    <div class="summary-num"><span class="inr">Rs.</span> <?php echo e(number_format($cashTotal, 0)); ?></div>
                 </td>
                 <td>
                     <div class="summary-kicker">Digital (GPay / UPI)</div>
-                    <div class="summary-num"><span class="inr">Rs.</span> {{ number_format($gpayAmt, 0) }}</div>
-                    <div class="summary-note">({{ $gpayCount }} transactions)</div>
+                    <div class="summary-num"><span class="inr">Rs.</span> <?php echo e(number_format($gpayTotal, 0)); ?></div>
+                    <div class="summary-note">(<?php echo e($gpayCount); ?> transactions)</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Other Methods</div>
-                    <div class="summary-num"><span class="inr">Rs.</span> {{ number_format($otherAmt, 0) }}</div>
-                    <div class="summary-note">({{ $otherCount }} entries)</div>
+                    <div class="summary-num"><span class="inr">Rs.</span> <?php echo e(number_format($otherTotal, 0)); ?></div>
+                    <div class="summary-note">(<?php echo e($otherCount); ?> entries)</div>
                 </td>
             </tr>
         </table>
     </div>
 
-    @if($expenses->isEmpty())
+    <?php if($entries->isEmpty()): ?>
     <div class="page-shell">
-        <p style="text-align:center; padding:30px; color:#6b7280; font-style:italic;">No expenses recorded matching the selected filter.</p>
+        <p style="text-align:center; padding:30px; color:#6b7280; font-style:italic;">No entries recorded yet.</p>
     </div>
-    @else
+    <?php else: ?>
     
-    <!-- All Expenses Table -->
+    <!-- All Entries Table -->
     <div class="page-shell">
-        <h3 class="section-head"><span>All Expense Entries</span></h3>
+        <h3 class="section-head"><span>All Collection Entries</span></h3>
         <table class="data-table">
             <thead>
                 <tr>
                     <th style="width:25px; text-align:center;">#</th>
-                    <th>Title / Payee</th>
-                    <th>Event</th>
-                    <th>Category</th>
+                    <th>Donor Name & Address</th>
+                    <th>Phone</th>
                     <th>Method</th>
                     <th>Date</th>
                     <th style="width:75px; text-align:right;">Amount</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($expenses as $i => $row)
+                <?php $__currentLoopData = $entries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr>
-                    <td style="text-align:center; color:#9ca3af;">{{ $i + 1 }}</td>
+                    <td style="text-align:center; color:#9ca3af;"><?php echo e($i + 1); ?></td>
                     <td>
-                        <strong>{{ $row->title }}</strong>
-                        @if($row->payee_name)
-                            <br><span style="font-size:8.5px; color:#6b7280;">Payee: {{ $row->payee_name }}</span>
-                        @endif
+                        <strong><?php echo e($row->giver_name); ?></strong>
+                        <?php if($row->giver_address): ?>
+                            <br><span style="font-size:8.5px; color:#6b7280;"><?php echo e($row->giver_address); ?></span>
+                        <?php endif; ?>
                     </td>
-                    <td>{{ optional($row->event)->title ?? '-' }}</td>
-                    <td>{{ ucfirst($row->category ?? 'General') }}</td>
-                    <td>{{ strtoupper($row->payment_method ?? 'Cash') }}</td>
-                    <td>{{ optional($row->expense_date)->format('d/m/Y') }}</td>
-                    <td style="text-align:right; font-weight:bold;"><span class="inr">Rs.</span> {{ number_format((float)$row->amount, 0) }}</td>
+                    <td><?php echo e($row->giver_phone ?? '-'); ?></td>
+                    <td><?php echo e(strtoupper($row->payment_method ?? 'Other')); ?></td>
+                    <td><?php echo e(optional($row->received_date)->format('d/m/Y')); ?></td>
+                    <td style="text-align:right; font-weight:bold;"><span class="inr">Rs.</span> <?php echo e(number_format((float)$row->amount, 0)); ?></td>
                 </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <tr class="total-row">
-                    <td colspan="6" style="text-align:right; font-size:10px;">GRAND TOTAL EXPENSES</td>
-                    <td style="text-align:right;"><span class="inr">Rs.</span> {{ number_format($totalAmount, 0) }}</td>
+                    <td colspan="5" style="text-align:right; font-size:10px;">GRAND TOTAL COLLECTED</td>
+                    <td style="text-align:right;"><span class="inr">Rs.</span> <?php echo e(number_format($totalCollected, 0)); ?></td>
                 </tr>
             </tbody>
         </table>
     </div>
-    @endif
+    <?php endif; ?>
 
     <!-- ==================== LAST PAGE: CONTACT US ==================== -->
     <div class="contact-wrap">
@@ -795,3 +818,4 @@
 
 </body>
 </html>
+<?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/client/ganpati/pdf.blade.php ENDPATH**/ ?>

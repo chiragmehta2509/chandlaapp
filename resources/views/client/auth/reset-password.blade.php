@@ -21,7 +21,7 @@
 <body class="cb-app min-h-screen flex items-center justify-center px-4 py-10">
     <div class="cb-card w-full max-w-md p-6 sm:p-8">
         <div class="text-center mb-8">
-            <img src="{{ asset('images/chandla-logo.png') }}" alt="" class="h-16 w-auto mx-auto mb-3">
+            <img src="{{ asset('images/logo.jpeg') }}" alt="" class="h-16 w-auto mx-auto mb-3">
             <h1 class="text-2xl font-bold text-cb-navy">Reset password</h1>
             <p class="text-slate-600 text-sm mt-1">Choose a new password for your account.</p>
         </div>

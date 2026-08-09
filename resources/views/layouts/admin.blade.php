@@ -18,7 +18,7 @@
     <div id="cb-loader-overlay" class="cb-loader-overlay--visible" role="status" aria-live="polite" aria-hidden="false" style="position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 1rem; transition: opacity 0.18s ease, visibility 0.18s ease;">
         <div class="cb-loader-overlay__panel">
             <div class="cb-loader-logo-container">
-                <img src="{{ asset('images/chandla-favicon.png') }}" alt="Chandla Book" class="cb-loader-logo">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Chandla Book" class="cb-loader-logo">
                 <span class="cb-loader-overlay__spinner">
                     <svg class="cb-loader-spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
@@ -35,7 +35,7 @@
     <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-indigo-900 to-indigo-800 text-white transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0" id="sidebar">
         <div class="flex items-center justify-between h-16 px-6 border-b border-indigo-700">
             <div class="flex items-center">
-                <img src="{{ asset('images/chandla-favicon.png') }}" alt="Vaish" class="h-9 w-auto mr-2">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Vaish" class="h-9 w-auto mr-2">
                 <h1 class="text-xl font-bold">Chandla Book</h1>
             </div>
             <button id="sidebarToggle" class="lg:hidden">

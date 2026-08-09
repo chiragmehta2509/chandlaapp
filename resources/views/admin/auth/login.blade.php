@@ -12,7 +12,7 @@
 <body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center">
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
         <div class="text-center mb-8">
-            <img src="{{ asset('images/chandla-favicon.png') }}" alt="Vaish" class="h-20 w-auto mx-auto mb-3">
+            <img src="{{ asset('images/logo.jpeg') }}" alt="Vaish" class="h-20 w-auto mx-auto mb-3">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Chandla Book</h1>
             <p class="text-gray-600">Admin Panel</p>
         </div>

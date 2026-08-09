@@ -1,9 +1,9 @@
-@extends('layouts.client')
 
-@section('title', 'Events')
 
-@section('content')
-@php
+<?php $__env->startSection('title', 'Events'); ?>
+
+<?php $__env->startSection('content'); ?>
+<?php
     $hasFilters = trim((string) request('search')) !== '' || trim((string) request('status')) !== '';
     $eventsStatusLabels = [
         '' => 'All events',
@@ -15,7 +15,7 @@
     if (! array_key_exists($eventsStatusValue, $eventsStatusLabels)) {
         $eventsStatusValue = '';
     }
-@endphp
+?>
 
 <div class="mb-6 sm:mb-8 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5 min-w-0 flex-1">
@@ -28,13 +28,13 @@
             <p class="cb-subtitle mt-1.5 max-w-xl text-sm sm:text-base leading-relaxed">Create and manage your occasions — search and filter below.</p>
         </div>
     </div>
-    @canEdit
-    <a href="{{ route('client.events.create') }}"
+    <?php if (\Illuminate\Support\Facades\Blade::check('canEdit')): ?>
+    <a href="<?php echo e(route('client.events.create')); ?>"
        class="cb-btn cb-btn-gold inline-flex items-center justify-center gap-2 w-full lg:w-auto shrink-0 min-h-[2.75rem] px-5 shadow-md touch-manipulation">
         <i class="fas fa-plus text-sm" aria-hidden="true"></i>
         <span>Create event</span>
     </a>
-    @endcanEdit
+    <?php endif; ?>
 </div>
 
 <div class="cb-card relative z-10 overflow-visible border border-slate-200/80 shadow-sm rounded-2xl mb-6 sm:mb-8">
@@ -42,7 +42,7 @@
         <h2 class="text-sm font-bold text-cb-navy tracking-wide">Search &amp; filter</h2>
         <p class="text-xs sm:text-sm text-slate-600 mt-1">Find events by title or narrow by status.</p>
     </div>
-    <form method="GET" action="{{ route('client.events.index') }}" class="p-4 sm:p-5 lg:p-6">
+    <form method="GET" action="<?php echo e(route('client.events.index')); ?>" class="p-4 sm:p-5 lg:p-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-12 gap-4 xl:gap-5 xl:items-end">
             <div class="sm:col-span-2 xl:col-span-5 space-y-1.5 min-w-0">
                 <label for="events-search" class="block text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Search</label>
@@ -53,7 +53,7 @@
                     <input id="events-search"
                            type="search"
                            name="search"
-                           value="{{ request('search') }}"
+                           value="<?php echo e(request('search')); ?>"
                            placeholder="Search by title or venue…"
                            autocomplete="off"
                            class="cb-field w-full min-h-[2.75rem] pl-10 pr-3 text-base sm:text-sm">
@@ -67,9 +67,9 @@
                             class="sr-only"
                             tabindex="-1"
                             aria-labelledby="events-status-label-text">
-                        @foreach($eventsStatusLabels as $val => $lbl)
-                            <option value="{{ $val }}" {{ $eventsStatusValue === $val ? 'selected' : '' }}>{{ $lbl }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $eventsStatusLabels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $lbl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($val); ?>" <?php echo e($eventsStatusValue === $val ? 'selected' : ''); ?>><?php echo e($lbl); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                     <button type="button"
                             id="events-status-trigger"
@@ -78,31 +78,31 @@
                             aria-expanded="false"
                             aria-controls="events-status-listbox"
                             aria-labelledby="events-status-label-text">
-                        <span class="js-events-status-text min-w-0 truncate">{{ $eventsStatusLabels[$eventsStatusValue] }}</span>
+                        <span class="js-events-status-text min-w-0 truncate"><?php echo e($eventsStatusLabels[$eventsStatusValue]); ?></span>
                         <i class="fas fa-chevron-down inline-block shrink-0 text-[0.7rem] text-slate-500 transition-[transform,color] duration-200 group-hover:text-[var(--cb-navy)] js-events-status-chev" style="transform: rotate(0deg)" aria-hidden="true"></i>
                     </button>
                     <ul id="events-status-listbox"
                         role="listbox"
                         class="absolute left-0 right-0 top-full z-[80] mt-2 hidden max-h-60 overflow-auto rounded-xl border border-slate-200/95 bg-white py-1 shadow-xl shadow-slate-900/15 ring-1 ring-black/[0.06] dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200"
                         aria-labelledby="events-status-label-text">
-                        @foreach($eventsStatusLabels as $val => $lbl)
+                        <?php $__currentLoopData = $eventsStatusLabels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $lbl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <li role="option"
                                 tabindex="-1"
-                                data-value="{{ $val }}"
-                                aria-selected="{{ $eventsStatusValue === $val ? 'true' : 'false' }}"
+                                data-value="<?php echo e($val); ?>"
+                                aria-selected="<?php echo e($eventsStatusValue === $val ? 'true' : 'false'); ?>"
                                 class="events-status-opt">
-                                @if($val === 'upcoming')
+                                <?php if($val === 'upcoming'): ?>
                                     <i class="fas fa-calendar-plus w-4 shrink-0 text-center opacity-80" aria-hidden="true"></i>
-                                @elseif($val === 'past')
+                                <?php elseif($val === 'past'): ?>
                                     <i class="fas fa-clock-rotate-left w-4 shrink-0 text-center opacity-80" aria-hidden="true"></i>
-                                @elseif($val === 'archived')
+                                <?php elseif($val === 'archived'): ?>
                                     <i class="fas fa-box-archive w-4 shrink-0 text-center opacity-80" aria-hidden="true"></i>
-                                @else
+                                <?php else: ?>
                                     <i class="fas fa-layer-group w-4 shrink-0 text-center opacity-80" aria-hidden="true"></i>
-                                @endif
-                                <span>{{ $lbl }}</span>
+                                <?php endif; ?>
+                                <span><?php echo e($lbl); ?></span>
                             </li>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
             </div>
@@ -112,32 +112,32 @@
                     <i class="fas fa-search text-sm opacity-90" aria-hidden="true"></i>
                     <span>Apply</span>
                 </button>
-                @if($hasFilters)
-                    <a href="{{ route('client.events.index') }}"
+                <?php if($hasFilters): ?>
+                    <a href="<?php echo e(route('client.events.index')); ?>"
                        class="cb-btn cb-btn--ghost inline-flex flex-1 items-center justify-center min-h-[2.25rem] py-1.5 text-sm touch-manipulation whitespace-nowrap">
                         Clear
                     </a>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </form>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-    @forelse($events as $event)
+    <?php $__empty_1 = true; $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
         <article class="cb-card overflow-hidden border border-slate-200/80 rounded-2xl p-5 sm:p-6 flex flex-col hover:shadow-lg hover:border-slate-200 transition-all duration-200">
-            @if(isset($authUser) && $authUser->isFamilyMember())
-                @if($event->user_id === $authUser->id)
+            <?php if(isset($authUser) && $authUser->isFamilyMember()): ?>
+                <?php if($event->user_id === $authUser->id): ?>
                     <span class="mb-3 self-start inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                         <i class="fas fa-user text-[9px]"></i> My Event
                     </span>
-                @else
+                <?php else: ?>
                     <span class="mb-3 self-start inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
                         <i class="fas fa-users text-[9px]"></i> Family
                     </span>
-                @endif
-            @endif
-            @php
+                <?php endif; ?>
+            <?php endif; ?>
+            <?php
                 $typeName = optional($event->eventType)->name ?? ucfirst($event->event_type ?? 'Other');
                 $typeSlug = optional($event->eventType)->slug ?? ($event->event_type ?? 'other');
                 $typeBadge = match(true) {
@@ -147,111 +147,116 @@
                     str_contains($typeSlug, 'ganpati') => ['icon' => 'fa-om', 'style' => 'background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(234, 179, 8, 0.2)); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.4); box-shadow: 0 0 10px rgba(249, 115, 22, 0.2);'],
                     default => ['icon' => 'fa-calendar-star', 'style' => 'background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3);'],
                 };
-            @endphp
-            <span class="mb-2 self-start inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border" style="{{ $typeBadge['style'] }}">
-                <i class="fas {{ $typeBadge['icon'] }} text-[10px]"></i> {{ $typeName }}
+            ?>
+            <span class="mb-2 self-start inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border" style="<?php echo e($typeBadge['style']); ?>">
+                <i class="fas <?php echo e($typeBadge['icon']); ?> text-[10px]"></i> <?php echo e($typeName); ?>
+
             </span>
-            <h3 class="text-lg font-bold text-cb-navy mb-2 leading-snug">{{ $event->title }}</h3>
-            <p class="text-slate-600 text-sm mb-4 flex-1">{{ Str::limit($event->description, 100) }}</p>
+            <h3 class="text-lg font-bold text-cb-navy mb-2 leading-snug"><?php echo e($event->title); ?></h3>
+            <p class="text-slate-600 text-sm mb-4 flex-1"><?php echo e(Str::limit($event->description, 100)); ?></p>
             <div class="space-y-2 mb-4 text-sm text-slate-600">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-calendar text-cb-gold w-4 shrink-0"></i>
-                    {{ $event->event_date->format('d/m/Y') }}
+                    <?php echo e($event->event_date->format('d/m/Y')); ?>
+
                 </div>
-                @if($event->event_time)
+                <?php if($event->event_time): ?>
                 <div class="flex items-center gap-2">
                     <i class="fas fa-clock text-cb-gold w-4 shrink-0"></i>
-                    {{ $event->event_time->format('h:i A') }}
+                    <?php echo e($event->event_time->format('h:i A')); ?>
+
                 </div>
-                @endif
-                @if($event->venue)
+                <?php endif; ?>
+                <?php if($event->venue): ?>
                 <div class="flex items-start gap-2">
                     <i class="fas fa-map-marker-alt text-cb-gold w-4 shrink-0 mt-0.5"></i>
-                    <span>{{ $event->venue }}</span>
+                    <span><?php echo e($event->venue); ?></span>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
-            @if(!$event->is_archived)
+            <?php if(!$event->is_archived): ?>
             <div class="mb-4 flex flex-wrap gap-2">
-                @canEdit
-                <a href="{{ route('client.chandlas.create', ['event_id' => $event->id]) }}"
+                <?php if (\Illuminate\Support\Facades\Blade::check('canEdit')): ?>
+                <a href="<?php echo e(route('client.chandlas.create', ['event_id' => $event->id])); ?>"
                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-violet-100 text-violet-800 hover:bg-violet-200">
                     <i class="fas fa-plus mr-1.5"></i>Chandla
                 </a>
-                <a href="{{ route('client.chandlas.create', ['event_id' => $event->id, 'lock_cash' => 1]) }}"
+                <a href="<?php echo e(route('client.chandlas.create', ['event_id' => $event->id, 'lock_cash' => 1])); ?>"
                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-sky-100 text-sky-800 hover:bg-sky-200">
                     <i class="fas fa-file-invoice mr-1.5"></i>Cover
                 </a>
-                @endcanEdit
-                @if($event->hasDirectGpayQrUnlocked())
+                <?php endif; ?>
+                <?php if($event->hasDirectGpayQrUnlocked()): ?>
                 <button type="button"
                         class="direct-gpay-open inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 hover:bg-emerald-200"
-                        data-event-id="{{ $event->id }}"
-                        data-upi-id="{{ $event->upi_id ?? '' }}"
-                        data-save-url="{{ route('client.events.direct-gpay.upi', $event->id) }}"
-                        data-qr-url="{{ route('client.events.direct-gpay.qr', $event->id) }}"
-                        data-pay-url="{{ route('public.direct-gpay', $event->id) }}"
+                        data-event-id="<?php echo e($event->id); ?>"
+                        data-upi-id="<?php echo e($event->upi_id ?? ''); ?>"
+                        data-save-url="<?php echo e(route('client.events.direct-gpay.upi', $event->id)); ?>"
+                        data-qr-url="<?php echo e(route('client.events.direct-gpay.qr', $event->id)); ?>"
+                        data-pay-url="<?php echo e(route('public.direct-gpay', $event->id)); ?>"
                         title="Direct QR for your Event to display on invitation card. User can pay using direct QR and upload screenshots.">
                     <i class="fas fa-qrcode mr-1.5"></i>Direct QR
                 </button>
-                @elseif($event->hasDirectGpayUnlockPending())
-                <a href="{{ route('client.events.direct-gpay-unlock.show', $event) }}"
+                <?php elseif($event->hasDirectGpayUnlockPending()): ?>
+                <a href="<?php echo e(route('client.events.direct-gpay-unlock.show', $event)); ?>"
                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200"
                    title="Direct QR for your Event to display on invitation card. User can pay using direct QR and upload screenshots.">
                     <i class="fas fa-hourglass-half mr-1.5"></i>Direct QR — pending
                 </a>
-                @else
-                <a href="{{ route('client.events.direct-gpay-unlock.show', $event) }}"
+                <?php else: ?>
+                <a href="<?php echo e(route('client.events.direct-gpay-unlock.show', $event)); ?>"
                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 hover:bg-emerald-200"
                    title="Direct QR for your Event to display on invitation card. User can pay using direct QR and upload screenshots.">
-                    <i class="fas fa-lock-open mr-1.5"></i>Unlock Direct QR (₹{{ number_format((float) config('services.direct_gpay_unlock.amount', 400), 0) }})
+                    <i class="fas fa-lock-open mr-1.5"></i>Unlock Direct QR (₹<?php echo e(number_format((float) config('services.direct_gpay_unlock.amount', 400), 0)); ?>)
                 </a>
-                @endif
+                <?php endif; ?>
             </div>
-            @endif
+            <?php endif; ?>
             <div class="flex justify-between items-center gap-3 pt-3 border-t border-slate-100 mt-auto">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 {{ $event->is_archived ? 'bg-slate-100 text-slate-700' : 'bg-emerald-100 text-emerald-800' }}">
-                    {{ $event->is_archived ? 'Archived' : 'Active' }}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 <?php echo e($event->is_archived ? 'bg-slate-100 text-slate-700' : 'bg-emerald-100 text-emerald-800'); ?>">
+                    <?php echo e($event->is_archived ? 'Archived' : 'Active'); ?>
+
                 </span>
                 <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-                    <a href="{{ route('client.events.show', $event->id) }}" class="inline-flex min-h-[2.5rem] min-w-[2.5rem] items-center justify-center rounded-lg text-cb-gold hover:bg-amber-50 transition-colors" title="View" aria-label="View event">
+                    <a href="<?php echo e(route('client.events.show', $event->id)); ?>" class="inline-flex min-h-[2.5rem] min-w-[2.5rem] items-center justify-center rounded-lg text-cb-gold hover:bg-amber-50 transition-colors" title="View" aria-label="View event">
                         <i class="fas fa-eye"></i>
                     </a>
-                    @canEdit
-                    <a href="{{ route('client.events.edit', $event->id) }}" class="inline-flex min-h-[2.5rem] min-w-[2.5rem] items-center justify-center rounded-lg text-sky-600 hover:bg-sky-50 transition-colors" title="Edit" aria-label="Edit event">
+                    <?php if (\Illuminate\Support\Facades\Blade::check('canEdit')): ?>
+                    <a href="<?php echo e(route('client.events.edit', $event->id)); ?>" class="inline-flex min-h-[2.5rem] min-w-[2.5rem] items-center justify-center rounded-lg text-sky-600 hover:bg-sky-50 transition-colors" title="Edit" aria-label="Edit event">
                         <i class="fas fa-edit"></i>
                     </a>
-                    @endcanEdit
-                    @canDelete
-                    <form action="{{ route('client.events.destroy', $event->id) }}" method="POST" class="inline-flex items-center" onsubmit="return confirm('Are you sure?')">
-                        @csrf
-                        @method('DELETE')
+                    <?php endif; ?>
+                    <?php if (\Illuminate\Support\Facades\Blade::check('canDelete')): ?>
+                    <form action="<?php echo e(route('client.events.destroy', $event->id)); ?>" method="POST" class="inline-flex items-center" onsubmit="return confirm('Are you sure?')">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('DELETE'); ?>
                         <button type="submit" class="inline-flex min-h-[2.5rem] min-w-[2.5rem] items-center justify-center rounded-lg text-red-600 hover:bg-red-50 transition-colors" title="Delete" aria-label="Delete event">
                             <i class="fas fa-trash"></i>
                         </button>
                     </form>
-                    @endcanDelete
+                    <?php endif; ?>
                 </div>
             </div>
         </article>
-    @empty
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <div class="col-span-full text-center py-14 px-4 cb-card rounded-2xl border border-dashed border-slate-200 bg-slate-50/40">
             <i class="fas fa-calendar-times text-slate-300 text-5xl mb-4"></i>
             <p class="text-slate-600 text-lg">No events found</p>
-            <a href="{{ route('client.events.create') }}" class="cb-link mt-4 inline-block">Create your first event</a>
+            <a href="<?php echo e(route('client.events.create')); ?>" class="cb-link mt-4 inline-block">Create your first event</a>
         </div>
-    @endforelse
+    <?php endif; ?>
 </div>
 
 <div class="mt-8 flex justify-center px-2 pb-2 overflow-x-auto">
-    {{ $events->links() }}
+    <?php echo e($events->links()); ?>
+
 </div>
 
-@canEdit
-<a href="{{ route('client.events.create') }}" class="cb-fab" title="New event" aria-label="New event">
+<?php if (\Illuminate\Support\Facades\Blade::check('canEdit')): ?>
+<a href="<?php echo e(route('client.events.create')); ?>" class="cb-fab" title="New event" aria-label="New event">
     <i class="fas fa-plus"></i>
 </a>
-@endcanEdit
+<?php endif; ?>
 
 <div id="direct-gpay-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-900/50" aria-hidden="true" role="dialog" aria-labelledby="direct-gpay-modal-title">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6">
@@ -286,7 +291,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 (function () {
     const modal = document.getElementById('direct-gpay-modal');
@@ -298,7 +303,7 @@
     const dlQr = document.getElementById('direct-gpay-download-qr');
     const copyBtn = document.getElementById('direct-gpay-copy-link');
     const payUrlEl = document.getElementById('direct-gpay-pay-url');
-    const csrf = @json(csrf_token());
+    const csrf = <?php echo json_encode(csrf_token(), 15, 512) ?>;
     let state = { saveUrl: '', qrUrl: '', payUrl: '' };
 
     function openModal() {
@@ -469,5 +474,7 @@
     }
 })();
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.client', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/client/events/index.blade.php ENDPATH**/ ?>

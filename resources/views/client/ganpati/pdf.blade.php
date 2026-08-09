@@ -12,8 +12,9 @@
         }
         $logoPath = null;
         foreach (['images/logo.jpeg', 'images/logo.png', 'images/chandla-logo.png', 'images/chandla-logo.jpg'] as $img) {
-            if (file_exists(public_path($img))) {
-                $logoPath = public_path($img);
+            $potentialPath = public_path($img);
+            if (file_exists($potentialPath)) {
+                $logoPath = 'file://' . str_replace('\\', '/', $potentialPath);
                 break;
             }
         }
@@ -56,14 +57,14 @@
 
         .pdf-fixed-logo {
             position: fixed;
-            top: 5mm;
-            right: 10mm;
+            top: -18mm;
+            right: 0;
             z-index: 1000;
             text-align: right;
         }
 
         .pdf-fixed-logo img {
-            height: 32px;
+            height: 46px;
             width: auto;
             display: block;
         }
@@ -550,14 +551,14 @@
         </div>
     </div>
 
-    <!-- ==================== PAGE 2: OUR PLANS ==================== -->
+    <!-- ==================== PAGE 2: OUR PLANS (1 of 2) ==================== -->
     <div class="plans-wrap">
         <div class="plans-header">
             <h2>Chandla Book — Our Membership Plans</h2>
-            <p>Digitalize your weddings, family functions, and community events with ease & full security</p>
+            <p>Digitalize your weddings, family functions, and community events with ease &amp; full security</p>
         </div>
 
-        <!-- 2x2 Grid for Plans -->
+        <!-- Row 1: Starter + Celebration -->
         <table class="plans-grid">
             <tr>
                 <td class="plan-card">
@@ -568,25 +569,68 @@
                     <ul class="plan-features">
                         <li>1 Event Limit</li>
                         <li>Up to 50 Gift / Chandla Entries</li>
-                        <li>Cash & Cover Tracking</li>
+                        <li>Cash &amp; Cover Tracking</li>
                         <li>Standard PDF Export</li>
+                        <li>3 Family Viewers (Read Only)</li>
                     </ul>
                 </td>
 
-                <td class="plan-card featured">
-                    <span class="plan-badge">Popular</span>
-                    <div class="plan-name">Host Plus Plan</div>
-                    <div class="plan-price">Rs. 500 <span class="period">/ event pack</span></div>
-                    <div class="plan-desc">Manage multiple events with unlimited ledger entries & hosting tools.</div>
+                <td class="plan-card">
+                    <span class="plan-badge">Best Value</span>
+                    <div class="plan-name">Celebration Pack</div>
+                    <div class="plan-price">Rs. 300 <span class="period">/ one-time</span></div>
+                    <div class="plan-desc">Enhance your celebration with printable invitations and graphic studio assets.</div>
                     <ul class="plan-features">
-                        <li>Up to 2 Events</li>
+                        <li>Marriage Invitation Templates</li>
+                        <li>Printable Invitation Designs</li>
+                        <li>Pre-Wedding Video Creator</li>
+                        <li>Event Countdown Studio</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Row 2: Guest Contribution + Host Plus -->
+        <table class="plans-grid">
+            <tr>
+                <td class="plan-card featured">
+                    <span class="plan-badge">Recommended</span>
+                    <div class="plan-name">Guest Contribution</div>
+                    <div class="plan-price">Rs. 400 <span class="period">/ one-time</span></div>
+                    <div class="plan-desc">Direct payment collections and unlimited ledger entries for your single event.</div>
+                    <ul class="plan-features">
+                        <li>Personal UPI / QR Collection</li>
+                        <li><strong>Unlimited Entries</strong> (Single Event)</li>
+                        <li>Guest Payment Tracking &amp; Log</li>
+                        <li>Detailed Full Event PDF Export</li>
+                    </ul>
+                </td>
+
+                <td class="plan-card">
+                    <span class="plan-badge">Great Value</span>
+                    <div class="plan-name">Host Plus Plan</div>
+                    <div class="plan-price">Rs. 500 <span class="period">/ one-time</span></div>
+                    <div class="plan-desc">Manage multiple events with unlimited ledger entries &amp; hosting tools.</div>
+                    <ul class="plan-features">
+                        <li>Up to <strong>2 Events</strong></li>
                         <li><strong>Unlimited Entries</strong> (All Events)</li>
                         <li>Personal UPI / QR Payment Collection</li>
                         <li>Full PDF Ledger Downloads</li>
                     </ul>
                 </td>
             </tr>
+        </table>
+    </div>
 
+    <!-- ==================== PAGE 3: OUR PLANS (2 of 2) ==================== -->
+    <div class="plans-wrap">
+        <div class="plans-header">
+            <h2>Chandla Book — Plans (Continued)</h2>
+            <p>Higher tier plans with advanced features, family editors, and enterprise-level support</p>
+        </div>
+
+        <!-- Row 3: Family + Premium Host -->
+        <table class="plans-grid">
             <tr>
                 <td class="plan-card">
                     <span class="plan-badge">Family Pick</span>
@@ -602,15 +646,46 @@
                 </td>
 
                 <td class="plan-card featured">
-                    <span class="plan-badge">Flagship</span>
+                    <span class="plan-badge">Most Popular</span>
                     <div class="plan-name">Premium Host</div>
                     <div class="plan-price">Rs. 700 <span class="period">/ complete bundle</span></div>
-                    <div class="plan-desc">Our flagship plan with custom invitation templates, reel studio & support.</div>
+                    <div class="plan-desc">Our flagship plan with custom invitation templates, reel studio &amp; support.</div>
                     <ul class="plan-features">
-                        <li>Up to 3 Events & Unlimited Entries</li>
-                        <li>Premium Invitation & Video Templates</li>
-                        <li>Priority WhatsApp & Phone Support</li>
-                        <li>Full Data Export & Custom Reports</li>
+                        <li>Up to <strong>3 Events</strong> &amp; Unlimited Entries</li>
+                        <li>Premium Invitation &amp; Video Templates</li>
+                        <li>Priority WhatsApp &amp; Phone Support</li>
+                        <li>Full Data Export &amp; Custom Reports</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Row 4: Professional + Enterprise -->
+        <table class="plans-grid">
+            <tr>
+                <td class="plan-card">
+                    <span class="plan-badge">Professional</span>
+                    <div class="plan-name">Professional</div>
+                    <div class="plan-price">Rs. 999 <span class="period">/ one-time</span></div>
+                    <div class="plan-desc">For power users and professional coordinators running multiple large events.</div>
+                    <ul class="plan-features">
+                        <li>Up to <strong>10 Events</strong></li>
+                        <li>Unlimited Family Editors</li>
+                        <li>Custom Branding &amp; Reports</li>
+                        <li>Priority Support Channel</li>
+                    </ul>
+                </td>
+
+                <td class="plan-card featured">
+                    <span class="plan-badge">Enterprise</span>
+                    <div class="plan-name">Enterprise</div>
+                    <div class="plan-price">Custom <span class="period">/ contact sales</span></div>
+                    <div class="plan-desc">Bespoke integration, white labeling, and dedicated hosting for large organizations.</div>
+                    <ul class="plan-features">
+                        <li>Unlimited Events &amp; Entries</li>
+                        <li>White Label / Custom Branding</li>
+                        <li>Dedicated Account Manager</li>
+                        <li>SLA &amp; Priority Infrastructure</li>
                     </ul>
                 </td>
             </tr>
@@ -709,15 +784,23 @@
                 </tr>
                 <tr>
                     <td class="c-label">Customer Support Phone</td>
-                    <td class="c-val">+91 78619 76671 (WhatsApp & Voice Call)</td>
+                    <td class="c-val">+91 78619 76671 (WhatsApp &amp; Voice Call)</td>
+                </tr>
+                <tr>
+                    <td class="c-label">Alternative Phone</td>
+                    <td class="c-val">+91 8200067737</td>
                 </tr>
                 <tr>
                     <td class="c-label">Support Email</td>
                     <td class="c-val">chandlabook@gmail.com / support@chandlabook.in</td>
                 </tr>
                 <tr>
+                    <td class="c-label">Alternative Email</td>
+                    <td class="c-val">info.ksky@gmail.com</td>
+                </tr>
+                <tr>
                     <td class="c-label">Mobile App Availability</td>
-                    <td class="c-val">Available on <strong>Android Play Store</strong> & <strong>Apple App Store</strong></td>
+                    <td class="c-val">Available on <strong>Android Play Store</strong> &amp; <strong>Apple App Store</strong></td>
                 </tr>
                 <tr>
                     <td class="c-label">Company Address</td>

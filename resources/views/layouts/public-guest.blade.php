@@ -27,7 +27,7 @@
     <div id="cb-loader-overlay" class="cb-loader-overlay--visible" role="status" aria-live="polite" aria-hidden="false" style="position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 1rem; transition: opacity 0.18s ease, visibility 0.18s ease;">
         <div class="cb-loader-overlay__panel">
             <div class="cb-loader-logo-container">
-                <img src="{{ asset('images/chandla-favicon.png') }}" alt="Chandla Book" class="cb-loader-logo">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Chandla Book" class="cb-loader-logo">
                 <span class="cb-loader-overlay__spinner">
                     <svg class="cb-loader-spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
@@ -42,7 +42,7 @@
 
     <header class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-4 flex items-center justify-between shrink-0">
         <a href="{{ route('public.home') }}" class="flex items-center gap-2 sm:gap-3 group">
-            <img src="{{ asset('images/chandla-favicon.png') }}" alt="Chandla Book" class="h-10 sm:h-12 w-auto" width="48" height="48" decoding="async">
+            <img src="{{ asset('images/logo.jpeg') }}" alt="Chandla Book" class="h-10 sm:h-12 w-auto" width="48" height="48" decoding="async">
             <span class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-white/90">Chandla Book</span>
         </a>
         <div class="flex items-center gap-4">

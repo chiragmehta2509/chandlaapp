@@ -17,7 +17,7 @@
     <div class="relative z-10 max-w-md mx-auto px-4 sm:px-5 py-8 sm:py-12">
         <header class="text-center mb-6">
             <a href="{{ route('public.home') }}" class="inline-flex flex-col items-center gap-2 no-underline">
-                <img src="{{ file_exists(public_path('images/chandla-favicon.png')) ? asset('images/chandla-favicon.png') : asset('images/chandla-favicon.png') }}"
+                <img src="{{ asset('images/logo.jpeg') }}"
                      width="64" height="64" class="h-16 w-16 object-contain drop-shadow-md" alt="Chandla Book">
                 <span class="text-white/90 text-sm font-bold tracking-tight">Chandla Book</span>
             </a>

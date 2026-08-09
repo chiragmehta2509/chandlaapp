@@ -19,7 +19,7 @@
             <a href="{{ route('public.home') }}" class="inline-flex flex-col items-center gap-3 group no-underline">
                 <div class="relative">
                     <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-indigo-500/30 to-fuchsia-500/30 blur-md opacity-80 group-hover:opacity-100 transition"></div>
-                    <img src="{{ file_exists(public_path('images/chandla-favicon.png')) ? asset('images/chandla-favicon.png') : asset('images/chandla-favicon.png') }}"
+                    <img src="{{ asset('images/logo.jpeg') }}"
                          width="80" height="80"
                          class="relative h-20 w-20 object-contain drop-shadow-lg"
                          alt="Chandla Book">

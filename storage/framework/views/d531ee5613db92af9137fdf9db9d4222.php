@@ -11,29 +11,29 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard') - Chandla Book</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/chandla-favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/chandla-app-icon.png') }}">
+    <title><?php echo $__env->yieldContent('title', 'Dashboard'); ?> - Chandla Book</title>
+    <link rel="icon" type="image/png" href="<?php echo e(asset('images/chandla-favicon.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('images/chandla-app-icon.png')); ?>">
     <meta name="theme-color" content="#1a3646">
-    <link rel="stylesheet" href="{{ asset('css/tailwind.css') }}?v=4">
-    <link rel="stylesheet" href="{{ asset('css/chandla-client.css') }}?v=12">
-    <link rel="stylesheet" href="{{ asset('css/ganpati.css') }}?v=1">
-    <link rel="stylesheet" href="{{ asset('css/cb-loader.css') }}?v=2">
+    <link rel="stylesheet" href="<?php echo e(asset('css/tailwind.css')); ?>?v=4">
+    <link rel="stylesheet" href="<?php echo e(asset('css/chandla-client.css')); ?>?v=12">
+    <link rel="stylesheet" href="<?php echo e(asset('css/ganpati.css')); ?>?v=1">
+    <link rel="stylesheet" href="<?php echo e(asset('css/cb-loader.css')); ?>?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="{{ asset('js/cb-loader.js') }}?v=2" defer></script>
+    <script src="<?php echo e(asset('js/cb-loader.js')); ?>?v=2" defer></script>
     <style>
         .cb-user-menu > summary { list-style: none; }
         .cb-user-menu > summary::-webkit-details-marker { display: none; }
         .cb-user-menu[open] > summary .cb-user-menu-chev { transform: rotate(180deg); }
     </style>
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 <body class="cb-app min-h-screen flex flex-col">
     <!-- Global Preloader -->
     <div id="cb-loader-overlay" class="cb-loader-overlay--visible" role="status" aria-live="polite" aria-hidden="false" style="position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 1rem; transition: opacity 0.18s ease, visibility 0.18s ease;">
         <div class="cb-loader-overlay__panel">
             <div class="cb-loader-logo-container">
-                <img src="{{ asset('images/logo.jpeg') }}" alt="Chandla Book" class="cb-loader-logo">
+                <img src="<?php echo e(asset('images/logo.jpeg')); ?>" alt="Chandla Book" class="cb-loader-logo">
                 <span class="cb-loader-overlay__spinner">
                     <svg class="cb-loader-spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
@@ -50,21 +50,21 @@
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
             <div class="flex h-14 sm:h-16 items-center justify-between gap-2">
                 <div class="flex items-center min-w-0 flex-1">
-                    <a href="{{ route('client.dashboard') }}" class="flex items-center min-w-0 group">
-                        <img src="{{ asset('images/logo.jpeg') }}" alt="Chandla Book" class="h-8 w-auto sm:h-10 shrink-0 opacity-90 group-hover:opacity-100" width="40" height="40">
+                    <a href="<?php echo e(route('client.dashboard')); ?>" class="flex items-center min-w-0 group">
+                        <img src="<?php echo e(asset('images/logo.jpeg')); ?>" alt="Chandla Book" class="h-8 w-auto sm:h-10 shrink-0 opacity-90 group-hover:opacity-100" width="40" height="40">
                         <span class="cb-brand-title text-lg sm:text-2xl ml-2 sm:ml-3 truncate">Chandla Book</span>
                     </a>
                 </div>
                 <nav class="hidden md:flex items-center gap-1 flex-wrap justify-end" aria-label="Main">
-                    <a href="{{ route('client.events.index') }}" class="cb-nav-item {{ request()->routeIs('client.events.*') ? 'cb-nav-item--active' : '' }}">Events</a>
-                    <a href="{{ route('client.chandlas.index') }}" class="cb-nav-item {{ request()->routeIs('client.chandlas.*') ? 'cb-nav-item--active' : '' }}">Ledger</a>
-                    <a href="{{ route('client.expenses.index') }}" class="cb-nav-item {{ request()->routeIs('client.expenses.*') ? 'cb-nav-item--active' : '' }}">💸 Expenses</a>
-                    <a href="{{ route('client.ganpati.index') }}" class="cb-nav-item cb-nav-item--ganpati {{ request()->routeIs('client.ganpati.*') ? 'cb-nav-item--active' : '' }}" style="color: #ea6d0e;">🪔 Ganpati Special</a>
-                    <a href="{{ route('client.contacts.index') }}" class="cb-nav-item {{ request()->routeIs('client.contacts.*') ? 'cb-nav-item--active' : '' }}">Contacts</a>
-                    <a href="{{ route('client.marriage-invitations.index') }}" class="cb-nav-item {{ request()->routeIs('client.marriage-invitations.*') ? 'cb-nav-item--active' : '' }}">Invitation</a>
-                    <a href="{{ route('client.pre-wedding.index') }}" class="cb-nav-item {{ request()->routeIs('client.pre-wedding.*') ? 'cb-nav-item--active' : '' }}">Pre-wedding</a>
-                    <a href="{{ route('client.plans') }}" class="cb-nav-item {{ request()->routeIs('client.plans') ? 'cb-nav-item--active' : '' }}">Plans</a>
-                    {{-- <a href="{{ route('client.matrimonial.index') }}" class="cb-nav-item {{ request()->routeIs('client.matrimonial.*') ? 'cb-nav-item--active' : '' }}">Find Partner</a> --}}
+                    <a href="<?php echo e(route('client.events.index')); ?>" class="cb-nav-item <?php echo e(request()->routeIs('client.events.*') ? 'cb-nav-item--active' : ''); ?>">Events</a>
+                    <a href="<?php echo e(route('client.chandlas.index')); ?>" class="cb-nav-item <?php echo e(request()->routeIs('client.chandlas.*') ? 'cb-nav-item--active' : ''); ?>">Ledger</a>
+                    <a href="<?php echo e(route('client.expenses.index')); ?>" class="cb-nav-item <?php echo e(request()->routeIs('client.expenses.*') ? 'cb-nav-item--active' : ''); ?>">💸 Expenses</a>
+                    <a href="<?php echo e(route('client.ganpati.index')); ?>" class="cb-nav-item cb-nav-item--ganpati <?php echo e(request()->routeIs('client.ganpati.*') ? 'cb-nav-item--active' : ''); ?>" style="color: #ea6d0e;">🪔 Ganpati Special</a>
+                    <a href="<?php echo e(route('client.contacts.index')); ?>" class="cb-nav-item <?php echo e(request()->routeIs('client.contacts.*') ? 'cb-nav-item--active' : ''); ?>">Contacts</a>
+                    <a href="<?php echo e(route('client.marriage-invitations.index')); ?>" class="cb-nav-item <?php echo e(request()->routeIs('client.marriage-invitations.*') ? 'cb-nav-item--active' : ''); ?>">Invitation</a>
+                    <a href="<?php echo e(route('client.pre-wedding.index')); ?>" class="cb-nav-item <?php echo e(request()->routeIs('client.pre-wedding.*') ? 'cb-nav-item--active' : ''); ?>">Pre-wedding</a>
+                    <a href="<?php echo e(route('client.plans')); ?>" class="cb-nav-item <?php echo e(request()->routeIs('client.plans') ? 'cb-nav-item--active' : ''); ?>">Plans</a>
+                    
                 </nav>
                 <div class="flex items-center gap-2 relative shrink-0 z-[60]">
                     <button id="cb-dark-mode-toggle" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition" title="Toggle theme">
@@ -77,70 +77,70 @@
                             title="Account menu"
                             aria-label="Open account menu"
                         >
-                            <span class="max-w-[8rem] sm:max-w-[12rem] truncate" title="{{ Auth::user()->name }}">{{ Auth::user()->name }}</span>
+                            <span class="max-w-[8rem] sm:max-w-[12rem] truncate" title="<?php echo e(Auth::user()->name); ?>"><?php echo e(Auth::user()->name); ?></span>
                             <i class="cb-user-menu-chev fa-solid fa-chevron-down text-[0.65rem] text-slate-400 transition-transform duration-200" aria-hidden="true"></i>
                         </summary>
                         <div
                             class="absolute right-0 top-full z-[60] mt-1.5 w-52 overflow-hidden rounded-xl border border-slate-200/90 bg-white py-1 shadow-lg"
                             role="menu"
                         >
-                            {{-- Profile (always visible) --}}
+                            
                             <a
-                                href="{{ route('client.profile') }}"
-                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 {{ request()->routeIs('client.profile') ? 'bg-slate-50/80' : '' }}"
+                                href="<?php echo e(route('client.profile')); ?>"
+                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 <?php echo e(request()->routeIs('client.profile') ? 'bg-slate-50/80' : ''); ?>"
                                 role="menuitem"
                             >
                                 <i class="fa-solid fa-circle-user w-4 text-center text-slate-400" aria-hidden="true"></i>
                                 <span class="flex-1 min-w-0">
                                     <span class="block font-semibold">Profile</span>
-                                    <span class="block text-xs text-slate-400 truncate">{{ Auth::user()->email ?: Auth::user()->phone }}</span>
+                                    <span class="block text-xs text-slate-400 truncate"><?php echo e(Auth::user()->email ?: Auth::user()->phone); ?></span>
                                 </span>
                             </a>
                             <div class="my-1 border-t border-slate-100" role="separator"></div>
-                            @isMainUser
+                            <?php if (\Illuminate\Support\Facades\Blade::check('isMainUser')): ?>
                                 <a
-                                    href="{{ route('client.family-members.index') }}"
-                                    class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 {{ request()->routeIs('client.family-members.*') ? 'bg-slate-50/80' : '' }}"
+                                    href="<?php echo e(route('client.family-members.index')); ?>"
+                                    class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 <?php echo e(request()->routeIs('client.family-members.*') ? 'bg-slate-50/80' : ''); ?>"
                                     role="menuitem"
                                 >
                                     <i class="fa-solid fa-users w-4 text-center text-slate-400" aria-hidden="true"></i>
                                     Family members
                                 </a>
-                            @endisMainUser
+                            <?php endif; ?>
                             <a
-                                href="{{ route('client.plans') }}"
-                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 {{ request()->routeIs('client.plans') ? 'bg-slate-50/80' : '' }}"
+                                href="<?php echo e(route('client.plans')); ?>"
+                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 <?php echo e(request()->routeIs('client.plans') ? 'bg-slate-50/80' : ''); ?>"
                                 role="menuitem"
                             >
                                 <i class="fa-solid fa-box-open w-4 text-center text-slate-400" aria-hidden="true"></i>
                                 My Packages
                             </a>
                             <a
-                                href="{{ route('client.transactions.index') }}"
-                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 {{ request()->routeIs('client.transactions.*') ? 'bg-slate-50/80' : '' }}"
+                                href="<?php echo e(route('client.transactions.index')); ?>"
+                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 <?php echo e(request()->routeIs('client.transactions.*') ? 'bg-slate-50/80' : ''); ?>"
                                 role="menuitem"
                             >
                                 <i class="fa-solid fa-receipt w-4 text-center text-slate-400" aria-hidden="true"></i>
                                 Transactions
                             </a>
                             <a
-                                href="{{ route('client.password.edit') }}"
-                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 {{ request()->routeIs('client.password.*') ? 'bg-slate-50/80' : '' }}"
+                                href="<?php echo e(route('client.password.edit')); ?>"
+                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 <?php echo e(request()->routeIs('client.password.*') ? 'bg-slate-50/80' : ''); ?>"
                                 role="menuitem"
                             >
                                 <i class="fa-solid fa-key w-4 text-center text-slate-400" aria-hidden="true"></i>
                                 Change password
                             </a>
                             <a
-                                href="{{ route('client.faq') }}"
-                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 {{ request()->routeIs('client.faq') ? 'bg-slate-50/80' : '' }}"
+                                href="<?php echo e(route('client.faq')); ?>"
+                                class="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 <?php echo e(request()->routeIs('client.faq') ? 'bg-slate-50/80' : ''); ?>"
                                 role="menuitem"
                             >
                                 <i class="fa-solid fa-circle-question w-4 text-center text-slate-400" aria-hidden="true"></i>
                                 FAQ
                             </a>
-                            <form action="{{ route('client.logout') }}" method="POST" role="none">
-                                @csrf
+                            <form action="<?php echo e(route('client.logout')); ?>" method="POST" role="none">
+                                <?php echo csrf_field(); ?>
                                 <button
                                     type="submit"
                                     class="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-50"
@@ -157,60 +157,61 @@
         </div>
     </header>
 
-    @familyViewer
+    <?php if (\Illuminate\Support\Facades\Blade::check('familyViewer')): ?>
         <div class="bg-amber-100 border-b border-amber-200 text-amber-900 text-xs sm:text-sm px-3 sm:px-6 py-2 text-center">
             <i class="fas fa-eye mr-1.5" aria-hidden="true"></i>
-            You're signed in as a <strong>family viewer</strong> for <strong>{{ Auth::user()->parent?->name ?? 'this account' }}</strong>. Read-only — you can browse and download but cannot add or edit.
+            You're signed in as a <strong>family viewer</strong> for <strong><?php echo e(Auth::user()->parent?->name ?? 'this account'); ?></strong>. Read-only — you can browse and download but cannot add or edit.
         </div>
-    @endfamilyViewer
-    @familyEditor
+    <?php endif; ?>
+    <?php if (\Illuminate\Support\Facades\Blade::check('familyEditor')): ?>
         <div class="bg-emerald-100 border-b border-emerald-200 text-emerald-900 text-xs sm:text-sm px-3 sm:px-6 py-2 text-center">
             <i class="fas fa-shield-halved mr-1.5" aria-hidden="true"></i>
-            You're signed in as a <strong>family editor</strong> for <strong>{{ Auth::user()->parent?->name ?? 'this account' }}</strong>. You can add and edit, but cannot delete records, manage other family members, or buy plans.
+            You're signed in as a <strong>family editor</strong> for <strong><?php echo e(Auth::user()->parent?->name ?? 'this account'); ?></strong>. You can add and edit, but cannot delete records, manage other family members, or buy plans.
         </div>
-    @endfamilyEditor
+    <?php endif; ?>
 
     <main class="cb-main flex-1 min-h-0 min-w-0 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-6 overflow-x-clip w-full">
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="cb-alert cb-alert--success mb-4" role="status" aria-live="polite">
-                <span class="block font-semibold">{{ session('success') }}</span>
-                @if(session('chandla_saved_summary') && is_array(session('chandla_saved_summary')))
-                    @php $cs = session('chandla_saved_summary'); @endphp
+                <span class="block font-semibold"><?php echo e(session('success')); ?></span>
+                <?php if(session('chandla_saved_summary') && is_array(session('chandla_saved_summary'))): ?>
+                    <?php $cs = session('chandla_saved_summary'); ?>
                     <dl class="mt-3 space-y-2 text-sm border-t border-emerald-700/15 pt-3 text-emerald-950/95">
                         <div class="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
                             <dt class="font-medium text-emerald-950/80 shrink-0">Name</dt>
-                            <dd class="break-words sm:text-right">{{ $cs['giver_name'] ?? '—' }}</dd>
+                            <dd class="break-words sm:text-right"><?php echo e($cs['giver_name'] ?? '—'); ?></dd>
                         </div>
                         <div class="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
                             <dt class="font-medium text-emerald-950/80 shrink-0">Amount</dt>
-                            <dd class="tabular-nums font-semibold sm:text-right">₹{{ number_format((float) ($cs['amount'] ?? 0), 2) }}</dd>
+                            <dd class="tabular-nums font-semibold sm:text-right">₹<?php echo e(number_format((float) ($cs['amount'] ?? 0), 2)); ?></dd>
                         </div>
                         <div class="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                             <dt class="font-medium text-emerald-950/80 shrink-0 pt-0.5">Address</dt>
-                            <dd class="break-words sm:text-right max-w-xl">{{ $cs['giver_address'] ?? '—' }}</dd>
+                            <dd class="break-words sm:text-right max-w-xl"><?php echo e($cs['giver_address'] ?? '—'); ?></dd>
                         </div>
                     </dl>
-                @endif
+                <?php endif; ?>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session('info'))
+        <?php if(session('info')): ?>
             <div class="mb-4 rounded-lg border border-sky-200 bg-sky-50 text-sky-900 px-4 py-3 text-sm" role="status">
-                {{ session('info') }}
-            </div>
-        @endif
+                <?php echo e(session('info')); ?>
 
-        @if($errors->any())
+            </div>
+        <?php endif; ?>
+
+        <?php if($errors->any()): ?>
             <div class="cb-alert cb-alert--error mb-4" role="alert">
                 <ul class="list-disc list-inside">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <li><?php echo e($error); ?></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ul>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <footer class="cb-site-footer shrink-0 border-t border-slate-200/90 bg-white/95 backdrop-blur-[2px]" role="contentinfo">
@@ -223,23 +224,23 @@
                     </p>
                 </div>
                 <nav class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm mt-2" aria-label="Footer">
-                    <a href="{{ route('client.dashboard') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Home</a>
-                    <a href="{{ route('client.plans') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Plans</a>
-                    <a href="{{ route('client.faq') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">FAQ</a>
-                    <a href="{{ route('client.about') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">About Us</a>
-                    <a href="{{ route('client.contact') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Contact us</a>
-                    @php
+                    <a href="<?php echo e(route('client.dashboard')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Home</a>
+                    <a href="<?php echo e(route('client.plans')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Plans</a>
+                    <a href="<?php echo e(route('client.faq')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">FAQ</a>
+                    <a href="<?php echo e(route('client.about')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">About Us</a>
+                    <a href="<?php echo e(route('client.contact')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Contact us</a>
+                    <?php
                         $footerMail = trim((string) config('chandlabook.support_email', ''));
                         if ($footerMail === '') {
                             $footerMail = (string) config('mail.from.address', '');
                         }
-                    @endphp
-                    @if($footerMail !== '')
-                        <a href="mailto:{{ $footerMail }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Email</a>
-                    @endif
-                    <a href="{{ route('public.privacy') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Privacy Policy</a>
-                    <a href="{{ route('public.terms') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Terms of use</a>
-                    <a href="{{ route('public.refund') }}" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Refund policy</a>
+                    ?>
+                    <?php if($footerMail !== ''): ?>
+                        <a href="mailto:<?php echo e($footerMail); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Email</a>
+                    <?php endif; ?>
+                    <a href="<?php echo e(route('public.privacy')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Privacy Policy</a>
+                    <a href="<?php echo e(route('public.terms')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Terms of use</a>
+                    <a href="<?php echo e(route('public.refund')); ?>" class="text-slate-600 hover:text-[var(--cb-navy)] transition-colors">Refund policy</a>
                 </nav>
             </div>
             <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[0.7rem] text-slate-400">
@@ -254,43 +255,40 @@
 
     <nav class="cb-bottom-nav md:hidden fixed bottom-0 left-0 right-0 z-50" aria-label="Primary">
         <div class="cb-bottom-nav__scroll max-w-7xl mx-auto">
-            <a href="{{ route('client.dashboard') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.dashboard') ? 'cb-bottom-nav__item--active' : '' }}">
+            <a href="<?php echo e(route('client.dashboard')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.dashboard') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-solid fa-house"></i>
                 <span>Home</span>
             </a>
-            <a href="{{ route('client.events.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.events.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            <a href="<?php echo e(route('client.events.index')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.events.*') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-regular fa-calendar"></i>
                 <span>Events</span>
             </a>
-            <a href="{{ route('client.chandlas.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.chandlas.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            <a href="<?php echo e(route('client.chandlas.index')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.chandlas.*') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-solid fa-book-open"></i>
                 <span>Ledger</span>
             </a>
-            <a href="{{ route('client.expenses.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.expenses.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            <a href="<?php echo e(route('client.expenses.index')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.expenses.*') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-solid fa-wallet"></i>
                 <span>Expenses</span>
             </a>
-            <a href="{{ route('client.ganpati.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.ganpati.*') ? 'cb-bottom-nav__item--active' : '' }}" style="{{ request()->routeIs('client.ganpati.*') ? 'color:#ea6d0e;' : '' }}">
+            <a href="<?php echo e(route('client.ganpati.index')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.ganpati.*') ? 'cb-bottom-nav__item--active' : ''); ?>" style="<?php echo e(request()->routeIs('client.ganpati.*') ? 'color:#ea6d0e;' : ''); ?>">
                 <span style="font-size:1.1rem;">🪔</span>
                 <span>Ganpati</span>
             </a>
-            <a href="{{ route('client.contacts.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.contacts.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            <a href="<?php echo e(route('client.contacts.index')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.contacts.*') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-solid fa-user-group"></i>
                 <span>Contacts</span>
             </a>
-            <a href="{{ route('client.marriage-invitations.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.marriage-invitations.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            <a href="<?php echo e(route('client.marriage-invitations.index')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.marriage-invitations.*') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-solid fa-envelope-open-text"></i>
                 <span>Invite</span>
             </a>
-            <a href="{{ route('client.pre-wedding.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.pre-wedding.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            <a href="<?php echo e(route('client.pre-wedding.index')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.pre-wedding.*') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-solid fa-camera-retro"></i>
                 <span>PreWed</span>
             </a>
-            {{-- <a href="{{ route('client.matrimonial.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.matrimonial.*') ? 'cb-bottom-nav__item--active' : '' }}">
-                <i class="fa-solid fa-heart"></i>
-                <span>Partner</span>
-            </a> --}}
-            <a href="{{ route('client.password.edit') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.password.*') ? 'cb-bottom-nav__item--active' : '' }}">
+            
+            <a href="<?php echo e(route('client.password.edit')); ?>" class="cb-bottom-nav__item <?php echo e(request()->routeIs('client.password.*') ? 'cb-bottom-nav__item--active' : ''); ?>">
                 <i class="fa-solid fa-gear"></i>
                 <span>Account</span>
             </a>
@@ -313,6 +311,7 @@
             }
         });
     </script>
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+<?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/layouts/client.blade.php ENDPATH**/ ?>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="{{ asset('images/chandla-favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/chandla-app-icon.png') }}">
+    <link rel="icon" type="image/png" href="<?php echo e(asset('images/chandla-favicon.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('images/chandla-app-icon.png')); ?>">
     <meta charset="utf-8">
-    <title>Chandla register — {{ $event->title }}</title>
-    @php
+    <title>Chandla register — <?php echo e($event->title); ?></title>
+    <?php
         $pdfFontUrl = null;
         if (!empty($gujaratiFontPath) && file_exists($gujaratiFontPath)) {
             $pdfFontUrl = 'file://' . str_replace('\\', '/', $gujaratiFontPath);
@@ -19,16 +19,16 @@
             }
         }
         $hasLogo = !empty($logoPath);
-    @endphp
+    ?>
     <style>
-        @if($pdfFontUrl)
+        <?php if($pdfFontUrl): ?>
         @font-face {
             font-family: 'PdfGujarati';
             font-style: normal;
             font-weight: 400;
-            src: url('{{ $pdfFontUrl }}') format('truetype');
+            src: url('<?php echo e($pdfFontUrl); ?>') format('truetype');
         }
-        @endif
+        <?php endif; ?>
 
         @page {
             margin: 24mm 11mm 20mm 11mm;
@@ -39,7 +39,7 @@
         }
 
         body {
-            font-family: {{ $pdfFontUrl ? "'PdfGujarati', 'DejaVu Sans'" : "'DejaVu Sans'" }}, sans-serif;
+            font-family: <?php echo e($pdfFontUrl ? "'PdfGujarati', 'DejaVu Sans'" : "'DejaVu Sans'"); ?>, sans-serif;
             font-size: 10.5px;
             line-height: 1.45;
             color: #1f2937;
@@ -514,7 +514,7 @@
     </style>
 </head>
 <body>
-    @php
+    <?php
         $notesOnHand = [
             500 => (int) ($inventory->note_500 ?? 0),
             200 => (int) ($inventory->note_200 ?? 0),
@@ -549,13 +549,13 @@
         }
         $pdfContactPhone = trim((string) config('chandlabook.support_phone', ''));
         $pdfSiteHost     = parse_url((string) config('app.url'), PHP_URL_HOST);
-    @endphp
+    ?>
 
-    @if($hasLogo)
+    <?php if($hasLogo): ?>
         <div class="pdf-fixed-logo">
-            <img src="{{ $logoPath }}" alt="Chandla Book">
+            <img src="<?php echo e($logoPath); ?>" alt="Chandla Book">
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Cover -->
     <div class="cover-wrap">
@@ -570,31 +570,31 @@
                 <table class="cover-meta-table">
                     <tr>
                         <td class="lbl">Event</td>
-                        <td class="val">{{ $event->title }}</td>
+                        <td class="val"><?php echo e($event->title); ?></td>
                     </tr>
                     <tr>
                         <td class="lbl">Event date</td>
-                        <td class="val">{{ $event->event_date->format('l, F j, Y') }}</td>
+                        <td class="val"><?php echo e($event->event_date->format('l, F j, Y')); ?></td>
                     </tr>
-                    @if($event->event_time)
+                    <?php if($event->event_time): ?>
                         <tr>
                             <td class="lbl">Time</td>
-                            <td class="val">{{ $event->event_time->format('h:i A') }}</td>
+                            <td class="val"><?php echo e($event->event_time->format('h:i A')); ?></td>
                         </tr>
-                    @endif
-                    @if($event->venue)
+                    <?php endif; ?>
+                    <?php if($event->venue): ?>
                         <tr>
                             <td class="lbl">Venue</td>
-                            <td class="val">{{ $event->venue }}</td>
+                            <td class="val"><?php echo e($event->venue); ?></td>
                         </tr>
-                    @endif
+                    <?php endif; ?>
                     <tr>
                         <td class="lbl">Entries recorded</td>
-                        <td class="val">{{ $event->chandlas->count() }} total rows</td>
+                        <td class="val"><?php echo e($event->chandlas->count()); ?> total rows</td>
                     </tr>
                     <tr>
                         <td class="lbl">Prepared</td>
-                        <td class="val">{{ now()->timezone(config('app.timezone'))->format('M j, Y · g:i A') }}</td>
+                        <td class="val"><?php echo e(now()->timezone(config('app.timezone'))->format('M j, Y · g:i A')); ?></td>
                     </tr>
                 </table>
                 </div>
@@ -610,46 +610,46 @@
             <tr>
                 <td>
                     <div class="summary-kicker">Total collected</div>
-                    <div class="summary-num"><span class="inr">&#8377; {{ number_format($totalCollected, 2) }}</span></div>
+                    <div class="summary-num"><span class="inr">&#8377; <?php echo e(number_format($totalCollected, 2)); ?></span></div>
                     <div class="summary-note">Cash + cover amounts</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Notes on hand</div>
-                    <div class="summary-num">{{ number_format($totalNotesCount) }}</div>
+                    <div class="summary-num"><?php echo e(number_format($totalNotesCount)); ?></div>
                     <div class="summary-note">Pieces across denominations</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Cash on hand</div>
-                    <div class="summary-num"><span class="inr">&#8377; {{ number_format($totalCashOnHand, 2) }}</span></div>
+                    <div class="summary-num"><span class="inr">&#8377; <?php echo e(number_format($totalCashOnHand, 2)); ?></span></div>
                     <div class="summary-note">Per inventory tally</div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <div class="summary-kicker">Cash (chandla)</div>
-                    <div class="summary-num"><span class="inr">&#8377; {{ number_format($cashTotal, 2) }}</span></div>
-                    <div class="summary-note">{{ $cash->count() }} entries</div>
+                    <div class="summary-num"><span class="inr">&#8377; <?php echo e(number_format($cashTotal, 2)); ?></span></div>
+                    <div class="summary-note"><?php echo e($cash->count()); ?> entries</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Cover</div>
-                    <div class="summary-num"><span class="inr">&#8377; {{ number_format($coverTotal, 2) }}</span></div>
-                    <div class="summary-note">{{ $cover->count() }} entries</div>
+                    <div class="summary-num"><span class="inr">&#8377; <?php echo e(number_format($coverTotal, 2)); ?></span></div>
+                    <div class="summary-note"><?php echo e($cover->count()); ?> entries</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Gifts listed</div>
-                    <div class="summary-num">{{ $giftCount }}</div>
+                    <div class="summary-num"><?php echo e($giftCount); ?></div>
                     <div class="summary-note">Gift rows in register</div>
                 </td>
             </tr>
             <tr>
                 <td style="background:#f0fdf4;border:1px solid #6ee7b7;">
                     <div class="summary-kicker" style="color:#065f46;">GPay transactions</div>
-                    <div class="summary-num" style="color:#065f46;">{{ $gpayCount }}</div>
+                    <div class="summary-num" style="color:#065f46;"><?php echo e($gpayCount); ?></div>
                     <div class="summary-note">UPI / GPay entries</div>
                 </td>
                 <td colspan="2" style="background:#f0fdf4;border:1px solid #6ee7b7;">
                     <div class="summary-kicker" style="color:#065f46;">GPay total received</div>
-                    <div class="summary-num" style="color:#065f46;"><span class="inr">&#8377; {{ number_format($gpayTotal, 2) }}</span></div>
+                    <div class="summary-num" style="color:#065f46;"><span class="inr">&#8377; <?php echo e(number_format($gpayTotal, 2)); ?></span></div>
                     <div class="summary-note">Sum of all GPay / UPI amounts</div>
                 </td>
             </tr>
@@ -665,16 +665,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($notesOnHand as $denomination => $count)
+                <?php $__currentLoopData = $notesOnHand; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $denomination => $count): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td><span class="inr">&#8377; {{ number_format($denomination) }}</span></td>
-                        <td>{{ number_format($count) }}</td>
-                        <td><span class="inr">&#8377; {{ number_format($denomination * $count, 2) }}</span></td>
+                        <td><span class="inr">&#8377; <?php echo e(number_format($denomination)); ?></span></td>
+                        <td><?php echo e(number_format($count)); ?></td>
+                        <td><span class="inr">&#8377; <?php echo e(number_format($denomination * $count, 2)); ?></span></td>
                     </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <tr class="total-row">
                     <td colspan="2">Total cash on hand</td>
-                    <td><span class="inr">&#8377; {{ number_format($totalCashOnHand, 2) }}</span></td>
+                    <td><span class="inr">&#8377; <?php echo e(number_format($totalCashOnHand, 2)); ?></span></td>
                 </tr>
             </tbody>
         </table>
@@ -701,25 +701,25 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($gpay as $row)
+                <?php $__empty_1 = true; $__currentLoopData = $gpay; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td>{{ $row->giver_name }}</td>
-                        <td>{{ $row->giver_address ?: '—' }}</td>
-                        <td>{{ $row->giver_phone ?: '—' }}</td>
-                        <td style="font-size:8.5px;color:#065f46;">{{ $row->gpay_transaction_id ?: '—' }}</td>
-                        <td><span class="inr" style="color:#065f46;font-weight:bold;">&#8377; {{ number_format($row->amount, 2) }}</span></td>
+                        <td><?php echo e($row->giver_name); ?></td>
+                        <td><?php echo e($row->giver_address ?: '—'); ?></td>
+                        <td><?php echo e($row->giver_phone ?: '—'); ?></td>
+                        <td style="font-size:8.5px;color:#065f46;"><?php echo e($row->gpay_transaction_id ?: '—'); ?></td>
+                        <td><span class="inr" style="color:#065f46;font-weight:bold;">&#8377; <?php echo e(number_format($row->amount, 2)); ?></span></td>
                     </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="5" class="muted">No GPay / UPI entries for this event.</td>
                     </tr>
-                @endforelse
-                @if($gpay->count() > 0)
+                <?php endif; ?>
+                <?php if($gpay->count() > 0): ?>
                     <tr class="total-row" style="background:#d1fae5 !important;">
-                        <td colspan="4" style="color:#065f46;">GPay section total &mdash; {{ $gpayCount }} transactions</td>
-                        <td><span class="inr" style="color:#065f46;">&#8377; {{ number_format($gpayTotal, 2) }}</span></td>
+                        <td colspan="4" style="color:#065f46;">GPay section total &mdash; <?php echo e($gpayCount); ?> transactions</td>
+                        <td><span class="inr" style="color:#065f46;">&#8377; <?php echo e(number_format($gpayTotal, 2)); ?></span></td>
                     </tr>
-                @endif
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -740,24 +740,24 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($cash as $row)
+                <?php $__empty_1 = true; $__currentLoopData = $cash; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td>{{ $row->giver_name }}</td>
-                        <td>{{ $row->giver_address ?: '—' }}</td>
-                        <td>{{ $row->giver_phone ?: '—' }}</td>
-                        <td><span class="inr">&#8377; {{ number_format($row->amount, 2) }}</span></td>
+                        <td><?php echo e($row->giver_name); ?></td>
+                        <td><?php echo e($row->giver_address ?: '—'); ?></td>
+                        <td><?php echo e($row->giver_phone ?: '—'); ?></td>
+                        <td><span class="inr">&#8377; <?php echo e(number_format($row->amount, 2)); ?></span></td>
                     </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="4" class="muted">No cash entries for this event.</td>
                     </tr>
-                @endforelse
-                @if($cash->count() > 0)
+                <?php endif; ?>
+                <?php if($cash->count() > 0): ?>
                     <tr class="total-row">
                         <td colspan="3">Section total</td>
-                        <td><span class="inr">&#8377; {{ number_format($cashTotal, 2) }}</span></td>
+                        <td><span class="inr">&#8377; <?php echo e(number_format($cashTotal, 2)); ?></span></td>
                     </tr>
-                @endif
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -777,24 +777,24 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($cover as $row)
+                <?php $__empty_1 = true; $__currentLoopData = $cover; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td>{{ $row->giver_name }}</td>
-                        <td>{{ $row->giver_address ?: '—' }}</td>
-                        <td>{{ $row->giver_phone ?: '—' }}</td>
-                        <td><span class="inr">&#8377; {{ number_format($row->amount, 2) }}</span></td>
+                        <td><?php echo e($row->giver_name); ?></td>
+                        <td><?php echo e($row->giver_address ?: '—'); ?></td>
+                        <td><?php echo e($row->giver_phone ?: '—'); ?></td>
+                        <td><span class="inr">&#8377; <?php echo e(number_format($row->amount, 2)); ?></span></td>
                     </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="4" class="muted">No cover entries for this event.</td>
                     </tr>
-                @endforelse
-                @if($cover->count() > 0)
+                <?php endif; ?>
+                <?php if($cover->count() > 0): ?>
                     <tr class="total-row">
                         <td colspan="3">Section total</td>
-                        <td><span class="inr">&#8377; {{ number_format($coverTotal, 2) }}</span></td>
+                        <td><span class="inr">&#8377; <?php echo e(number_format($coverTotal, 2)); ?></span></td>
                     </tr>
-                @endif
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -814,23 +814,24 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($gift as $row)
+                <?php $__empty_1 = true; $__currentLoopData = $gift; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td>{{ $row->giver_name }}</td>
-                        <td>{{ $row->giver_address ?: '—' }}</td>
-                        <td>{{ $row->giver_phone ?: '—' }}</td>
-                        <td>{{ $row->gift_item_name ?: '—' }}</td>
+                        <td><?php echo e($row->giver_name); ?></td>
+                        <td><?php echo e($row->giver_address ?: '—'); ?></td>
+                        <td><?php echo e($row->giver_phone ?: '—'); ?></td>
+                        <td><?php echo e($row->gift_item_name ?: '—'); ?></td>
                     </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="4" class="muted">No gift entries for this event.</td>
                     </tr>
-                @endforelse
+                <?php endif; ?>
             </tbody>
         </table>
         <hr class="hr-decor">
         <p style="font-size: 9px; color: #9ca3af; text-align: center; margin: 8px 0 0;">
-            End of register · Chandla Book · {{ config('app.name', 'Chandla Book') }}
+            End of register · Chandla Book · <?php echo e(config('app.name', 'Chandla Book')); ?>
+
         </p>
     </div>
 
@@ -1031,3 +1032,4 @@
     </div>
 </body>
 </html>
+<?php /**PATH C:\Users\Chirag\Desktop\New folder\ChandlaBook\resources\views/client/chandlas/pdf.blade.php ENDPATH**/ ?>

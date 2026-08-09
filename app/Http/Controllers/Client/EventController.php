@@ -41,7 +41,7 @@ class EventController extends Controller
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        $events = $query->orderBy('event_date', 'desc')->paginate(12);
+        $events = $query->with('eventType')->orderBy('event_date', 'desc')->paginate(12);
 
         return view('client.events.index', compact('events', 'authUser'));
     }
@@ -75,8 +75,12 @@ class EventController extends Controller
             ? 1  // family members always get 1 free event of their own
             : $buyer->maxEventsAllowed();
 
-        // Count only this user's own events for the limit check
-        $currentEvents = Event::where('user_id', $eventOwnerId)->count();
+        // Count only this user's own events for the limit check.
+        // Ganpati Special events are free for all users and don't count against the limit.
+        $ganpatiTypeId = \App\Models\EventType::where('slug', 'ganpati_special')->value('id');
+        $currentEvents = Event::where('user_id', $eventOwnerId)
+            ->when($ganpatiTypeId, fn($q) => $q->where('event_type_id', '!=', $ganpatiTypeId))
+            ->count();
 
         $redeemingCoin = $request->has('redeem_coin') && $buyer && $buyer->free_event_credits > 0;
 
