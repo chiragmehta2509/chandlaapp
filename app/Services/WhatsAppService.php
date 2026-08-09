@@ -58,9 +58,32 @@ class WhatsAppService
                 return $response->json();
             }
 
+            $resJson = $response->json();
+            $errorCode = $resJson['error']['code'] ?? null;
+
+            // Handle Error 132001: Template name does not exist in the requested language
+            // Automatically try alternate language codes (e.g., en_US <-> en <-> en_GB)
+            if ($errorCode === 132001) {
+                $fallbacks = match ($languageCode) {
+                    'en'    => ['en_US', 'en_GB'],
+                    'en_US' => ['en', 'en_GB'],
+                    'en_GB' => ['en_US', 'en'],
+                    default => ['en_US', 'en'],
+                };
+
+                foreach ($fallbacks as $fallbackCode) {
+                    Log::info("WhatsApp template '{$templateName}' not found in '{$languageCode}'. Retrying with '{$fallbackCode}'...");
+                    $payload['template']['language']['code'] = $fallbackCode;
+                    $fallbackResp = Http::withToken($this->token)->post($this->baseUrl, $payload);
+                    if ($fallbackResp->successful()) {
+                        return $fallbackResp->json();
+                    }
+                }
+            }
+
             Log::error('WhatsApp API Error', [
                 'status' => $response->status(),
-                'response' => $response->json(),
+                'response' => $resJson,
                 'payload' => $payload
             ]);
 
