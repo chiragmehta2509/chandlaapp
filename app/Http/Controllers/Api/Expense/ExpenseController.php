@@ -475,79 +475,6 @@ class ExpenseController extends Controller
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    // GET /api/v1/expenses/pdf
-    // ──────────────────────────────────────────────────────────────────────────
-
-    /**
-     * Download or generate the PDF register of expenses via API.
-     */
-    public function pdf(Request $request)
-    {
-        $query = $this->userExpenses($request)->with('event');
-
-        if ($request->filled('event_id')) {
-            $query->where('event_id', $request->event_id);
-        }
-        if ($request->filled('category')) {
-            $query->where('category', $request->category);
-        }
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
-        if ($request->filled('from_date')) {
-            $query->where('expense_date', '>=', $request->from_date);
-        }
-        if ($request->filled('to_date')) {
-            $query->where('expense_date', '<=', $request->to_date);
-        }
-
-        $expenses = $query->orderBy('expense_date', 'desc')->orderBy('id', 'desc')->get();
-
-        // Build filter description
-        $parts = [];
-        if ($request->filled('event_id')) {
-            $ev = Event::find($request->event_id);
-            $parts[] = 'Event: ' . ($ev?->title ?? 'ID ' . $request->event_id);
-        }
-        if ($request->filled('category'))       { $parts[] = 'Category: ' . ucfirst($request->category); }
-        if ($request->filled('payment_method')) { $parts[] = 'Payment: ' . str_replace('_', ' ', $request->payment_method); }
-        if ($request->filled('from_date'))      { $parts[] = 'From: ' . $request->from_date; }
-        if ($request->filled('to_date'))        { $parts[] = 'To: '   . $request->to_date; }
-        $filterLabel = $parts ? implode(' · ', $parts) : 'All expenses';
-
-        $pdf = Pdf::loadView('client.expenses.pdf', compact('expenses', 'filterLabel'));
-
-        // Running footer decoration
-        try {
-            $dompdf      = $pdf->getDomPDF();
-            $canvas      = $dompdf->getCanvas();
-            $fontMetrics = $dompdf->getFontMetrics();
-            $font        = $fontMetrics->get_font('DejaVu Sans', 'normal');
-            if ($font) {
-                $muted = [0.38, 0.41, 0.45];
-                $canvas->page_text(34,  806, 'Chandla Book · ' . config('app.name'), $font, 7.5, $muted);
-                $canvas->page_text(238, 806, 'Page {PAGE_NUM} of {PAGE_COUNT}', $font, 9, [0.18, 0.23, 0.29]);
-            }
-        } catch (\Throwable $e) {}
-
-        $pdfBytes = $pdf->output();
-
-        // If mobile app requests JSON format (base64)
-        if ($request->wantsJson() || $request->query('response_type') === 'json') {
-            return response()->json([
-                'success'   => true,
-                'filename'  => 'expense-register-' . now()->format('Y-m-d') . '.pdf',
-                'pdf_base64'=> base64_encode($pdfBytes),
-            ]);
-        }
-
-        // Default: return raw PDF stream
-        return response($pdfBytes)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="expense-register-' . now()->format('Y-m-d') . '.pdf"');
-    }
-
-    // ──────────────────────────────────────────────────────────────────────────
     // GET /api/v1/expenses/cash-ledger
     // ──────────────────────────────────────────────────────────────────────────
 
@@ -660,6 +587,68 @@ class ExpenseController extends Controller
                 'cash_out_entries' => $cashOutEntries,
             ],
         ]);
+    }
+
+    /**
+     * Download or stream PDF report for Expenses.
+     * GET /api/v1/expenses/pdf
+     */
+    public function pdf(Request $request)
+    {
+        $query = $this->userExpenses($request)->with('event');
+
+        if ($request->filled('event_id')) {
+            $query->where('event_id', $request->event_id);
+        }
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', $request->payment_method);
+        }
+        if ($request->filled('from_date')) {
+            $query->where('expense_date', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->where('expense_date', '<=', $request->to_date);
+        }
+
+        $expenses = $query->orderBy('expense_date', 'desc')->orderBy('id', 'desc')->get();
+
+        $selectedEvent = null;
+        $parts = [];
+        if ($request->filled('event_id')) {
+            $selectedEvent = Event::find($request->event_id);
+            $parts[] = 'Event: ' . ($selectedEvent?->title ?? 'ID ' . $request->event_id);
+        }
+        if ($request->filled('category'))       { $parts[] = 'Category: ' . ucfirst($request->category); }
+        if ($request->filled('payment_method')) { $parts[] = 'Payment: ' . str_replace('_', ' ', $request->payment_method); }
+        if ($request->filled('from_date'))      { $parts[] = 'From: ' . $request->from_date; }
+        if ($request->filled('to_date'))        { $parts[] = 'To: '   . $request->to_date; }
+        $filterLabel = $parts ? implode(' · ', $parts) : 'All expenses';
+
+        $pdf = Pdf::loadView('client.expenses.pdf', compact('expenses', 'filterLabel', 'selectedEvent'))
+            ->setPaper('a4', 'portrait');
+
+        try {
+            $dompdf      = $pdf->getDomPDF();
+            $canvas      = $dompdf->getCanvas();
+            $fontMetrics = $dompdf->getFontMetrics();
+            $font        = $fontMetrics->get_font('DejaVu Sans', 'normal');
+            if ($font) {
+                $muted = [0.38, 0.41, 0.45];
+                $canvas->page_text(34,  806, 'Chandla Book · Expense Register', $font, 7.5, $muted);
+                $canvas->page_text(238, 806, 'Page {PAGE_NUM} of {PAGE_COUNT}', $font, 9, [0.18, 0.23, 0.29]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Expense PDF footer skipped: ' . $e->getMessage());
+        }
+
+        $filename = 'expense_report_' . date('Y-m-d') . '.pdf';
+
+        return response($pdf->output())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 }
 
