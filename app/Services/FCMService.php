@@ -43,7 +43,8 @@ class FCMService
             return false;
         }
 
-        $tokens = $user->deviceTokens()->active()->pluck('token')->toArray();
+        $tokenCol = DeviceToken::getTokenColumn();
+        $tokens = $user->deviceTokens()->active()->pluck($tokenCol)->toArray();
 
         if (empty($tokens)) {
             return false;
@@ -69,11 +70,11 @@ class FCMService
             // Update device tokens based on results
             foreach ($report->getItems() as $index => $result) {
                 if ($result->isSuccessful()) {
-                    DeviceToken::where('token', $tokens[$index])
-                        ->update(['last_used_at' => now()]);
+                    DeviceToken::where($tokenCol, $tokens[$index])
+                        ->update(['is_active' => true]);
                 } else {
                     // Remove invalid tokens
-                    DeviceToken::where('token', $tokens[$index])->delete();
+                    DeviceToken::where($tokenCol, $tokens[$index])->delete();
                 }
             }
 
@@ -90,6 +91,8 @@ class FCMService
             return false;
         }
 
+        $tokenCol = DeviceToken::getTokenColumn();
+
         try {
             $message = CloudMessage::withTarget('token', $token)
                 ->withNotification(FCMNotification::create($title, $body))
@@ -97,15 +100,15 @@ class FCMService
 
             $this->messaging->send($message);
 
-            DeviceToken::where('token', $token)
-                ->update(['last_used_at' => now()]);
+            DeviceToken::where($tokenCol, $token)
+                ->update(['is_active' => true]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('FCM Send Error: ' . $e->getMessage());
             
             // Remove invalid token
-            DeviceToken::where('token', $token)->delete();
+            DeviceToken::where($tokenCol, $token)->delete();
             
             return false;
         }

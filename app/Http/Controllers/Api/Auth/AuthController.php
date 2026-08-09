@@ -64,9 +64,10 @@ class AuthController extends Controller
 
         if (!empty($deviceToken)) {
             try {
+                $col = DeviceToken::getTokenColumn();
                 DeviceToken::updateOrCreate(
                     [
-                        'device_token' => $deviceToken,
+                        $col => $deviceToken,
                     ],
                     [
                         'user_id'     => $user->id,

@@ -137,9 +137,10 @@ class NotificationController extends Controller
             ], 422);
         }
 
+        $col = DeviceToken::getTokenColumn();
         $device = DeviceToken::updateOrCreate(
             [
-                'device_token' => $token,
+                $col => $token,
             ],
             [
                 'user_id'     => $request->user()->id,

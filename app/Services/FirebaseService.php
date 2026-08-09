@@ -144,7 +144,8 @@ class FirebaseService
             $error = $response->json('error');
             if (isset($error['status']) && ($error['status'] === 'UNREGISTERED' || $error['status'] === 'INVALID_ARGUMENT')) {
                 // Token is no longer valid, deactivate it
-                DeviceToken::where('device_token', $deviceToken)->update(['is_active' => false]);
+                $tokenCol = DeviceToken::getTokenColumn();
+                DeviceToken::where($tokenCol, $deviceToken)->update(['is_active' => false]);
                 Log::info("Deactivated invalid device token: {$deviceToken}");
             }
 

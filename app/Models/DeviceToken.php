@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class DeviceToken extends Model
 {
@@ -14,6 +15,7 @@ class DeviceToken extends Model
     protected $fillable = [
         'user_id',
         'device_token',
+        'token',
         'platform',
         'device_name',
         'app_version',
@@ -23,6 +25,22 @@ class DeviceToken extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Get active token column name dynamically (supports legacy 'token' and new 'device_token').
+     */
+    public static function getTokenColumn(): string
+    {
+        static $col = null;
+        if ($col === null) {
+            try {
+                $col = Schema::hasColumn('device_tokens', 'device_token') ? 'device_token' : 'token';
+            } catch (\Throwable $e) {
+                $col = 'token';
+            }
+        }
+        return $col;
+    }
 
     /**
      * Get the user that owns the device token.
