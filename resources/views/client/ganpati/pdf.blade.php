@@ -528,7 +528,7 @@
                     <tr>
                         <td class="lbl">Total Collected</td>
                         <td class="val" style="font-size:14px; font-weight:bold; color:#1a3646;">
-                            <span class="inr">₹</span> {{ number_format($totalCollected, 0) }}
+                            <span class="inr">Rs.</span> {{ number_format($totalCollected, 0) }}
                         </td>
                     </tr>
                     <tr>
@@ -563,7 +563,7 @@
                 <td class="plan-card">
                     <span class="plan-badge">Free</span>
                     <div class="plan-name">Starter Plan</div>
-                    <div class="plan-price">₹0 <span class="period">/ free forever</span></div>
+                    <div class="plan-price">Rs. 0 <span class="period">/ free forever</span></div>
                     <div class="plan-desc">Ideal for small family functions and basic ledger tracking.</div>
                     <ul class="plan-features">
                         <li>1 Event Limit</li>
@@ -576,7 +576,7 @@
                 <td class="plan-card featured">
                     <span class="plan-badge">Popular</span>
                     <div class="plan-name">Host Plus Plan</div>
-                    <div class="plan-price">₹500 <span class="period">/ event pack</span></div>
+                    <div class="plan-price">Rs. 500 <span class="period">/ event pack</span></div>
                     <div class="plan-desc">Manage multiple events with unlimited ledger entries & hosting tools.</div>
                     <ul class="plan-features">
                         <li>Up to 2 Events</li>
@@ -591,7 +591,7 @@
                 <td class="plan-card">
                     <span class="plan-badge">Family Pick</span>
                     <div class="plan-name">Family Plan</div>
-                    <div class="plan-price">₹600 <span class="period">/ family pack</span></div>
+                    <div class="plan-price">Rs. 600 <span class="period">/ family pack</span></div>
                     <div class="plan-desc">Coordinate family functions with multi-editor read/write access.</div>
                     <ul class="plan-features">
                         <li>3 Family Editors (Write Access)</li>
@@ -604,7 +604,7 @@
                 <td class="plan-card featured">
                     <span class="plan-badge">Flagship</span>
                     <div class="plan-name">Premium Host</div>
-                    <div class="plan-price">₹700 <span class="period">/ complete bundle</span></div>
+                    <div class="plan-price">Rs. 700 <span class="period">/ complete bundle</span></div>
                     <div class="plan-desc">Our flagship plan with custom invitation templates, reel studio & support.</div>
                     <ul class="plan-features">
                         <li>Up to 3 Events & Unlimited Entries</li>
@@ -629,16 +629,16 @@
             <tr>
                 <td>
                     <div class="summary-kicker">Cash Collected</div>
-                    <div class="summary-num"><span class="inr">₹</span>{{ number_format($cashTotal, 0) }}</div>
+                    <div class="summary-num"><span class="inr">Rs.</span> {{ number_format($cashTotal, 0) }}</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Digital (GPay / UPI)</div>
-                    <div class="summary-num"><span class="inr">₹</span>{{ number_format($gpayTotal, 0) }}</div>
+                    <div class="summary-num"><span class="inr">Rs.</span> {{ number_format($gpayTotal, 0) }}</div>
                     <div class="summary-note">({{ $gpayCount }} transactions)</div>
                 </td>
                 <td>
                     <div class="summary-kicker">Other Methods</div>
-                    <div class="summary-num"><span class="inr">₹</span>{{ number_format($otherTotal, 0) }}</div>
+                    <div class="summary-num"><span class="inr">Rs.</span> {{ number_format($otherTotal, 0) }}</div>
                     <div class="summary-note">({{ $otherCount }} entries)</div>
                 </td>
             </tr>
@@ -678,12 +678,12 @@
                     <td>{{ $row->giver_phone ?? '-' }}</td>
                     <td>{{ strtoupper($row->payment_method ?? 'Other') }}</td>
                     <td>{{ optional($row->received_date)->format('d/m/Y') }}</td>
-                    <td style="text-align:right; font-weight:bold;"><span class="inr">₹</span> {{ number_format((float)$row->amount, 0) }}</td>
+                    <td style="text-align:right; font-weight:bold;"><span class="inr">Rs.</span> {{ number_format((float)$row->amount, 0) }}</td>
                 </tr>
                 @endforeach
                 <tr class="total-row">
                     <td colspan="5" style="text-align:right; font-size:10px;">GRAND TOTAL COLLECTED</td>
-                    <td style="text-align:right;"><span class="inr">₹</span> {{ number_format($totalCollected, 0) }}</td>
+                    <td style="text-align:right;"><span class="inr">Rs.</span> {{ number_format($totalCollected, 0) }}</td>
                 </tr>
             </tbody>
         </table>
