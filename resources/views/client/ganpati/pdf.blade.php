@@ -10,8 +10,14 @@
         if (!empty($gujaratiFontPath) && file_exists($gujaratiFontPath)) {
             $pdfFontUrl = 'file://' . str_replace('\\', '/', $gujaratiFontPath);
         }
-        $logoPath = public_path('images/chandla-logo.png');
-        $hasLogo = file_exists($logoPath);
+        $logoPath = null;
+        foreach (['images/logo.jpeg', 'images/logo.png', 'images/chandla-logo.png', 'images/chandla-logo.jpg'] as $img) {
+            if (file_exists(public_path($img))) {
+                $logoPath = public_path($img);
+                break;
+            }
+        }
+        $hasLogo = !empty($logoPath);
     @endphp
     <style>
         @if($pdfFontUrl)

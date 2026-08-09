@@ -17,10 +17,19 @@
                     <!-- Header -->
                     <tr>
                         <td style="background-color:#1a3646;border-radius:14px 14px 0 0;padding:26px 28px;text-align:center;border-bottom:4px solid #b8860b;">
-                            @if(isset($message) && file_exists(public_path('images/chandla-logo.png')))
-                                <img src="{{ $message->embed(public_path('images/chandla-logo.png')) }}" alt="Chandla Book" width="150" style="display:block;margin:0 auto 14px;border:0;height:auto;max-width:150px;">
-                            @elseif(file_exists(public_path('images/chandla-logo.png')))
-                                <img src="{{ url('images/chandla-logo.png') }}" alt="Chandla Book" width="150" style="display:block;margin:0 auto 14px;border:0;height:auto;max-width:150px;">
+                            @php
+                                $logoFile = null;
+                                foreach (['images/logo.jpeg', 'images/logo.png', 'images/chandla-logo.png', 'images/chandla-logo.jpg'] as $img) {
+                                    if (file_exists(public_path($img))) {
+                                        $logoFile = public_path($img);
+                                        break;
+                                    }
+                                }
+                            @endphp
+                            @if(isset($message) && $logoFile)
+                                <img src="{{ $message->embed($logoFile) }}" alt="Chandla Book" width="150" style="display:block;margin:0 auto 14px;border:0;height:auto;max-width:150px;">
+                            @else
+                                <img src="{{ url('images/logo.jpeg') }}" alt="Chandla Book" width="150" style="display:block;margin:0 auto 14px;border:0;height:auto;max-width:150px;">
                             @endif
                             <p style="margin:0;font-size:11px;font-weight:700;color:rgba(255,255,255,0.88);letter-spacing:0.14em;text-transform:uppercase;">Chandla register export</p>
                             <p style="margin:10px 0 0;font-size:22px;font-weight:700;color:#ffffff;line-height:1.25;letter-spacing:-0.02em;">Your PDF is ready</p>

@@ -17,10 +17,19 @@
                     <!-- Top bar -->
                     <tr>
                         <td style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#4c1d95 100%);background-color:#312e81;border-radius:12px 12px 0 0;padding:28px 32px;text-align:center;">
-                            @if(file_exists(public_path('images/chandla-logo.png')))
-                                <img src="{{ $message->embed(public_path('images/chandla-logo.png')) }}" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
-                            @elseif(file_exists(public_path('images/chandla-favicon.png')))
-                                <img src="{{ $message->embed(public_path('images/chandla-favicon.png')) }}" width="56" height="56" alt="" style="display:block;margin:0 auto 12px auto;border:0;">
+                            @php
+                                $logoFile = null;
+                                foreach (['images/logo.jpeg', 'images/logo.png', 'images/chandla-logo.png', 'images/chandla-logo.jpg'] as $img) {
+                                    if (file_exists(public_path($img))) {
+                                        $logoFile = public_path($img);
+                                        break;
+                                    }
+                                }
+                            @endphp
+                            @if(isset($message) && $logoFile)
+                                <img src="{{ $message->embed($logoFile) }}" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
+                            @else
+                                <img src="{{ url('images/logo.jpeg') }}" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
                             @endif
                             <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Chandla Book</p>
                             <p style="margin:8px 0 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(255,255,255,0.85);font-weight:500;">Security Alert</p>
