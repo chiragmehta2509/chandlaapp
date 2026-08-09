@@ -69,6 +69,10 @@ Route::get('/packages/{slug}', [PublicSeoController::class, 'package'])->name('p
 Route::post('/webhooks/razorpay', MatrimonialRazorpayWebhookController::class);
 Route::post('/webhooks/razorpay-payments', [\App\Http\Controllers\Webhooks\RazorpayWebhookController::class, 'handle']);
 
+/** WhatsApp Cloud API webhook (Meta verification + event callbacks). */
+Route::get('/webhooks/whatsapp',  [\App\Http\Controllers\Webhooks\WhatsAppWebhookController::class, 'verify']);
+Route::post('/webhooks/whatsapp', [\App\Http\Controllers\Webhooks\WhatsAppWebhookController::class, 'handle']);
+
 Route::view('/docs', 'swagger');
 
 // Public payment routes used by QR links

@@ -10,6 +10,7 @@ class VerifyCsrfToken extends Middleware
         'api/*',
         'webhooks/razorpay',
         'webhooks/razorpay-payments',
+        'webhooks/whatsapp',
     ];
 }
 

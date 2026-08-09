@@ -81,8 +81,9 @@ return [
         'admin_notify_email' => env('ADMIN_NOTIFICATION_EMAIL', env('MAIL_FROM_ADDRESS', '')),
     ],
     'whatsapp' => [
-        'token' => env('WHATSAPP_TOKEN'),
-        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'token'            => env('WHATSAPP_TOKEN'),
+        'phone_number_id'  => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'verify_token'     => env('WHATSAPP_VERIFY_TOKEN', 'chandlabook_whatsapp_verify'),
     ],
 ];
 
