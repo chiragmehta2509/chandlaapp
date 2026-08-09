@@ -120,40 +120,42 @@ class NotificationController extends Controller
 
     public function registerDevice(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'token' => 'required|string',
-            'platform' => 'required|string|in:android,ios,web',
-            'device_id' => 'nullable|string',
+        $token = $request->input('device_token') ?? $request->input('token');
+
+        $validator = Validator::make(array_merge($request->all(), ['token' => $token]), [
+            'token'       => 'required|string',
+            'platform'    => 'nullable|string|in:android,ios,web',
             'device_name' => 'nullable|string',
+            'app_version' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
         $device = DeviceToken::updateOrCreate(
             [
-                'token' => $request->token,
+                'device_token' => $token,
             ],
             [
-                'user_id' => $request->user()->id,
-                'platform' => $request->platform,
-                'device_id' => $request->device_id,
-                'device_name' => $request->device_name,
-                'is_active' => true,
-                'last_used_at' => now(),
+                'user_id'     => $request->user()->id,
+                'platform'    => strtolower($request->input('platform', 'android')),
+                'device_name' => $request->input('device_name'),
+                'app_version' => $request->input('app_version'),
+                'is_active'   => true,
             ]
         );
 
         return response()->json([
+            'status'  => true,
             'success' => true,
             'message' => 'Device registered successfully',
-            'data' => $device
-        ]);
+            'data'    => $device
+        ], 200);
     }
 
     public function unregisterDevice(Request $request, $id)

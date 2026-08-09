@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\DeviceToken;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -52,6 +53,36 @@ class AuthController extends Controller
         }
 
         return $this->firebaseAuth;
+    }
+
+    /**
+     * Auto-register device_token if passed during login / signup.
+     */
+    protected function saveDeviceTokenIfPresent(User $user, Request $request): void
+    {
+        $deviceToken = $request->input('device_token') ?? $request->input('token');
+
+        if (!empty($deviceToken)) {
+            try {
+                DeviceToken::updateOrCreate(
+                    [
+                        'device_token' => $deviceToken,
+                    ],
+                    [
+                        'user_id'     => $user->id,
+                        'platform'    => strtolower($request->input('platform', 'android')),
+                        'device_name' => $request->input('device_name'),
+                        'app_version' => $request->input('app_version'),
+                        'is_active'   => true,
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to auto-register device_token during auth', [
+                    'user_id' => $user->id,
+                    'error'   => $e->getMessage()
+                ]);
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -153,6 +184,8 @@ class AuthController extends Controller
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            $this->saveDeviceTokenIfPresent($user, $request);
 
             ActivityLog::create([
                 'user_id'    => $user->id,
@@ -282,6 +315,8 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            $this->saveDeviceTokenIfPresent($user, $request);
+
             ActivityLog::create([
                 'user_id'    => $user->id,
                 'action'     => 'apple_login',
@@ -362,6 +397,8 @@ class AuthController extends Controller
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            $this->saveDeviceTokenIfPresent($user, $request);
 
             ActivityLog::create([
                 'user_id'    => $user->id,
@@ -486,6 +523,8 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        $this->saveDeviceTokenIfPresent($user, $request);
+
         ActivityLog::create([
             'user_id'    => $user->id,
             'action'     => 'phone_otp_login',
@@ -533,6 +572,8 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        $this->saveDeviceTokenIfPresent($user, $request);
 
         ActivityLog::create([
             'user_id'    => $user->id,
@@ -599,6 +640,8 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        $this->saveDeviceTokenIfPresent($user, $request);
 
         ActivityLog::create([
             'user_id'    => $user->id,
