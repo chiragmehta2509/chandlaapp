@@ -17,6 +17,7 @@
     <div class="cb-card overflow-hidden">
         <form method="POST" action="{{ route('client.expenses.store') }}" enctype="multipart/form-data"
               class="p-4 sm:p-6 lg:p-8">
+            @csrf
             @php
                 $tab1HasErrors = $errors->hasAny(['event_id', 'title', 'category', 'amount', 'expense_date', 'payment_method']);
                 $tab2HasErrors = $errors->hasAny([
