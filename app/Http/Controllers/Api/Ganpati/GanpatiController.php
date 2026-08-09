@@ -529,23 +529,39 @@ class GanpatiController extends Controller
      */
     public function downloadPdf(Request $request, $id)
     {
-        $event = $this->userGanpatiEvents($request)->findOrFail($id);
+        $event = $this->userGanpatiEvents($request)
+            ->with('chandlas')
+            ->findOrFail($id);
 
-        $entries = Chandla::where('event_id', $event->id)
-            ->orderBy('received_date', 'asc')
-            ->orderBy('id', 'asc')
-            ->get();
+        $entries = $event->chandlas
+            ->sortBy(fn($r) => mb_strtolower(trim((string) $r->giver_name)))
+            ->values();
 
-        $pdf = Pdf::loadView('client.ganpati.pdf', [
-            'event'   => $event,
-            'entries' => $entries,
-            'cash'    => $entries->where('payment_method', 'cash'),
-            'gpay'    => $entries->where('payment_method', 'gpay'),
-            'other'   => $entries->whereNotIn('payment_method', ['cash', 'gpay']),
-        ])->setPaper('a4', 'portrait');
+        $cash  = $entries->where('payment_method', 'cash');
+        $gpay  = $entries->where('payment_method', 'gpay');
+        $other = $entries->whereNotIn('payment_method', ['cash', 'gpay']);
 
-        $filename = 'ganpati_chanda_' . str_replace(' ', '_', strtolower($event->title)) . '.pdf';
+        $pdf = Pdf::loadView('client.ganpati.pdf', compact('event', 'entries', 'cash', 'gpay', 'other'))
+            ->setPaper('a4', 'portrait');
 
-        return $pdf->download($filename);
+        try {
+            $dompdf      = $pdf->getDomPDF();
+            $canvas      = $dompdf->getCanvas();
+            $fontMetrics = $dompdf->getFontMetrics();
+            $font        = $fontMetrics->get_font('DejaVu Sans', 'normal');
+            if ($font) {
+                $muted = [0.38, 0.41, 0.45];
+                $canvas->page_text(34, 806, 'Chandla Book · Ganpati Special', $font, 7.5, $muted);
+                $canvas->page_text(238, 806, 'Page {PAGE_NUM} of {PAGE_COUNT}', $font, 9, [0.18, 0.23, 0.29]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Ganpati PDF footer skipped: ' . $e->getMessage());
+        }
+
+        $filename = 'ganpati-chanda-' . $event->id . '.pdf';
+
+        return response($pdf->output())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 }
