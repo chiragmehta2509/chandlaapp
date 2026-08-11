@@ -325,7 +325,7 @@ class GanpatiController extends Controller
 
         $validated = $request->validate([
             'giver_name'         => 'required|string|max:255',
-            'giver_phone'        => 'nullable|string|max:30',
+            'giver_phone'        => 'required|string|max:30',
             'giver_address'      => 'nullable|string',
             'amount'             => 'required|numeric|min:0',
             'payment_method'     => 'required|in:cash,gpay,other',
@@ -425,6 +425,32 @@ class GanpatiController extends Controller
 
             return Chandla::create($data);
         });
+
+        if (!empty($chandla->giver_phone)) {
+            try {
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $chandla->giver_phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'chandla_added',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($chandla->giver_name ?? 'Guest'),
+                                \App\Services\WhatsAppService::formatTextParameter((string) ($chandla->amount ?? 0))
+                            ]
+                        ]
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('WhatsApp chandla_added failed in ganpati', [
+                    'chandla_id' => $chandla->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         if ($request->input('submit_action') === 'another') {
             return redirect()->route('client.ganpati.chandla.create', $event->id)

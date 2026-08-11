@@ -39,10 +39,10 @@
 
             <div class="mb-4">
                 <label for="giver_phone" class="block text-xs font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 mb-1.5">
-                    Phone <span class="text-slate-400 font-normal normal-case">(optional)</span>
+                    Phone <span class="text-red-500">*</span>
                 </label>
                 <input type="tel" id="giver_phone" name="giver_phone" value="{{ old('giver_phone') }}"
-                       maxlength="30" placeholder="e.g. 98765 43210"
+                       maxlength="30" placeholder="e.g. 98765 43210" required
                        class="cb-field w-full @error('giver_phone') border-red-400 @enderror">
                 @error('giver_phone') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
             </div>

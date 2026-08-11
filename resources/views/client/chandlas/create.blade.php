@@ -105,8 +105,8 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                             <div>
-                                <label class="cb-label cb-label--classic" for="giver_phone">Phone <span class="font-normal text-slate-400">(optional)</span></label>
-                                <input type="text" name="giver_phone" id="giver_phone" value="{{ old('giver_phone') }}" class="cb-field min-h-[48px] w-full" inputmode="tel" placeholder="Phone">
+                                <label class="cb-label cb-label--classic" for="giver_phone">Phone <span class="text-red-500">*</span></label>
+                                <input type="text" name="giver_phone" id="giver_phone" value="{{ old('giver_phone') }}" class="cb-field min-h-[48px] w-full" inputmode="tel" placeholder="Phone" required>
                             </div>
                             <div>
                                 <label class="cb-label cb-label--classic" for="giver_email">Email <span class="font-normal text-slate-400">(optional)</span></label>

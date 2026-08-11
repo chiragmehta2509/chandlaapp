@@ -222,7 +222,7 @@ class ChandlaController extends Controller
         $validated = $request->validate([
             'event_id' => 'required|exists:events,id',
             'giver_name' => 'required|string|max:255',
-            'giver_phone' => 'nullable|string',
+            'giver_phone' => 'required|string',
             'giver_email' => 'nullable|email',
             'giver_address' => 'nullable|string',
             'category' => 'required|in:chandla,cover,gift',
