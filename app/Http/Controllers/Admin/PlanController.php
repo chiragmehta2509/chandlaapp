@@ -203,7 +203,7 @@ class PlanController extends Controller
         $levelNames = config('packs.level_names', []);
         $planName   = $levelNames[$level] ?? "Level {$level}";
 
-        $users = $this->usersAtLevel($level)->paginate(25);
+        $users = $this->usersAtLevel($level)->get();
 
         return view('admin.plans.subscribers', compact('users', 'level', 'planName'));
     }

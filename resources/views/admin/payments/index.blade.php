@@ -50,50 +50,12 @@
     </nav>
 </div>
 
-<!-- Filters -->
-<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-6">
-    <form method="GET" action="{{ route('admin.payments.index') }}" class="flex flex-col sm:flex-row gap-4 items-end">
-        <input type="hidden" name="tab" value="{{ $tab }}">
-        <div class="flex-1 w-full">
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Search</label>
-            <input type="text" name="search" value="{{ request('search') }}" 
-                   placeholder="{{ $tab === 'razorpay' ? 'Search by TXN, order ID, or payment ID...' : 'Search by transaction / reference ID...' }}" 
-                   class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500">
-        </div>
-        <div class="w-full sm:w-48">
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Status</label>
-            <select name="status" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                <option value="">All Statuses</option>
-                @if($tab === 'razorpay')
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
-                    <option value="success" {{ request('status') === 'success' ? 'selected' : '' }}>Success</option>
-                    <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
-                    <option value="refunded" {{ request('status') === 'refunded' ? 'selected' : '' }}>Refunded</option>
-                @else
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
-                    <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
-                @endif
-            </select>
-        </div>
-        <div class="flex gap-2 w-full sm:w-auto">
-            <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors w-full sm:w-auto">
-                <i class="fas fa-search mr-2 text-xs"></i> Filter
-            </button>
-            @if(request('search') || request('status'))
-                <a href="{{ route('admin.payments.index', ['tab' => $tab]) }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl transition-colors">
-                    Reset
-                </a>
-            @endif
-        </div>
-    </form>
-</div>
+
 
 <!-- Payments Table -->
 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="data-table min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50/75">
                 @if($tab === 'razorpay')
                     <tr>
@@ -188,8 +150,6 @@
             </tbody>
         </table>
     </div>
-    <div class="bg-gray-50 px-6 py-4">
-        {{ $payments->appends(request()->query())->links() }}
-    </div>
+
 </div>
 @endsection

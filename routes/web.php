@@ -152,6 +152,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reports/chandla/export', [AdminReportController::class, 'exportChandlaReport'])->name('reports.chandla.export');
         Route::get('/reports/events-summary', [AdminReportController::class, 'eventSummary'])->name('reports.events-summary');
 
+        // Notifications
+        Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'create'])->name('notifications.create');
+        Route::post('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'store'])->name('notifications.store');
+
         // Plan Management
         Route::get('/plans', [AdminPlanController::class, 'index'])->name('plans.index');
         Route::get('/plans/create', [AdminPlanController::class, 'createPack'])->name('plans.create');

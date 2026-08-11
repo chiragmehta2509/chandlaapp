@@ -11,7 +11,7 @@ class EventTypeController extends Controller
 {
     public function index()
     {
-        $eventTypes = EventType::ordered()->paginate(20);
+        $eventTypes = EventType::ordered()->get();
         return view('admin.event-types.index', compact('eventTypes'));
     }
 

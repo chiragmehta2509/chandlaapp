@@ -29,7 +29,7 @@ class ChandlaController extends Controller
             $query->whereBetween('received_date', [$request->start_date, $request->end_date]);
         }
 
-        $chandlas = $query->orderBy('received_date', 'desc')->paginate(20);
+        $chandlas = $query->orderBy('received_date', 'desc')->get();
         $events = Event::orderBy('event_date', 'desc')->get();
 
         $stats = [

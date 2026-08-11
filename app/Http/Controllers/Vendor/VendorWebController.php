@@ -169,7 +169,7 @@ class VendorWebController extends Controller
         $pendingVendors = Vendor::where('status', 'pending')->with('category')->get();
         $activeVendors = Vendor::where('status', 'active')->with('category')->get();
         
-        $leads = VendorLead::with(['vendor', 'event'])->orderBy('created_at', 'desc')->paginate(20);
+        $leads = VendorLead::with(['vendor', 'event'])->orderBy('created_at', 'desc')->get();
 
         return view('admin.vendors.index', compact('pendingVendors', 'activeVendors', 'leads'));
     }

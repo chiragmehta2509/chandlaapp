@@ -25,7 +25,7 @@
 
     {{-- Subscribers Table --}}
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-100">
+        <table class="data-table min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wide">User</th>
@@ -96,11 +96,7 @@
             </tbody>
         </table>
 
-        @if($users->hasPages())
-        <div class="px-4 py-4 border-t border-gray-100">
-            {{ $users->links() }}
-        </div>
-        @endif
+
     </div>
 
 </div>

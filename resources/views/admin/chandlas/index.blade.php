@@ -28,39 +28,12 @@
     </div>
 </div>
 
-<!-- Filters -->
-<div class="bg-white rounded-lg shadow p-6 mb-6">
-    <form method="GET" action="{{ route('admin.chandlas.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <select name="event_id" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">All Events</option>
-            @foreach($events as $event)
-                <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>
-                    {{ $event->title }}
-                </option>
-            @endforeach
-        </select>
-        <select name="category" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">All Categories</option>
-            <option value="chandla" {{ request('category') === 'chandla' ? 'selected' : '' }}>Cash</option>
-            <option value="cover" {{ request('category') === 'cover' ? 'selected' : '' }}>Cover</option>
-            <option value="gift" {{ request('category') === 'gift' ? 'selected' : '' }}>Gift</option>
-        </select>
-        <select name="payment_method" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">All Payment Methods</option>
-            <option value="gpay" {{ request('payment_method') === 'gpay' ? 'selected' : '' }}>GPay</option>
-            <option value="cash" {{ request('payment_method') === 'cash' ? 'selected' : '' }}>Cash</option>
-            <option value="other" {{ request('payment_method') === 'other' ? 'selected' : '' }}>N/A</option>
-        </select>
-        <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
-            <i class="fas fa-search mr-2"></i>Filter
-        </button>
-    </form>
-</div>
+
 
 <!-- Chandlas Table -->
 <div class="bg-white rounded-lg shadow overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="data-table min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -131,8 +104,6 @@
             </tbody>
         </table>
     </div>
-    <div class="bg-gray-50 px-6 py-4">
-        {{ $chandlas->links() }}
-    </div>
+
 </div>
 @endsection

@@ -13,27 +13,11 @@
     </a>
 </div>
 
-<!-- Filters -->
-<div class="bg-white rounded-lg shadow p-6 mb-6">
-    <form method="GET" action="{{ route('admin.users.index') }}" class="flex gap-4">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search users..." 
-               class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <select name="status" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">All Status</option>
-            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-            <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-            <option value="premium" {{ request('status') === 'premium' ? 'selected' : '' }}>Premium</option>
-        </select>
-        <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
-            <i class="fas fa-search mr-2"></i>Search
-        </button>
-    </form>
-</div>
 
 <!-- Users Table -->
 <div class="bg-white rounded-lg shadow overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="data-table min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
@@ -100,8 +84,6 @@
             </tbody>
         </table>
     </div>
-    <div class="bg-gray-50 px-6 py-4">
-        {{ $users->links() }}
-    </div>
+
 </div>
 @endsection

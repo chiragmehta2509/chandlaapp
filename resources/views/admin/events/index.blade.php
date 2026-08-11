@@ -8,72 +8,60 @@
     <p class="text-gray-600 mt-1">Manage all events in the system</p>
 </div>
 
-<!-- Filters -->
-<div class="bg-white rounded-lg shadow p-6 mb-6">
-    <form method="GET" action="{{ route('admin.events.index') }}" class="flex gap-4">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search events..." 
-               class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <select name="status" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">All Events</option>
-            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-            <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
-        </select>
-        <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
-            <i class="fas fa-search mr-2"></i>Search
-        </button>
-    </form>
-</div>
-
-<!-- Events Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @forelse($events as $event)
-        <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
-            <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $event->title }}</h3>
-                <p class="text-gray-600 text-sm mb-4">{{ Str::limit($event->description, 100) }}</p>
-                <div class="space-y-2 mb-4">
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-calendar mr-2"></i>
-                        {{ $event->event_date->format('M d, Y') }}
-                    </div>
-                    @if($event->venue)
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-map-marker-alt mr-2"></i>
-                        {{ $event->venue }}
-                    </div>
-                    @endif
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-user mr-2"></i>
-                        {{ $event->user->name }}
-                    </div>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $event->is_archived ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800' }}">
-                        {{ $event->is_archived ? 'Archived' : 'Active' }}
-                    </span>
-                    <div class="space-x-2">
-                        <a href="{{ route('admin.events.show', $event->id) }}" class="text-indigo-600 hover:text-indigo-800">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @empty
-        <div class="col-span-3 text-center py-12">
-            <p class="text-gray-500">No events found</p>
-        </div>
-    @endforelse
-</div>
-
-<div class="mt-6">
-    {{ $events->links() }}
+<!-- Events Table -->
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="data-table min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Title</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venue</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($events as $event)
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ $event->title }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $event->event_date->format('M d, Y') }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $event->venue ?? 'N/A' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $event->user->name ?? 'N/A' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $event->is_archived ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800' }}">
+                                {{ $event->is_archived ? 'Archived' : 'Active' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{{ route('admin.events.show', $event->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No events found</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection
