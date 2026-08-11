@@ -11,20 +11,7 @@
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);max-width:600px;width:100%;">
                 <tr>
                     <td style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#4c1d95 100%);padding:28px;text-align:center;">
-                        @php
-                            $logoFile = null;
-                            foreach (['images/logo.jpeg', 'images/logo.png', 'images/chandla-logo.png', 'images/chandla-logo.jpg'] as $img) {
-                                if (file_exists(public_path($img))) {
-                                    $logoFile = public_path($img);
-                                    break;
-                                }
-                            }
-                        @endphp
-                        @if(isset($message) && $logoFile)
-                            <img src="{{ $message->embed($logoFile) }}" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;">
-                        @else
-                            <img src="{{ url('images/logo.jpeg') }}" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;">
-                        @endif
+                        <img src="https://chandlabook.in/images/chandla-logo.png" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;">
                         <p style="margin:0;color:#e0e7ff;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Family viewer access</p>
                     </td>
                 </tr>
