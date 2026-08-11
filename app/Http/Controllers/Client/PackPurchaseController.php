@@ -389,7 +389,6 @@ class PackPurchaseController extends Controller
 
             $owner->save();
 
-            // Record a PackPaymentReceipt for backward compatibility with old reports
             $amountInr = (float) config("packs.{$configKey}.amount_inr", 0);
             \App\Models\PackPaymentReceipt::firstOrCreate(
                 ['razorpay_payment_id' => $paymentId],
@@ -400,5 +399,38 @@ class PackPurchaseController extends Controller
                 ]
             );
         });
+
+        if (!empty($owner->phone)) {
+            try {
+                $packLabel = config("packs.{$configKey}.label", ucfirst($configKey));
+                $amountInr = (float) config("packs.{$configKey}.amount_inr", 0);
+                $validityDate = now()->addMonths(6)->format('d M Y');
+
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $owner->phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'plan_purchase_confirmation',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($owner->name ?? 'User'),
+                                \App\Services\WhatsAppService::formatTextParameter((string) $amountInr),
+                                \App\Services\WhatsAppService::formatTextParameter($packLabel),
+                                \App\Services\WhatsAppService::formatTextParameter($validityDate)
+                            ]
+                        ]
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('WhatsApp plan_purchase_confirmation failed for pack', [
+                    'user_id' => $ownerId,
+                    'pack' => $configKey,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
     }
 }

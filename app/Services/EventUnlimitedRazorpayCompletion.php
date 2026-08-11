@@ -93,8 +93,8 @@ class EventUnlimitedRazorpayCompletion
                             'type' => 'body',
                             'parameters' => [
                                 \App\Services\WhatsAppService::formatTextParameter($buyer->name ?? 'User'),
-                                \App\Services\WhatsAppService::formatTextParameter('Unlimited'),
                                 \App\Services\WhatsAppService::formatTextParameter((string) $amount),
+                                \App\Services\WhatsAppService::formatTextParameter('Unlimited'),
                                 \App\Services\WhatsAppService::formatTextParameter('Lifetime')
                             ]
                         ]
