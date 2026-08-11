@@ -14,7 +14,7 @@
     <header class="sticky top-0 z-50 w-full bg-slate-50 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 transition-all duration-300">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center">
-                <img src="<?php echo e(asset('images/chandla-favicon.png')); ?>" alt="Chandla Book" class="h-14 w-auto mr-3" decoding="async">
+                <img src="<?php echo e(asset('images/logo.jpeg')); ?>" alt="Chandla Book" class="h-14 w-auto mr-3" decoding="async">
                 <span class="text-2xl font-bold text-slate-900 dark:text-white">Chandla Book</span>
             </div>
             <div class="flex flex-wrap items-center gap-2 sm:gap-3">
