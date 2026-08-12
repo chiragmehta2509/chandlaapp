@@ -94,9 +94,17 @@ class FamilyMemberController extends Controller
 
         $password = $request->input('password') ?: Str::random(10);
 
+        // Skip phone if it already belongs to another user (family members may share phone numbers)
+        $incomingPhone = $request->input('phone');
+        $phoneToStore  = null;
+        if ($incomingPhone) {
+            $phoneTaken = User::where('phone', $incomingPhone)->exists();
+            $phoneToStore = $phoneTaken ? null : $incomingPhone;
+        }
+
         $member = User::create([
             'name'             => $request->name,
-            'phone'            => $request->phone,
+            'phone'            => $phoneToStore,
             'email'            => $request->email,
             'password'         => Hash::make($password),
             'parent_user_id'   => $user->id,
@@ -181,12 +189,25 @@ class FamilyMemberController extends Controller
         }
 
         $updateData = array_filter([
-            'name'        => $request->name,
-            'phone'       => $request->phone,
-            'email'       => $request->email,
-            'family_role' => $request->family_role,
-            'is_active'   => $request->is_active,
+            'name'        => $request->input('name'),
+            'email'       => $request->input('email'),
+            'family_role' => $request->input('family_role'),
+            'is_active'   => $request->input('is_active'),
         ], fn($v) => $v !== null);
+
+        // Only update phone if it won't violate the unique constraint
+        // (family members may share a phone with the main account holder)
+        $incomingPhone = $request->input('phone');
+        if ($incomingPhone !== null) {
+            $phoneTaken = User::where('phone', $incomingPhone)
+                ->where('id', '!=', $member->id)
+                ->exists();
+            if (!$phoneTaken) {
+                $updateData['phone'] = $incomingPhone;
+            }
+            // If phone is already taken by another user, silently skip it
+            // (the member keeps their current phone)
+        }
 
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);

@@ -298,6 +298,7 @@ class ChandlaController extends Controller
             'received_date' => 'required|date',
             'receipt_number' => 'nullable|string',
             'notes' => 'nullable|string',
+            'description' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -314,7 +315,7 @@ class ChandlaController extends Controller
         $data = $request->only([
             'event_id', 'giver_name', 'giver_phone', 'giver_email', 'giver_address',
             'category', 'payment_method', 'amount', 'gift_item_name', 'gift_received',
-            'gpay_transaction_id', 'received_date', 'receipt_number', 'notes'
+            'gpay_transaction_id', 'received_date', 'receipt_number', 'notes', 'description'
         ]);
 
         $data['user_id'] = $userId;
@@ -442,7 +443,7 @@ class ChandlaController extends Controller
         $updateData = $request->only([
             'giver_name', 'giver_phone', 'giver_email', 'giver_address',
             'category', 'payment_method', 'amount', 'gift_item_name', 'gift_received',
-            'gpay_transaction_id', 'received_date', 'receipt_number', 'notes'
+            'gpay_transaction_id', 'received_date', 'receipt_number', 'notes', 'description'
         ]);
 
         // Handing GPay image
