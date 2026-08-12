@@ -138,7 +138,7 @@ class EventController extends Controller
             'event_time' => 'nullable|date_format:H:i',
             'venue' => 'nullable|string|max:255',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'event_type' => 'nullable|string|in:wedding,birthday,anniversary,other',
+            'event_type' => 'nullable|string|max:100',
             'event_type_id' => 'nullable|exists:event_types,id',
         ]);
 
@@ -215,7 +215,7 @@ class EventController extends Controller
             'event_time' => 'nullable|date_format:H:i',
             'venue' => 'nullable|string|max:255',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'event_type' => 'nullable|string|in:wedding,birthday,anniversary,other',
+            'event_type' => 'nullable|string|max:100',
             'event_type_id' => 'nullable|exists:event_types,id',
         ]);
 
