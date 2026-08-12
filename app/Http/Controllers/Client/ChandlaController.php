@@ -7,6 +7,7 @@ use App\Models\Chandla;
 use App\Models\Contact;
 use App\Models\EventCashInventory;
 use App\Models\Event;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -609,6 +610,52 @@ class ChandlaController extends Controller
         ]);
 
         return $pdf->download('free-plan-first-50-entries.pdf');
+    }
+
+    public function ledgerPdf()
+    {
+        /** @var \App\Models\User $authUser */
+        $authUser = Auth::user();
+        $ownerId = $authUser->dataOwnerId();
+        if ($authUser->isFamilyMember() && Event::where('user_id', $authUser->id)->exists()) {
+            $ownerId = $authUser->id;
+        }
+
+        $owner = User::find($ownerId) ?? $authUser;
+
+        $entries = Chandla::with('event')
+            ->where('user_id', $ownerId)
+            ->orderBy('received_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $cash = $entries->where('category', 'chandla')->where('payment_method', '!=', 'gpay')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $gpay = $entries->where('payment_method', 'gpay')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $cover = $entries->where('category', 'cover')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $gift = $entries->where('category', 'gift')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+            
+        $gujaratiFontPath = $this->resolvePdfGujaratiFontPath();
+
+        $pdf = Pdf::loadView('client.chandlas.ledger-pdf', [
+            'cash'             => $cash,
+            'gpay'             => $gpay,
+            'cover'            => $cover,
+            'gift'             => $gift,
+            'user'             => $owner,
+            'gujaratiFontPath' => $gujaratiFontPath,
+        ]);
+
+        $this->decorateEventChandlaPdf($pdf);
+
+        return $pdf->download('entire-ledger.pdf');
     }
 
     private function resolvePdfGujaratiFontPath(): ?string

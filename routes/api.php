@@ -217,6 +217,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::prefix('chandlas')->group(function () {
         Route::get('/', [ChandlaController::class, 'index']);
         Route::get('/stats', [ChandlaController::class, 'stats']);
+        Route::get('/pdf', [ChandlaController::class, 'downloadPdf']);
         Route::get('/{id}', [ChandlaController::class, 'show']);
         Route::post('/', [ChandlaController::class, 'store']);
         Route::put('/{id}', [ChandlaController::class, 'update']);

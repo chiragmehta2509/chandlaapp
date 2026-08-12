@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api\Chandla;
 use App\Http\Controllers\Controller;
 use App\Models\Chandla;
 use App\Models\Event;
+use App\Models\User;
 use App\Models\ActivityLog;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -30,6 +33,84 @@ class ChandlaController extends Controller
             $total += $denom * $count;
         }
         return $total;
+    }
+
+    public function downloadPdf(Request $request)
+    {
+        /** @var \App\Models\User $authUser */
+        $authUser = $request->user();
+        $ownerId = $authUser->dataOwnerId();
+        if ($authUser->isFamilyMember() && Event::where('user_id', $authUser->id)->exists()) {
+            $ownerId = $authUser->id;
+        }
+
+        $owner = User::find($ownerId) ?? $authUser;
+
+        $entries = Chandla::with('event')
+            ->where('user_id', $ownerId)
+            ->orderBy('received_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $cash = $entries->where('category', 'chandla')->where('payment_method', '!=', 'gpay')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $gpay = $entries->where('payment_method', 'gpay')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $cover = $entries->where('category', 'cover')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+        $gift = $entries->where('category', 'gift')
+            ->sortBy(fn ($row) => mb_strtolower(trim((string) $row->giver_name)))
+            ->values();
+            
+        $gujaratiFontPath = $this->resolvePdfGujaratiFontPath();
+
+        $pdf = Pdf::loadView('client.chandlas.ledger-pdf', [
+            'cash'             => $cash,
+            'gpay'             => $gpay,
+            'cover'            => $cover,
+            'gift'             => $gift,
+            'user'             => $owner,
+            'gujaratiFontPath' => $gujaratiFontPath,
+        ]);
+
+        $this->decorateEventChandlaPdf($pdf);
+
+        return $pdf->download('entire-ledger.pdf');
+    }
+
+    private function resolvePdfGujaratiFontPath(): ?string
+    {
+        $fontDirectory = storage_path('fonts');
+        $projectFontPath = $fontDirectory . DIRECTORY_SEPARATOR . 'gujarati.ttf';
+
+        if (is_file($projectFontPath)) {
+            return $projectFontPath;
+        }
+        return null;
+    }
+
+    private function decorateEventChandlaPdf(\Barryvdh\DomPDF\PDF $pdf): void
+    {
+        try {
+            $dompdf = $pdf->getDomPDF();
+            $canvas = $dompdf->getCanvas();
+            $fontMetrics = $dompdf->getFontMetrics();
+            $font = $fontMetrics->get_font('DejaVu Sans', 'normal');
+            if (!$font) {
+                return;
+            }
+
+            $muted = [0.38, 0.41, 0.45];
+            $canvas->page_text(34, 806, 'Chandla Book • ' . config('app.name'), $font, 7.5, $muted);
+            $canvas->page_text(238, 806, 'Page {PAGE_NUM} of {PAGE_COUNT}', $font, 9, [0.18, 0.23, 0.29]);
+        } catch (\Throwable $e) {
+            Log::warning('Event PDF footer chrome skipped', [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function index(Request $request)

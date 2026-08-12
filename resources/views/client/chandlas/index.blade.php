@@ -8,11 +8,16 @@
         <h1 class="cb-page-title">Ledger</h1>
         <p class="cb-subtitle">Gifts and contributions across your events</p>
     </div>
-    @canEdit
-    <a href="{{ route('client.chandlas.create') }}" class="cb-btn cb-btn-gold w-full sm:w-auto justify-center sm:justify-center shrink-0">
-        <i class="fas fa-plus"></i>Add chandla
-    </a>
-    @endcanEdit
+    <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <a href="{{ route('client.chandlas.pdf') }}" target="_blank" class="cb-btn cb-btn-outline w-full sm:w-auto justify-center shrink-0">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </a>
+        @canEdit
+        <a href="{{ route('client.chandlas.create') }}" class="cb-btn cb-btn-gold w-full sm:w-auto justify-center shrink-0">
+            <i class="fas fa-plus"></i>Add chandla
+        </a>
+        @endcanEdit
+    </div>
 </div>
 
 @php

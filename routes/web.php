@@ -235,6 +235,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/chandlas/search-givers', [ClientChandlaController::class, 'searchGivers'])->name('chandlas.search-givers');
         Route::get('/chandlas/free-limit/download', [ClientChandlaController::class, 'freeLimitDownload'])->name('chandlas.free-limit.download');
         Route::post('/chandlas/{id}/clone', [ClientChandlaController::class, 'clone'])->name('chandlas.clone');
+        Route::get('/chandlas/pdf', [ClientChandlaController::class, 'ledgerPdf'])->name('chandlas.pdf');
         Route::resource('chandlas', ClientChandlaController::class);
         Route::get('/events/{eventId}/chandlas/pdf', [ClientChandlaController::class, 'pdf'])->name('events.chandlas.pdf');
 
