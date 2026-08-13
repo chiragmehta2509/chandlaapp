@@ -104,62 +104,67 @@ class AuthController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Resend OTP logic check (if requested from verify page)
+        // Resend logic check
         if ($request->has('resend_otp')) {
             $registrationData = $request->session()->get('registration_data');
             if (!$registrationData) {
                 return redirect()->route('client.register')->withErrors(['session' => 'Registration session expired. Please start again.']);
             }
-            $request->merge($registrationData); // Pretend we submitted the form again
+            $request->merge($registrationData);
         }
 
-        $otp = (string) random_int(100000, 999999);
+        $token = (string) \Illuminate\Support\Str::uuid();
         
         $registrationData = [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'password' => $request->password, // Stored raw in session, hashed on create
+            'password' => $request->password,
             'referral_code' => $request->referral_code,
+            'source' => 'web'
         ];
         
+        // Cache the data for 15 minutes (cross-device accessible)
+        cache()->put("reg_data_{$token}", $registrationData, now()->addMinutes(15));
+        
+        // Also keep in session just for the "Resend" button on the waiting page
         $request->session()->put('registration_data', $registrationData);
-        $request->session()->put('registration_otp', $otp);
-        $request->session()->put('registration_otp_expires_at', now()->addMinutes(15));
+        $request->session()->put('registration_token', $token);
         
         $sentTo = '';
+        $verificationUrl = route('client.register.verify.link', ['token' => $token]);
 
-        if (!empty($request->phone)) { // Both or just Phone -> WhatsApp
+        if (!empty($request->phone)) { 
             try {
-                // Log for local debugging
-                \Illuminate\Support\Facades\Log::info("Mock OTP to WhatsApp {$request->phone}: {$otp}");
+                \Illuminate\Support\Facades\Log::info("Mock Link to WhatsApp {$request->phone}: {$verificationUrl}");
                 
                 $waService = new \App\Services\WhatsAppService();
                 $cleanPhone = preg_replace('/^\+?91/', '', $request->phone);
-                // Placeholder: Update with actual template when provided by user
+                
+                // Using the requested template name and passing the token
                 /* 
                 $waService->sendTemplateMessage(
                     to: '91' . $cleanPhone,
-                    templateName: 'otp_verification',
+                    templateName: 'otp_verification_link',
                     languageCode: 'en',
                     components: [
-                        ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($otp)]]
+                        ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]]
                     ]
                 );
                 */
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('OTP WhatsApp failed', ['error' => $e->getMessage()]);
+                \Illuminate\Support\Facades\Log::error('Link WhatsApp failed', ['error' => $e->getMessage()]);
             }
             $sentTo = 'WhatsApp number ending in ' . substr($request->phone, -4);
-        } else { // Email only
+        } else { 
             try {
-                \Illuminate\Support\Facades\Log::info("Sending OTP via Email to {$request->email}: {$otp}");
-                Mail::send('emails.otp', ['name' => $request->name, 'otp' => $otp], function ($message) use ($request) {
+                \Illuminate\Support\Facades\Log::info("Sending Link via Email to {$request->email}: {$verificationUrl}");
+                Mail::send('emails.verify_link', ['name' => $request->name, 'verification_url' => $verificationUrl], function ($message) use ($request) {
                     $message->to($request->email, $request->name)
-                        ->subject('Your Verification Code');
+                        ->subject('Verify your Chandla Book account');
                 });
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('OTP Email failed', ['error' => $e->getMessage()]);
+                \Illuminate\Support\Facades\Log::error('Link Email failed', ['error' => $e->getMessage()]);
             }
             $parts = explode('@', $request->email);
             $sentTo = 'email address ' . substr($parts[0], 0, 3) . '***@' . $parts[1];
@@ -168,7 +173,7 @@ class AuthController extends Controller
         $request->session()->put('registration_sent_to', $sentTo);
 
         if ($request->has('resend_otp')) {
-            return back()->with('status', 'A new verification code has been sent.');
+            return back()->with('status', 'A new verification link has been sent.');
         }
 
         return redirect()->route('client.register.verify');
@@ -182,27 +187,18 @@ class AuthController extends Controller
         return view('client.auth.verify-otp');
     }
 
-    public function verifyOtp(Request $request)
+    public function verifyAccountLink(Request $request, $token)
     {
-        $request->validate(['otp' => 'required|string|size:6']);
+        $data = cache()->get("reg_data_{$token}");
 
-        $sessionOtp = $request->session()->get('registration_otp');
-        $expiresAt = $request->session()->get('registration_otp_expires_at');
-        $data = $request->session()->get('registration_data');
-
-        if (!$sessionOtp || !$data) {
-            return redirect()->route('client.register')->withErrors(['session' => 'Registration session expired. Please register again.']);
+        if (!$data) {
+            return redirect()->route('client.login')->withErrors(['session' => 'This verification link has expired or is invalid. Please register again.']);
         }
 
-        if (now()->greaterThan($expiresAt)) {
-            return back()->withErrors(['otp' => 'This verification code has expired. Please click Resend Code.']);
-        }
+        // Clear cache
+        cache()->forget("reg_data_{$token}");
 
-        if ($request->otp !== $sessionOtp) {
-            return back()->withErrors(['otp' => 'Invalid verification code. Please try again.']);
-        }
-
-        // OTP is valid, create the user
+        // Create the user
         $referrerId = null;
         if (!empty($data['referral_code'])) {
             $referrerId = User::where('referral_code', $data['referral_code'])->value('id');
@@ -261,12 +257,18 @@ class AuthController extends Controller
             }
         }
 
-        // Clear session data
-        $request->session()->forget(['registration_data', 'registration_otp', 'registration_otp_expires_at', 'registration_sent_to']);
+        // If it was initiated via API, redirect to a special success page or back to app
+        if (isset($data['source']) && $data['source'] === 'api') {
+            return redirect()->route('client.login')->with(
+                'status',
+                'Account verified successfully! You can now log in from the mobile app.'
+            );
+        }
 
+        // If initiated via Web, redirect to login
         return redirect()->route('client.login')->with(
             'status',
-            'Account created and verified. Please sign in.'
+            'Account verified successfully! Please sign in.'
         );
     }
 

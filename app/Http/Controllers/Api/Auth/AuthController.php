@@ -569,8 +569,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $otp = (string) random_int(100000, 999999);
-        $identifier = (string) Str::uuid();
+        $token = (string) Str::uuid();
 
         $registrationData = [
             'name'     => $request->name,
@@ -578,44 +577,46 @@ class AuthController extends Controller
             'phone'    => $request->phone,
             'password' => $request->password,
             'referral_code' => $request->referral_code,
+            'source'   => 'api'
         ];
 
-        // Cache the data and OTP for 15 minutes
-        cache()->put("api_reg_data_{$identifier}", $registrationData, now()->addMinutes(15));
-        cache()->put("api_reg_otp_{$identifier}", $otp, now()->addMinutes(15));
+        // Cache the data for 15 minutes. It will be verified by the Web controller.
+        cache()->put("reg_data_{$token}", $registrationData, now()->addMinutes(15));
 
         $sentTo = '';
+        $verificationUrl = route('client.register.verify.link', ['token' => $token]);
 
-        if (!empty($request->phone)) { // Both or just Phone -> WhatsApp
+        if (!empty($request->phone)) { 
             try {
-                \Illuminate\Support\Facades\Log::info("Mock API OTP to WhatsApp {$request->phone}: {$otp}");
+                \Illuminate\Support\Facades\Log::info("Mock API Link to WhatsApp {$request->phone}: {$verificationUrl}");
                 
                 $waService = new \App\Services\WhatsAppService();
                 $cleanPhone = preg_replace('/^\+?91/', '', $request->phone);
-                // Placeholder: Update with actual template when provided by user
+                
+                // Using the requested template name and passing the token
                 /* 
                 $waService->sendTemplateMessage(
                     to: '91' . $cleanPhone,
-                    templateName: 'otp_verification',
+                    templateName: 'otp_verification_link',
                     languageCode: 'en',
                     components: [
-                        ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($otp)]]
+                        ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]]
                     ]
                 );
                 */
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('API OTP WhatsApp failed', ['error' => $e->getMessage()]);
+                \Illuminate\Support\Facades\Log::error('API Link WhatsApp failed', ['error' => $e->getMessage()]);
             }
             $sentTo = 'WhatsApp number ending in ' . substr($request->phone, -4);
-        } else { // Email only
+        } else { 
             try {
-                \Illuminate\Support\Facades\Log::info("Sending API OTP via Email to {$request->email}: {$otp}");
-                Mail::send('emails.otp', ['name' => $request->name, 'otp' => $otp], function ($message) use ($request) {
+                \Illuminate\Support\Facades\Log::info("Sending API Link via Email to {$request->email}: {$verificationUrl}");
+                Mail::send('emails.verify_link', ['name' => $request->name, 'verification_url' => $verificationUrl], function ($message) use ($request) {
                     $message->to($request->email, $request->name)
-                        ->subject('Your Verification Code');
+                        ->subject('Verify your Chandla Book account');
                 });
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('API OTP Email failed', ['error' => $e->getMessage()]);
+                \Illuminate\Support\Facades\Log::error('API Link Email failed', ['error' => $e->getMessage()]);
             }
             $parts = explode('@', $request->email);
             $sentTo = 'email address ' . substr($parts[0], 0, 3) . '***@' . $parts[1];
@@ -623,129 +624,12 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "Verification code sent to {$sentTo}",
+            'message' => "Verification link sent to {$sentTo}",
             'data'    => [
-                'identifier' => $identifier,
                 'sent_to'    => $sentTo,
                 'expires_in' => 900 // 15 mins
             ],
         ], 200);
-    }
-
-    public function verifyRegisterOtp(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'identifier' => 'required|string',
-            'otp'        => 'required|string|size:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
-
-        $cachedData = cache()->get("api_reg_data_{$request->identifier}");
-        $cachedOtp = cache()->get("api_reg_otp_{$request->identifier}");
-
-        if (!$cachedData || !$cachedOtp) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Registration session expired or invalid. Please register again.',
-            ], 400);
-        }
-
-        if ($request->otp !== $cachedOtp) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid verification code.',
-            ], 400);
-        }
-
-        // Clear cache
-        cache()->forget("api_reg_data_{$request->identifier}");
-        cache()->forget("api_reg_otp_{$request->identifier}");
-
-        // Create User
-        $referrerId = null;
-        if (!empty($cachedData['referral_code'])) {
-            $referrerId = User::where('referral_code', $cachedData['referral_code'])->value('id');
-        }
-
-        $authProvider = !empty($cachedData['email']) ? 'email' : 'phone';
-        $freeCredits = $referrerId ? 1 : 0;
-
-        $user = User::create([
-            'name'          => $cachedData['name'],
-            'email'         => $cachedData['email'] ?? null,
-            'phone'         => $cachedData['phone'] ?? null,
-            'password'      => Hash::make($cachedData['password']),
-            'auth_provider' => $authProvider,
-            'is_active'     => true,
-            'referred_by'   => $referrerId,
-            'free_event_credits' => $freeCredits,
-        ]);
-
-        if ($referrerId) {
-            User::where('id', $referrerId)->increment('free_event_credits');
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        $this->saveDeviceTokenIfPresent($user, $request);
-
-        ActivityLog::create([
-            'user_id'    => $user->id,
-            'action'     => 'api_register_otp',
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
-
-        // Send Welcome Email
-        if (!empty($user->email)) {
-            try {
-                Mail::send('emails.welcome', ['user' => $user], function ($message) use ($user) {
-                    $message->to($user->email, $user->name)
-                        ->subject('Welcome to Chandla Book — your account is ready');
-                });
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('API Welcome email failed', ['error' => $e->getMessage()]);
-            }
-        }
-
-        // Send Welcome WhatsApp
-        if (!empty($user->phone)) {
-            try {
-                $waService  = new \App\Services\WhatsAppService();
-                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
-                $waService->sendTemplateMessage(
-                    to: '91' . $cleanPhone,
-                    templateName: 'welcome_first_login',
-                    languageCode: 'en',
-                    components: [
-                        [
-                            'type'       => 'body',
-                            'parameters' => [
-                                \App\Services\WhatsAppService::formatTextParameter($user->name ?? 'User'),
-                            ],
-                        ],
-                    ]
-                );
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('API Welcome WhatsApp failed', ['error' => $e->getMessage()]);
-            }
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Registration and verification successful',
-            'data'    => [
-                'user'       => $user,
-                'token'      => $token,
-                'token_type' => 'Bearer',
-            ],
-        ], 201);
     }
 
     public function login(Request $request)

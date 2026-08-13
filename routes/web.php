@@ -176,6 +176,7 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::post('/login', [ClientAuthController::class, 'login']);
     Route::get('/register', [ClientAuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [ClientAuthController::class, 'register']);
+    Route::get('/account_verification/{token}', [ClientAuthController::class, 'verifyAccountLink'])->name('register.verify.link');
     Route::get('/register/verify', [ClientAuthController::class, 'showOtpVerificationForm'])->name('register.verify');
     Route::post('/register/verify', [ClientAuthController::class, 'verifyOtp'])->name('register.verify.submit');
     Route::post('/logout', [ClientAuthController::class, 'logout'])->name('logout');    // Client Protected Routes
