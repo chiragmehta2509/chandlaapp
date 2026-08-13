@@ -33,12 +33,28 @@ class FirebaseService
     }
 
     /**
+     * @var string|null
+     */
+    protected $cachedAccessToken = null;
+
+    /**
+     * @var bool
+     */
+    protected $tokenAttempted = false;
+
+    /**
      * Get OAuth2 Access Token.
      *
      * @return string|null
      */
     protected function getAccessToken(): ?string
     {
+        if ($this->tokenAttempted) {
+            return $this->cachedAccessToken;
+        }
+
+        $this->tokenAttempted = true;
+
         if (!file_exists($this->credentialsPath)) {
             Log::error("Firebase service account credentials file not found at: {$this->credentialsPath}");
             return null;
@@ -58,7 +74,8 @@ class FirebaseService
                 $this->projectId = $credentials['project_id'] ?? null;
             }
 
-            return $token['access_token'] ?? null;
+            $this->cachedAccessToken = $token['access_token'] ?? null;
+            return $this->cachedAccessToken;
         } catch (\Exception $e) {
             Log::error("Error generating Firebase OAuth2 access token: " . $e->getMessage());
             return null;

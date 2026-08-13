@@ -19,7 +19,24 @@ class NotificationController extends Controller
 
     public function create()
     {
-        return view('admin.notifications.create');
+        // Get user IDs that have at least one active device token
+        $usersWithTokens = \App\Models\DeviceToken::where('is_active', true)
+            ->whereNotNull('device_token')
+            ->where('device_token', '!=', '')
+            ->pluck('user_id')
+            ->toArray();
+
+        // Get all active users
+        $users = User::select('id', 'name', 'phone')
+            ->active()
+            ->orderBy('name')
+            ->get()
+            ->map(function ($user) use ($usersWithTokens) {
+                $user->has_token = in_array($user->id, $usersWithTokens);
+                return $user;
+            });
+
+        return view('admin.notifications.create', compact('users'));
     }
 
     public function store(Request $request)
@@ -27,8 +44,10 @@ class NotificationController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'message' => 'required|string',
-            'target_audience' => 'required|in:all,plan_wise',
+            'target_audience' => 'required|in:all,plan_wise,specific_users',
             'plan_level' => 'required_if:target_audience,plan_wise|integer|min:0|max:7',
+            'specific_user_ids' => 'required_if:target_audience,specific_users|array',
+            'specific_user_ids.*' => 'integer|exists:users,id',
         ]);
 
         $data = [
@@ -39,6 +58,9 @@ class NotificationController extends Controller
 
         if ($request->target_audience === 'all') {
             $data['send_to'] = 'all';
+        } elseif ($request->target_audience === 'specific_users') {
+            $data['send_to'] = 'selected_users';
+            $data['user_ids'] = $request->specific_user_ids;
         } else {
             $data['send_to'] = 'selected_users';
             

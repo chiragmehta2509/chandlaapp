@@ -88,6 +88,11 @@ class NotificationService
             $tokens = DeviceToken::whereIn('user_id', $userIds)
                 ->where('is_active', true)
                 ->pluck('device_token')
+                ->filter(function ($token) {
+                    return !empty(trim((string) $token));
+                })
+                ->unique()
+                ->values()
                 ->toArray();
 
             if (!empty($tokens)) {
