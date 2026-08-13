@@ -88,11 +88,13 @@ class AuthController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => ['required', 'string', 'max:255', 'email:rfc,dns', 'unique:users,email', new NotDisposableEmail],
-            'phone' => ['required', 'string', 'size:10', 'regex:/^[6-9][0-9]{9}$/', 'unique:users,phone'],
+            'email' => ['nullable', 'required_without:phone', 'string', 'max:255', 'email:rfc,dns', 'unique:users,email', new NotDisposableEmail],
+            'phone' => ['nullable', 'required_without:email', 'string', 'size:10', 'regex:/^[6-9][0-9]{9}$/', 'unique:users,phone'],
             'password' => 'required|string|min:8|confirmed',
             'referral_code' => 'nullable|string|exists:users,referral_code',
         ], [
+            'email.required_without' => 'Please provide at least an email address or mobile number.',
+            'phone.required_without' => 'Please provide at least a mobile number or email address.',
             'phone.regex' => 'Enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).',
             'phone.size' => 'Mobile number must be exactly 10 digits.',
             'email.email' => 'Enter a valid email address.',
@@ -102,19 +104,118 @@ class AuthController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $referrerId = null;
-        if (!empty($request->referral_code)) {
-            $referrerId = User::where('referral_code', $request->referral_code)->value('id');
+        // Resend OTP logic check (if requested from verify page)
+        if ($request->has('resend_otp')) {
+            $registrationData = $request->session()->get('registration_data');
+            if (!$registrationData) {
+                return redirect()->route('client.register')->withErrors(['session' => 'Registration session expired. Please start again.']);
+            }
+            $request->merge($registrationData); // Pretend we submitted the form again
         }
 
-        $authProvider = $request->email ? 'email' : 'phone';
-        $freeCredits = $referrerId ? 1 : 0;
+        $otp = (string) random_int(100000, 999999);
         
-        $user = User::create([
+        $registrationData = [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'password' => Hash::make($request->password),
+            'password' => $request->password, // Stored raw in session, hashed on create
+            'referral_code' => $request->referral_code,
+        ];
+        
+        $request->session()->put('registration_data', $registrationData);
+        $request->session()->put('registration_otp', $otp);
+        $request->session()->put('registration_otp_expires_at', now()->addMinutes(15));
+        
+        $sentTo = '';
+
+        if (!empty($request->phone)) { // Both or just Phone -> WhatsApp
+            try {
+                // Log for local debugging
+                \Illuminate\Support\Facades\Log::info("Mock OTP to WhatsApp {$request->phone}: {$otp}");
+                
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $request->phone);
+                // Placeholder: Update with actual template when provided by user
+                /* 
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'otp_verification',
+                    languageCode: 'en',
+                    components: [
+                        ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($otp)]]
+                    ]
+                );
+                */
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('OTP WhatsApp failed', ['error' => $e->getMessage()]);
+            }
+            $sentTo = 'WhatsApp number ending in ' . substr($request->phone, -4);
+        } else { // Email only
+            try {
+                \Illuminate\Support\Facades\Log::info("Sending OTP via Email to {$request->email}: {$otp}");
+                Mail::send('emails.otp', ['name' => $request->name, 'otp' => $otp], function ($message) use ($request) {
+                    $message->to($request->email, $request->name)
+                        ->subject('Your Verification Code');
+                });
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('OTP Email failed', ['error' => $e->getMessage()]);
+            }
+            $parts = explode('@', $request->email);
+            $sentTo = 'email address ' . substr($parts[0], 0, 3) . '***@' . $parts[1];
+        }
+
+        $request->session()->put('registration_sent_to', $sentTo);
+
+        if ($request->has('resend_otp')) {
+            return back()->with('status', 'A new verification code has been sent.');
+        }
+
+        return redirect()->route('client.register.verify');
+    }
+
+    public function showOtpVerificationForm(Request $request)
+    {
+        if (!$request->session()->has('registration_data')) {
+            return redirect()->route('client.register')->withErrors(['session' => 'Registration session expired or invalid.']);
+        }
+        return view('client.auth.verify-otp');
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate(['otp' => 'required|string|size:6']);
+
+        $sessionOtp = $request->session()->get('registration_otp');
+        $expiresAt = $request->session()->get('registration_otp_expires_at');
+        $data = $request->session()->get('registration_data');
+
+        if (!$sessionOtp || !$data) {
+            return redirect()->route('client.register')->withErrors(['session' => 'Registration session expired. Please register again.']);
+        }
+
+        if (now()->greaterThan($expiresAt)) {
+            return back()->withErrors(['otp' => 'This verification code has expired. Please click Resend Code.']);
+        }
+
+        if ($request->otp !== $sessionOtp) {
+            return back()->withErrors(['otp' => 'Invalid verification code. Please try again.']);
+        }
+
+        // OTP is valid, create the user
+        $referrerId = null;
+        if (!empty($data['referral_code'])) {
+            $referrerId = User::where('referral_code', $data['referral_code'])->value('id');
+        }
+
+        $authProvider = !empty($data['email']) ? 'email' : 'phone';
+        $freeCredits = $referrerId ? 1 : 0;
+        
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'password' => Hash::make($data['password']),
             'auth_provider' => $authProvider,
             'is_active' => true,
             'referral_code' => $this->generateReferralCode(),
@@ -126,19 +227,24 @@ class AuthController extends Controller
             User::where('id', $referrerId)->increment('free_event_credits');
         }
 
+        // Send Welcome messages
         if (!empty($user->email)) {
-            Mail::send('emails.welcome', ['user' => $user], function ($message) use ($user) {
-                $message->to($user->email, $user->name)
-                    ->subject('Welcome to Chandla Book — your account is ready');
-            });
+            try {
+                Mail::send('emails.welcome', ['user' => $user], function ($message) use ($user) {
+                    $message->to($user->email, $user->name)
+                        ->subject('Welcome to Chandla Book — your account is ready');
+                });
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Welcome Email failed', ['error' => $e->getMessage()]);
+            }
         }
 
         if (!empty($user->phone)) {
             try {
                 $waService = new \App\Services\WhatsAppService();
-                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone); // Remove +91 or 91 if it somehow exists
+                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
                 $waService->sendTemplateMessage(
-                    to: '91' . $cleanPhone, // Prepend 91 for Indian numbers
+                    to: '91' . $cleanPhone,
                     templateName: 'welcome_first_login',
                     languageCode: 'en',
                     components: [
@@ -151,17 +257,16 @@ class AuthController extends Controller
                     ]
                 );
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Welcome WhatsApp failed during web registration', [
-                    'user_id' => $user->id,
-                    'phone' => $user->phone,
-                    'error' => $e->getMessage()
-                ]);
+                \Illuminate\Support\Facades\Log::error('Welcome WhatsApp failed', ['error' => $e->getMessage()]);
             }
         }
 
+        // Clear session data
+        $request->session()->forget(['registration_data', 'registration_otp', 'registration_otp_expires_at', 'registration_sent_to']);
+
         return redirect()->route('client.login')->with(
             'status',
-            'Account created. Please sign in with your email or phone and password.'
+            'Account created and verified. Please sign in.'
         );
     }
 

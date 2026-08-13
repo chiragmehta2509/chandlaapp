@@ -21,7 +21,7 @@
     <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-white dark:from-indigo-950 dark:via-purple-900 dark:to-slate-950 transition-colors duration-200 flex flex-col">
         <header class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
             <a href="<?php echo e(route('public.home')); ?>" class="flex items-center gap-2 sm:gap-3 group">
-                <img src="<?php echo e(asset('images/chandla-favicon.png')); ?>" alt="Chandla Book" class="h-10 sm:h-12 w-auto" decoding="async">
+                <img src="<?php echo e(asset('images/logo.jpeg')); ?>" alt="Chandla Book" class="h-10 sm:h-12 w-auto" decoding="async">
                 <span class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:hover:text-white/90">Chandla Book</span>
             </a>
             <div class="flex items-center gap-4">

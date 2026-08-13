@@ -86,6 +86,7 @@ Route::prefix('v1')->group(function () {
         
         // Email/Password
         Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register/verify', [AuthController::class, 'verifyRegisterOtp']);
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
