@@ -348,6 +348,32 @@ class GanpatiController extends Controller
             'notes'               => $request->input('notes'),
         ]);
 
+        if (!empty($chandla->giver_phone)) {
+            try {
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $chandla->giver_phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'chandla_added',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($chandla->giver_name ?? 'Guest'),
+                                \App\Services\WhatsAppService::formatTextParameter((string) ($chandla->amount ?? 0))
+                            ]
+                        ]
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('WhatsApp chandla_added failed', [
+                    'chandla_id' => $chandla->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         // Process cash notes breakdown if payment is cash
         if ($request->input('payment_method') === 'cash') {
             $notesCount = [];
