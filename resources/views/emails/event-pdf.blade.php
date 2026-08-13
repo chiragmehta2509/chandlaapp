@@ -17,7 +17,7 @@
                     <!-- Header -->
                     <tr>
                         <td style="background-color:#1a3646;border-radius:14px 14px 0 0;padding:26px 28px;text-align:center;border-bottom:4px solid #b8860b;">
-                            <img src="{{ asset('images/chandla-logo.png') }}" alt="Chandla Book" width="150" style="display:block;margin:0 auto 14px;border:0;height:auto;max-width:150px;">
+                            <img src="https://chandlabook.in/images/chandla-logo.png" alt="Chandla Book" width="150" style="display:block;margin:0 auto 14px;border:0;height:auto;max-width:150px;">
                             <p style="margin:0;font-size:11px;font-weight:700;color:rgba(255,255,255,0.88);letter-spacing:0.14em;text-transform:uppercase;">Chandla register export</p>
                             <p style="margin:10px 0 0;font-size:22px;font-weight:700;color:#ffffff;line-height:1.25;letter-spacing:-0.02em;">Your PDF is ready</p>
                         </td>
