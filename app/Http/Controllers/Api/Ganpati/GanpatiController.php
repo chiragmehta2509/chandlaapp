@@ -359,15 +359,18 @@ class GanpatiController extends Controller
             }
 
             if (!empty($notesCount)) {
+                $defaults = [];
+                foreach ($this->denominations() as $d) {
+                    $defaults["note_{$d}"] = 0;
+                }
                 $inv = EventCashInventory::firstOrCreate(
                     ['event_id' => $event->id],
-                    ['cash_notes' => array_fill_keys($this->denominations(), 0)]
+                    $defaults
                 );
-                $existing = is_array($inv->cash_notes) ? $inv->cash_notes : [];
                 foreach ($notesCount as $denom => $cnt) {
-                    $existing[$denom] = ($existing[$denom] ?? 0) + $cnt;
+                    $column = "note_{$denom}";
+                    $inv->{$column} += $cnt;
                 }
-                $inv->cash_notes = $existing;
                 $inv->save();
             }
         }
