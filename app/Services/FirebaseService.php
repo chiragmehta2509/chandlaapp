@@ -152,6 +152,7 @@ class FirebaseService
                 ->post($url, $body);
 
             if ($response->successful()) {
+                Log::info("FCM Success for token {$deviceToken}: " . $response->body());
                 return true;
             }
 
