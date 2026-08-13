@@ -554,6 +554,7 @@ class AuthController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
+            'phone'    => 'nullable|string|regex:/^[0-9]{10}$/',
         ]);
 
         if ($validator->fails()) {
@@ -567,6 +568,7 @@ class AuthController extends Controller
         $user = User::create([
             'name'          => $request->name,
             'email'         => $request->email,
+            'phone'         => $request->phone,
             'password'      => Hash::make($request->password),
             'auth_provider' => 'email',
             'is_active'     => true,
@@ -583,6 +585,7 @@ class AuthController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
+        // Send welcome email
         if (!empty($user->email)) {
             try {
                 Mail::send('emails.welcome', ['user' => $user], function ($message) use ($user) {
@@ -593,6 +596,33 @@ class AuthController extends Controller
                 \Illuminate\Support\Facades\Log::error('Welcome email failed during API registration', [
                     'user_id' => $user->id,
                     'email'   => $user->email,
+                    'error'   => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Send WhatsApp welcome message if phone number provided
+        if (!empty($user->phone)) {
+            try {
+                $waService  = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'welcome_first_login',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type'       => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($user->name ?? 'User'),
+                            ],
+                        ],
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Welcome WhatsApp failed during email registration', [
+                    'user_id' => $user->id,
+                    'phone'   => $user->phone,
                     'error'   => $e->getMessage(),
                 ]);
             }
