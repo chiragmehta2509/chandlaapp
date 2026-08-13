@@ -16,7 +16,7 @@
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;margin:0 auto;">
                     <tr>
                         <td style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#4c1d95 100%);background-color:#312e81;border-radius:12px 12px 0 0;padding:24px 28px;text-align:center;">
-                            <img src="https://chandlabook.in/images/chandla-logo.png" width="140" height="auto" alt="Chandla Book" style="display:block;margin:0 auto 10px auto;max-width:140px;height:auto;border:0;">
+                            <img src="{{ asset('images/chandla-logo.png') }}" width="140" height="auto" alt="Chandla Book" style="display:block;margin:0 auto 10px auto;max-width:140px;height:auto;border:0;">
                             <p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Chandla Book</p>
                             <p style="margin:6px 0 0 0;font-size:12px;color:rgba(255,255,255,0.88);font-weight:500;">Payment notification</p>
                         </td>

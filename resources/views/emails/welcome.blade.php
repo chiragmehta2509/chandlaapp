@@ -26,7 +26,7 @@
                     <!-- Top bar -->
                     <tr>
                         <td style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#4c1d95 100%);background-color:#312e81;border-radius:12px 12px 0 0;padding:28px 32px;text-align:center;">
-                            <img src="https://chandlabook.in/images/chandla-logo.png" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
+                            <img src="{{ asset('images/chandla-logo.png') }}" width="160" alt="Chandla Book" style="display:block;margin:0 auto 12px auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
                             <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Chandla Book</p>
                             <p style="margin:8px 0 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(255,255,255,0.85);font-weight:500;">Smart event &amp; collection management</p>
                         </td>
