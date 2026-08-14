@@ -1,0 +1,10 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/chandlabook/public_html/
+    - rsync -a --exclude='.git' --exclude='.env' ./ $DEPLOYPATH
+    - cd $DEPLOYPATH && composer install --no-dev --optimize-autoloader
+    - cd $DEPLOYPATH && php artisan migrate --force
+    - cd $DEPLOYPATH && php artisan config:cache
+    - cd $DEPLOYPATH && php artisan route:cache
+    - cd $DEPLOYPATH && php artisan view:cache
