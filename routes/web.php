@@ -184,6 +184,8 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/change-password', [ClientAuthController::class, 'showChangePasswordForm'])->name('password.edit');
         Route::post('/change-password', [ClientAuthController::class, 'changePassword'])->name('password.update');
         Route::get('/profile', [ClientAuthController::class, 'showProfile'])->name('profile');
+        Route::post('/profile/send-verification', [ClientAuthController::class, 'sendProfileVerification'])->name('profile.send-verification');
+        Route::get('/profile/verify/{token}', [ClientAuthController::class, 'verifyProfileLink'])->name('profile.verify.link');
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
         Route::get('/plans', [ClientSupportController::class, 'plans'])->name('plans');
         Route::get('/faq', [ClientSupportController::class, 'faq'])->name('faq');

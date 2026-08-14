@@ -30,6 +30,78 @@ class AuthController extends Controller
         return view('client.auth.profile', compact('user'));
     }
 
+    public function sendProfileVerification(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:email,phone'
+        ]);
+
+        $user = Auth::guard('web')->user();
+        $token = (string) \Illuminate\Support\Str::uuid();
+        
+        cache()->put("profile_verify_{$token}", [
+            'user_id' => $user->id,
+            'type' => $request->type
+        ], now()->addMinutes(15));
+
+        $verificationUrl = route('client.profile.verify.link', ['token' => $token]);
+
+        if ($request->type === 'email') {
+            if (!$user->email) return back()->withErrors(['email' => 'No email address found.']);
+            try {
+                \Illuminate\Support\Facades\Log::info("Sending Profile Link via Email to {$user->email}: {$verificationUrl}");
+                \Illuminate\Support\Facades\Mail::send('emails.verify_link', ['name' => $user->name, 'verification_url' => $verificationUrl], function ($message) use ($user) {
+                    $message->to($user->email, $user->name)->subject('Verify your Chandla Book email');
+                });
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Profile Link Email failed', ['error' => $e->getMessage()]);
+            }
+        } elseif ($request->type === 'phone') {
+            if (!$user->phone) return back()->withErrors(['phone' => 'No phone number found.']);
+            try {
+                \Illuminate\Support\Facades\Log::info("Profile Link to WhatsApp {$user->phone}: {$verificationUrl}");
+                $waService = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
+                
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'otp_verification_link',
+                    languageCode: 'en',
+                    components: [
+                        ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]]
+                    ]
+                );
+                
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Profile Link WhatsApp failed', ['error' => $e->getMessage()]);
+            }
+        }
+
+        return back()->with('status', ucfirst($request->type) . ' verification link sent! Please check your ' . ($request->type === 'email' ? 'inbox' : 'WhatsApp') . '.');
+    }
+
+    public function verifyProfileLink(Request $request, $token)
+    {
+        $data = cache()->get("profile_verify_{$token}");
+
+        if (!$data) {
+            return redirect()->route('client.profile')->withErrors(['session' => 'This verification link has expired or is invalid.']);
+        }
+
+        $user = \App\Models\User::find($data['user_id']);
+        if ($user) {
+            if ($data['type'] === 'email') {
+                $user->update(['email_verified_at' => now()]);
+            } elseif ($data['type'] === 'phone') {
+                $user->update(['phone_verified_at' => now()]);
+            }
+        }
+
+        cache()->forget("profile_verify_{$token}");
+
+        return redirect()->route('client.profile')->with('status', ucfirst($data['type']) . ' verified successfully!');
+    }
+
     public function showRegisterForm()
     {
         if (Auth::guard('web')->check()) {
