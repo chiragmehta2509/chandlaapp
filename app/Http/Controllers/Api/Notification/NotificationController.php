@@ -23,7 +23,8 @@ class NotificationController extends Controller
     {
         $perPage = $request->get('per_page', 15);
         $notifications = $request->user()
-            ->notifications()
+            ->notificationUsers()
+            ->with('notification')
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
@@ -36,7 +37,8 @@ class NotificationController extends Controller
     public function unread(Request $request)
     {
         $notifications = $request->user()
-            ->notifications()
+            ->notificationUsers()
+            ->with('notification')
             ->unread()
             ->orderBy('created_at', 'desc')
             ->get();
@@ -51,7 +53,8 @@ class NotificationController extends Controller
     public function show(Request $request, $id)
     {
         $notification = $request->user()
-            ->notifications()
+            ->notificationUsers()
+            ->with('notification')
             ->findOrFail($id);
 
         return response()->json([
@@ -63,7 +66,7 @@ class NotificationController extends Controller
     public function markAsRead(Request $request, $id)
     {
         $notification = $request->user()
-            ->notifications()
+            ->notificationUsers()
             ->findOrFail($id);
 
         $notification->update([
@@ -81,7 +84,7 @@ class NotificationController extends Controller
     public function markAllAsRead(Request $request)
     {
         $request->user()
-            ->notifications()
+            ->notificationUsers()
             ->unread()
             ->update([
                 'is_read' => true,
@@ -97,7 +100,7 @@ class NotificationController extends Controller
     public function destroy(Request $request, $id)
     {
         $notification = $request->user()
-            ->notifications()
+            ->notificationUsers()
             ->findOrFail($id);
 
         $notification->delete();
@@ -110,7 +113,7 @@ class NotificationController extends Controller
 
     public function clearAll(Request $request)
     {
-        $request->user()->notifications()->delete();
+        $request->user()->notificationUsers()->delete();
 
         return response()->json([
             'success' => true,

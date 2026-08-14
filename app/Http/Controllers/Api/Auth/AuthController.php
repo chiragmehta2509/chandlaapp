@@ -552,13 +552,10 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'     => 'required|string|max:255',
-            'email'    => 'nullable|required_without:phone|email|unique:users,email',
-            'phone'    => 'nullable|required_without:email|string|regex:/^[0-9]{10}$/|unique:users,phone',
+            'email'    => 'nullable|email|unique:users,email',
+            'phone'    => 'required|string|regex:/^[0-9]{10}$/|unique:users,phone',
             'password' => 'required|string|min:8|confirmed',
             'referral_code' => 'nullable|string|exists:users,referral_code',
-        ], [
-            'email.required_without' => 'Please provide at least an email address or mobile number.',
-            'phone.required_without' => 'Please provide at least a mobile number or email address.',
         ]);
 
         if ($validator->fails()) {
@@ -586,41 +583,24 @@ class AuthController extends Controller
         $sentTo = '';
         $verificationUrl = route('client.register.verify.link', ['token' => $token]);
 
-        if (!empty($request->phone)) { 
-            try {
-                \Illuminate\Support\Facades\Log::info("Mock API Link to WhatsApp {$request->phone}: {$verificationUrl}");
-                
-                $waService = new \App\Services\WhatsAppService();
-                $cleanPhone = preg_replace('/^\+?91/', '', $request->phone);
-                
-                // Using the requested template name and passing the token
-                /* 
-                $waService->sendTemplateMessage(
-                    to: '91' . $cleanPhone,
-                    templateName: 'otp_verification_link',
-                    languageCode: 'en',
-                    components: [
-                        ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]]
-                    ]
-                );
-                */
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('API Link WhatsApp failed', ['error' => $e->getMessage()]);
-            }
-            $sentTo = 'WhatsApp number ending in ' . substr($request->phone, -4);
-        } else { 
-            try {
-                \Illuminate\Support\Facades\Log::info("Sending API Link via Email to {$request->email}: {$verificationUrl}");
-                Mail::send('emails.verify_link', ['name' => $request->name, 'verification_url' => $verificationUrl], function ($message) use ($request) {
-                    $message->to($request->email, $request->name)
-                        ->subject('Verify your Chandla Book account');
-                });
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('API Link Email failed', ['error' => $e->getMessage()]);
-            }
-            $parts = explode('@', $request->email);
-            $sentTo = 'email address ' . substr($parts[0], 0, 3) . '***@' . $parts[1];
+        try {
+            \Illuminate\Support\Facades\Log::info("API Link to WhatsApp {$request->phone}: {$verificationUrl}");
+            
+            $waService = new \App\Services\WhatsAppService();
+            $cleanPhone = preg_replace('/^\+?91/', '', $request->phone);
+            
+            $waService->sendTemplateMessage(
+                to: '91' . $cleanPhone,
+                templateName: 'otp_verification_link',
+                languageCode: 'en',
+                components: [
+                    ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]]
+                ]
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('API Link WhatsApp failed', ['error' => $e->getMessage()]);
         }
+        $sentTo = 'WhatsApp number ending in ' . substr($request->phone, -4);
 
         return response()->json([
             'success' => true,

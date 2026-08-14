@@ -109,6 +109,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'getProfile']);
         Route::put('/profile', [UserController::class, 'updateProfile']);
+        Route::post('/profile/send-verification', [UserController::class, 'sendProfileVerification']);
         Route::post('/avatar', [UserController::class, 'uploadAvatar']);
         Route::delete('/avatar', [UserController::class, 'deleteAvatar']);
         

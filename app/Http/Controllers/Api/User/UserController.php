@@ -53,6 +53,58 @@ class UserController extends Controller
         ]);
     }
 
+    public function sendProfileVerification(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user->phone) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No phone number found to verify.',
+            ], 400);
+        }
+
+        $token = (string) \Illuminate\Support\Str::uuid();
+        
+        cache()->put("profile_verify_{$token}", [
+            'user_id' => $user->id,
+            'type' => 'phone'
+        ], now()->addMinutes(15));
+
+        $verificationUrl = route('client.profile.verify.link', ['token' => $token]);
+
+        try {
+            \Illuminate\Support\Facades\Log::info("API Profile Link to WhatsApp {$user->phone}: {$verificationUrl}");
+            $waService = new \App\Services\WhatsAppService();
+            $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
+            
+            $waService->sendTemplateMessage(
+                to: '91' . $cleanPhone,
+                templateName: 'otp_verification_link',
+                languageCode: 'en',
+                components: [
+                    ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]]
+                ]
+            );
+            
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('API Profile Link WhatsApp failed', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send WhatsApp verification. Please try again later.',
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'WhatsApp verification link sent! Please check your WhatsApp.',
+            'data'    => [
+                'sent_to'    => 'WhatsApp number ending in ' . substr($user->phone, -4),
+                'expires_in' => 900 // 15 mins
+            ],
+        ], 200);
+    }
+
     public function uploadAvatar(Request $request)
     {
         $validator = Validator::make($request->all(), [

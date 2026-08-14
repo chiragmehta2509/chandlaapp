@@ -58,29 +58,9 @@
                         Email
                     </span>
                 </div>
-                <div class="flex-1 min-w-0 flex items-center justify-between gap-4">
+                <div class="flex-1 min-w-0">
                     @if($user->email)
-                        <div class="flex flex-col gap-1">
-                            <p class="text-sm font-semibold text-slate-900 break-all">{{ $user->email }}</p>
-                            @if($user->email_verified_at)
-                                <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-                                    <i class="fas fa-check-circle"></i> Verified
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600">
-                                    <i class="fas fa-exclamation-circle"></i> Not Verified
-                                </span>
-                            @endif
-                        </div>
-                        @if(!$user->email_verified_at)
-                            <form method="POST" action="{{ route('client.profile.send-verification') }}">
-                                @csrf
-                                <input type="hidden" name="type" value="email">
-                                <button type="submit" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors border border-indigo-100">
-                                    Verify Now
-                                </button>
-                            </form>
-                        @endif
+                        <p class="text-sm font-semibold text-slate-900 break-all">{{ $user->email }}</p>
                     @else
                         <p class="text-sm text-slate-400 italic">Not set</p>
                     @endif
