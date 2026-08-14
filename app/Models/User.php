@@ -68,6 +68,21 @@ class User extends Authenticatable
         'enterprise_pack_paid_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'is_email_verified',
+        'is_phone_verified',
+    ];
+
+    public function getIsEmailVerifiedAttribute()
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    public function getIsPhoneVerifiedAttribute()
+    {
+        return $this->phone_verified_at !== null;
+    }
+
     public const FAMILY_ROLE_VIEWER = 'viewer';
     public const FAMILY_ROLE_EDITOR = 'editor';
 

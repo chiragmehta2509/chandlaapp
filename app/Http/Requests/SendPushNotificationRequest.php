@@ -30,6 +30,8 @@ class SendPushNotificationRequest extends FormRequest
             'send_to' => 'required|string|in:all,selected_users',
             'user_ids' => 'required_if:send_to,selected_users|array',
             'user_ids.*' => 'integer|exists:users,id',
+            'target_audience' => 'nullable|string',
+            'target_data' => 'nullable|array',
             'schedule_at' => 'nullable|date_format:Y-m-d H:i:s',
         ];
     }

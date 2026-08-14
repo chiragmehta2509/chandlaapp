@@ -43,6 +43,8 @@ class NotificationService
                 'action_value' => $data['action_value'] ?? null,
                 'created_by' => $createdBy,
                 'send_to' => $data['send_to'],
+                'target_audience' => $data['target_audience'] ?? null,
+                'target_data' => $data['target_data'] ?? null,
                 'schedule_at' => $data['schedule_at'] ?? null,
                 'status' => $status,
             ]);

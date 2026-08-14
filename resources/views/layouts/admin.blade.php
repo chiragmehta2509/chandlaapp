@@ -98,7 +98,7 @@
                 <i class="fas fa-clipboard-list w-5 mr-3"></i>
                 Event Summary
             </a>
-            <a href="{{ route('admin.notifications.create') }}" class="flex items-center px-6 py-3 text-gray-200 hover:bg-indigo-700 transition-colors {{ request()->routeIs('admin.notifications.*') ? 'bg-indigo-700 border-r-4 border-yellow-400' : '' }}">
+            <a href="{{ route('admin.notifications.index') }}" class="flex items-center px-6 py-3 text-gray-200 hover:bg-indigo-700 transition-colors {{ request()->routeIs('admin.notifications.*') ? 'bg-indigo-700 border-r-4 border-yellow-400' : '' }}">
                 <i class="fas fa-bell w-5 mr-3"></i>
                 Push Notifications
             </a>

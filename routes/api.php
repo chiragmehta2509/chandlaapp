@@ -377,7 +377,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::post('/admin/notifications/send', [AdminNotificationController::class, 'send']);
+    Route::get('/admin/notifications', [App\Http\Controllers\Api\PushNotification\AdminNotificationController::class, 'index']);
+    Route::post('/admin/notifications/send', [App\Http\Controllers\Api\PushNotification\AdminNotificationController::class, 'send']);
 });
 
 require __DIR__ . '/vendor_api.php';

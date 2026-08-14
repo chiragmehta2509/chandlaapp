@@ -17,6 +17,15 @@ class NotificationController extends Controller
         $this->notificationService = $notificationService;
     }
 
+    public function index()
+    {
+        $notifications = \App\Models\Notification::with('creator')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.notifications.index', compact('notifications'));
+    }
+
     public function create()
     {
         // Get user IDs that have at least one active device token
@@ -54,13 +63,16 @@ class NotificationController extends Controller
             'title' => $request->title,
             'message' => $request->message,
             'action_type' => 'none',
+            'target_audience' => $request->target_audience,
         ];
 
         if ($request->target_audience === 'all') {
             $data['send_to'] = 'all';
+            $data['target_data'] = null;
         } elseif ($request->target_audience === 'specific_users') {
             $data['send_to'] = 'selected_users';
             $data['user_ids'] = $request->specific_user_ids;
+            $data['target_data'] = ['user_ids' => $request->specific_user_ids];
         } else {
             $data['send_to'] = 'selected_users';
             
@@ -83,6 +95,7 @@ class NotificationController extends Controller
             }
 
             $data['user_ids'] = $userIds->toArray();
+            $data['target_data'] = ['plan_level' => $planLevel];
         }
 
         try {

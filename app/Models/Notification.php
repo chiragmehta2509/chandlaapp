@@ -19,12 +19,15 @@ class Notification extends Model
         'action_value',
         'created_by',
         'send_to',
+        'target_audience',
+        'target_data',
         'schedule_at',
         'status',
     ];
 
     protected $casts = [
         'schedule_at' => 'datetime',
+        'target_data' => 'array',
     ];
 
     /**

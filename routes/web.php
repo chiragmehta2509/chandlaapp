@@ -153,7 +153,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reports/events-summary', [AdminReportController::class, 'eventSummary'])->name('reports.events-summary');
 
         // Notifications
-        Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'create'])->name('notifications.create');
+        Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/create', [\App\Http\Controllers\Admin\NotificationController::class, 'create'])->name('notifications.create');
         Route::post('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'store'])->name('notifications.store');
 
         // Plan Management

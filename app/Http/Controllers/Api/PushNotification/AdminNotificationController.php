@@ -21,6 +21,22 @@ class AdminNotificationController extends Controller
     }
 
     /**
+     * Get paginated history of sent notifications.
+     */
+    public function index()
+    {
+        $notifications = \App\Models\Notification::withCount('users')
+            ->orderBy('created_at', 'desc')
+            ->paginate(request('per_page', 20));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Notifications history retrieved.',
+            'data' => $notifications
+        ]);
+    }
+
+    /**
      * Send push notification.
      *
      * @param SendPushNotificationRequest $request
