@@ -40,7 +40,7 @@
                             <i class="fas fa-shield-alt text-2xl"></i>
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Verify Your Account</h1>
-                        <p class="text-slate-600 dark:text-white/70 mt-2 text-sm sm:text-base">We've sent a 6-digit verification code to your {{ session('registration_sent_to', 'contact details') }}.</p>
+                        <p class="text-slate-600 dark:text-white/70 mt-2 text-sm sm:text-base">We've sent a verification link to your {{ session('registration_sent_to', 'contact details') }}.</p>
                     </div>
 
                     @if($errors->any())
@@ -58,33 +58,24 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('client.register.verify.submit') }}">
-                        @csrf
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2" for="otp">Verification Code</label>
-                            <input
-                                class="w-full text-center tracking-widest text-2xl rounded-xl border border-slate-300 dark:border-white/20 bg-white dark:bg-white/10 px-4 py-3 text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
-                                id="otp"
-                                type="text"
-                                name="otp"
-                                required
-                                autofocus
-                                autocomplete="one-time-code"
-                                maxlength="6"
-                                placeholder="••••••"
-                            >
+                        <div class="mb-8 p-6 bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-500/20 rounded-xl text-center">
+                            <i class="fab fa-whatsapp text-4xl text-green-500 mb-3"></i>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Verification Link Sent!</h3>
+                            <p class="text-sm text-slate-600 dark:text-white/70">
+                                Please check your WhatsApp messages. Tap the link we sent you to securely verify your account.
+                            </p>
                         </div>
 
-                        <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 dark:bg-indigo-500 px-4 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900">
-                            Verify & Complete Registration
-                        </button>
-                    </form>
+                        <a href="{{ route('client.login') }}" class="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 dark:bg-indigo-500 px-4 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900">
+                            I've Verified My Account (Login)
+                        </a>
                     
                     <div class="mt-6 text-center text-sm">
                         <form method="POST" action="{{ route('client.register') }}" class="inline">
                             @csrf
+                            <input type="hidden" name="resend_otp" value="1">
                             <button type="submit" class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline bg-transparent border-none p-0 cursor-pointer">
-                                Resend Code
+                                Resend Link
                             </button>
                         </form>
                     </div>
