@@ -59,7 +59,10 @@ class AuthController extends Controller
                 components: [
                     [
                         'type' => 'body', 
-                        'parameters' => [\App\Services\WhatsAppService::formatTextParameter($user->name)]
+                        'parameters' => [
+                            \App\Services\WhatsAppService::formatTextParameter($user->name),
+                            \App\Services\WhatsAppService::formatTextParameter(strtoupper(substr($token, 0, 6))),
+                        ]
                     ],
                     [
                         'type' => 'button',
@@ -215,7 +218,10 @@ class AuthController extends Controller
                 components: [
                     [
                         'type' => 'body', 
-                        'parameters' => [\App\Services\WhatsAppService::formatTextParameter($request->name)]
+                        'parameters' => [
+                            \App\Services\WhatsAppService::formatTextParameter($request->name),
+                            \App\Services\WhatsAppService::formatTextParameter(strtoupper(substr($token, 0, 6))),
+                        ]
                     ],
                     [
                         'type' => 'button',
