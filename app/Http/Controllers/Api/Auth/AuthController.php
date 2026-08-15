@@ -592,9 +592,18 @@ class AuthController extends Controller
             $waService->sendTemplateMessage(
                 to: '91' . $cleanPhone,
                 templateName: 'otp_verification_link',
-                languageCode: 'en',
+                languageCode: 'en_US',
                 components: [
-                    ['type' => 'body', 'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]]
+                    [
+                        'type' => 'body',
+                        'parameters' => [\App\Services\WhatsAppService::formatTextParameter($request->name)]
+                    ],
+                    [
+                        'type' => 'button',
+                        'sub_type' => 'url',
+                        'index' => '0',
+                        'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token)]
+                    ]
                 ]
             );
         } catch (\Throwable $e) {

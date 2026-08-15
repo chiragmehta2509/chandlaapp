@@ -75,18 +75,16 @@
                             >
                         </div>
                         <div class="mb-5">
-                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2" for="email">Email *</label>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2" for="email">Email <span class="text-xs text-slate-500 font-normal">(Optional)</span></label>
                             <input
                                 class="w-full rounded-xl border border-slate-300 dark:border-white/20 bg-white dark:bg-white/10 px-4 py-3 text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
                                 id="email"
                                 type="email"
                                 name="email"
                                 value="<?php echo e(old('email')); ?>"
-                                required
                                 autocomplete="email"
                                 maxlength="255"
                             >
-                            <p class="mt-1.5 text-xs text-slate-500 dark:text-white/60">Real inbox required — we check the domain and block disposable / temp mail.</p>
                         </div>
                         <div class="mb-5">
                             <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2" for="phone">Mobile number *</label>
@@ -96,10 +94,10 @@
                                 type="tel"
                                 name="phone"
                                 value="<?php echo e(old('phone')); ?>"
-                                required
                                 autocomplete="tel"
                                 inputmode="tel"
                                 maxlength="14"
+                                required
                             >
                             <p class="mt-1.5 text-xs text-slate-500 dark:text-white/60">10-digit Indian mobile (first digit 6–9). You may enter <span class="font-medium text-slate-700 dark:text-white/80">+91</span> or spaces — we normalize it.</p>
                         </div>
@@ -189,6 +187,13 @@
                 toggleBtn.addEventListener('click', function() {
                     const isDark = document.documentElement.classList.toggle('dark');
                     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                });
+            }
+
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Let native required validation handle phone
                 });
             }
         });
