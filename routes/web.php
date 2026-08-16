@@ -358,4 +358,10 @@ Route::prefix('client')->name('client.')->group(function () {
     });
 });
 
+// Catch WhatsApp verification links at root level (e.g. chandlabook.in/{uuid})
+// and redirect to the actual verification route
+Route::get('/{token}', function ($token) {
+    return redirect()->route('client.register.verify.link', ['token' => $token]);
+})->where('token', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+
 require __DIR__ . '/vendor_web.php';
