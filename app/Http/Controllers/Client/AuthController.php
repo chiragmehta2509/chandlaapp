@@ -255,7 +255,19 @@ class AuthController extends Controller
 
     public function verifyAccountLink(Request $request, $token)
     {
+        \Illuminate\Support\Facades\Log::info("verifyAccountLink called", [
+            'token' => $token,
+            'cache_key' => "reg_data_{$token}",
+            'cache_driver' => config('cache.default'),
+            'cache_has' => cache()->has("reg_data_{$token}"),
+        ]);
+
         $data = cache()->get("reg_data_{$token}");
+
+        \Illuminate\Support\Facades\Log::info("Cache lookup result", [
+            'found' => !is_null($data),
+            'data' => $data,
+        ]);
 
         if (!$data) {
             return redirect()->route('client.login')->withErrors(['session' => 'This verification link has expired or is invalid. Please register again.']);
