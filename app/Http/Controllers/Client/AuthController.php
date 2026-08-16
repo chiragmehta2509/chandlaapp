@@ -91,10 +91,11 @@ class AuthController extends Controller
         $user = \App\Models\User::find($data['user_id']);
         if ($user) {
             if ($data['type'] === 'email') {
-                $user->update(['email_verified_at' => now()]);
+                $user->email_verified_at = now();
             } elseif ($data['type'] === 'phone') {
-                $user->update(['phone_verified_at' => now()]);
+                $user->phone_verified_at = now();
             }
+            $user->save();
         }
 
         cache()->forget("profile_verify_{$token}");

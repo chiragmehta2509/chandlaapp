@@ -27,6 +27,8 @@ class User extends Authenticatable
         'is_deleted',
         'deleted_at',
         'language',
+        'email_verified_at',
+        'phone_verified_at',
         'referral_code',
         'referred_by',
         'free_event_credits',
