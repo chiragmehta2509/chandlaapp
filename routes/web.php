@@ -359,8 +359,11 @@ Route::prefix('client')->name('client.')->group(function () {
 });
 
 // Catch WhatsApp verification links at root level (e.g. chandlabook.in/{uuid})
-// and redirect to the actual verification route
+// and redirect to the actual verification route (Registration vs Profile)
 Route::get('/{token}', function ($token) {
+    if (cache()->has("profile_verify_{$token}")) {
+        return redirect()->route('client.profile.verify.link', ['token' => $token]);
+    }
     return redirect()->route('client.register.verify.link', ['token' => $token]);
 })->where('token', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
 
