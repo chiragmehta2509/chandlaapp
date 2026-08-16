@@ -1,0 +1,26 @@
+[2026-08-16 10:07:20] local.ERROR: Command "config:publish" is not defined.
+
+Did you mean one of these?
+    config:cache
+    config:clear
+    config:show
+    lang:publish
+    sail:publish
+    stub:publish
+    vendor:publish {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"config:publish\" is not defined.
+
+Did you mean one of these?
+    config:cache
+    config:clear
+    config:show
+    lang:publish
+    sail:publish
+    stub:publish
+    vendor:publish at C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\vendor\\symfony\\console\\Application.php:745)
+[stacktrace]
+#0 C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\vendor\\symfony\\console\\Application.php(266): Symfony\\Component\\Console\\Application->find('config:publish')
+#1 C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\vendor\\symfony\\console\\Application.php(175): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#2 C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(201): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#3 C:\\Users\\Chirag\\Desktop\\New folder\\ChandlaBook\\artisan(14): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#4 {main}
+"} 
