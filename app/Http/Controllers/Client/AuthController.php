@@ -292,6 +292,8 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
             'auth_provider' => $authProvider,
             'is_active' => true,
+            'phone_verified_at' => now(),
+            'email_verified_at' => !empty($data['email']) ? now() : null,
             'referral_code' => $this->generateReferralCode(),
             'referred_by' => $referrerId,
             'free_event_credits' => $freeCredits,
