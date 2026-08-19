@@ -854,4 +854,196 @@ class AuthController extends Controller
             'message' => 'Password reset successfully',
         ]);
     }
+
+    // -------------------------------------------------------------------------
+    // WhatsApp Deep-Link Account Verification
+    // -------------------------------------------------------------------------
+
+    /**
+     * POST /api/v1/auth/verify-account
+     *
+     * Called by the Flutter app when it intercepts the WhatsApp verification
+     * deep-link (chandlabook://verify?token=...) instead of letting the browser
+     * open the web route /client/account_verification/{token}.
+     *
+     * Body params:
+     *   token  (required) – the UUID token that was embedded in the WhatsApp link
+     *
+     * On success the user account is created (if not already) and a Sanctum token
+     * is returned so the user is immediately logged in inside the app.
+     */
+    public function verifyAccount(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $token = trim($request->input('token'));
+        $cacheKey = "reg_data_{$token}";
+
+        \Illuminate\Support\Facades\Log::info('API verifyAccount called', [
+            'token'      => $token,
+            'cache_key'  => $cacheKey,
+            'cache_has'  => cache()->has($cacheKey),
+        ]);
+
+        $data = cache()->get($cacheKey);
+
+        if (!$data) {
+            return response()->json([
+                'success'        => false,
+                'message'        => 'This verification link has expired or is invalid. Please register again.',
+                'phone_verified' => false,
+            ], 410); // 410 Gone
+        }
+
+        // Check if user was already created (e.g., web-link was clicked first)
+        $existingUser = User::where('phone', $data['phone'] ?? null)->first();
+        if ($existingUser) {
+            // Already verified — just return a token
+            cache()->forget($cacheKey);
+
+            $authToken = $existingUser->createToken('auth_token')->plainTextToken;
+            $this->saveDeviceTokenIfPresent($existingUser, $request);
+
+            return response()->json([
+                'success'        => true,
+                'message'        => 'Account already verified. Logged in successfully.',
+                'phone_verified' => !is_null($existingUser->phone_verified_at),
+                'data'           => [
+                    'user'       => $existingUser,
+                    'token'      => $authToken,
+                    'token_type' => 'Bearer',
+                ],
+            ]);
+        }
+
+        // Clear cache before creating user to prevent duplicate calls
+        cache()->forget($cacheKey);
+
+        // Resolve referrer
+        $referrerId = null;
+        if (!empty($data['referral_code'])) {
+            $referrerId = User::where('referral_code', $data['referral_code'])->value('id');
+        }
+
+        $authProvider = !empty($data['email']) ? 'email' : 'phone';
+        $freeCredits  = $referrerId ? 1 : 0;
+
+        try {
+            $user = User::create([
+                'name'              => $data['name'],
+                'email'             => $data['email'] ?? null,
+                'phone'             => $data['phone'] ?? null,
+                'password'          => \Illuminate\Support\Facades\Hash::make($data['password']),
+                'auth_provider'     => $authProvider,
+                'is_active'         => true,
+                'phone_verified_at' => now(),
+                'email_verified_at' => !empty($data['email']) ? now() : null,
+                'referral_code'     => $this->generateReferralCode(),
+                'referred_by'       => $referrerId,
+                'free_event_credits'=> $freeCredits,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('API verifyAccount user creation failed', [
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'success'        => false,
+                'message'        => 'Account creation failed. Please try again.',
+                'phone_verified' => false,
+            ], 500);
+        }
+
+        if ($referrerId) {
+            User::where('id', $referrerId)->increment('free_event_credits');
+        }
+
+        // Send Welcome WhatsApp
+        if (!empty($user->phone)) {
+            try {
+                $waService  = new \App\Services\WhatsAppService();
+                $cleanPhone = preg_replace('/^\+?91/', '', $user->phone);
+                $waService->sendTemplateMessage(
+                    to: '91' . $cleanPhone,
+                    templateName: 'welcome_first_login',
+                    languageCode: 'en',
+                    components: [
+                        [
+                            'type'       => 'body',
+                            'parameters' => [
+                                \App\Services\WhatsAppService::formatTextParameter($user->name ?? 'User'),
+                            ],
+                        ],
+                    ]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('API verifyAccount welcome WhatsApp failed', [
+                    'user_id' => $user->id,
+                    'error'   => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Send Welcome Email
+        if (!empty($user->email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::send(
+                    'emails.welcome',
+                    ['user' => $user],
+                    function ($message) use ($user) {
+                        $message->to($user->email, $user->name)
+                            ->subject('Welcome to Chandla Book — your account is ready');
+                    }
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('API verifyAccount welcome email failed', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $authToken = $user->createToken('auth_token')->plainTextToken;
+
+        $this->saveDeviceTokenIfPresent($user, $request);
+
+        ActivityLog::create([
+            'user_id'    => $user->id,
+            'action'     => 'account_verified',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return response()->json([
+            'success'        => true,
+            'message'        => 'Account verified and created successfully.',
+            'phone_verified' => !is_null($user->phone_verified_at),
+            'data'           => [
+                'user'       => $user,
+                'token'      => $authToken,
+                'token_type' => 'Bearer',
+            ],
+        ], 201);
+    }
+
+    /**
+     * Generate a unique 8-character referral code.
+     */
+    private function generateReferralCode(): string
+    {
+        do {
+            $code = strtoupper(substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 8));
+        } while (User::where('referral_code', $code)->exists());
+
+        return $code;
+    }
 }
+

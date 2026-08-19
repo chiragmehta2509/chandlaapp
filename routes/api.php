@@ -90,6 +90,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+        // WhatsApp Deep-Link Account Verification
+        // Flutter intercepts the WhatsApp link and posts the token here instead of
+        // opening the browser. Returns phone_verified status + auth token.
+        Route::post('/verify-account', [AuthController::class, 'verifyAccount']);
     });
 });
 
