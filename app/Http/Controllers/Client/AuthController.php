@@ -61,6 +61,7 @@ class AuthController extends Controller
                         'type' => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($user->name),
+                            \App\Services\WhatsAppService::formatTextParameter($user->phone),
                         ]
                     ],
                     [
@@ -220,6 +221,7 @@ class AuthController extends Controller
                         'type' => 'body', 
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($request->name),
+                            \App\Services\WhatsAppService::formatTextParameter($request->phone),
                         ]
                     ],
                     [
