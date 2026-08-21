@@ -598,7 +598,6 @@ class AuthController extends Controller
                         'type' => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($request->name),
-                            \App\Services\WhatsAppService::formatTextParameter(strtoupper(substr($token, 0, 6))),
                         ]
                     ],
                     [

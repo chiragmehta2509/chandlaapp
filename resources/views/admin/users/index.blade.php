@@ -68,12 +68,17 @@
                             <a href="{{ route('admin.users.edit', $user->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" class="inline">
+                            <form action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" class="inline mr-3">
                                 @csrf
-                                <button type="submit" class="text-yellow-600 hover:text-yellow-900">
+                                <button type="submit" class="text-yellow-600 hover:text-yellow-900" title="{{ $user->is_active ? 'Deactivate' : 'Activate' }} User">
                                     <i class="fas fa-toggle-{{ $user->is_active ? 'on' : 'off' }}"></i>
                                 </button>
                             </form>
+                            <button type="button"
+                                onclick="confirmDelete('{{ route('admin.users.destroy', $user->id) }}', '{{ addslashes($user->name) }}')"
+                                class="text-red-600 hover:text-red-900" title="Delete User">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                 @empty
@@ -86,4 +91,50 @@
     </div>
 
 </div>
+
+{{-- Delete Confirmation Modal --}}
+<div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-gray-900">Delete User</h3>
+                <p class="text-sm text-gray-500">This action cannot be undone.</p>
+            </div>
+        </div>
+        <p class="text-gray-700 mb-6">Are you sure you want to permanently delete <strong id="deleteUserName"></strong>? All their data will be removed.</p>
+        <div class="flex justify-end gap-3">
+            <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm transition-colors">
+                Cancel
+            </button>
+            <form id="deleteForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors">
+                    <i class="fas fa-trash mr-1"></i> Delete Permanently
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    function confirmDelete(actionUrl, userName) {
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteForm').action = actionUrl;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+    // Close on backdrop click
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+</script>
+@endpush
+
 @endsection

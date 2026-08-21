@@ -32,8 +32,8 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'message' => $validator->errors()->first(),
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -87,7 +87,6 @@ class UserController extends Controller
                         'type' => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($user->name),
-                            \App\Services\WhatsAppService::formatTextParameter(strtoupper(substr($token, 0, 6))),
                         ]
                     ],
                     [

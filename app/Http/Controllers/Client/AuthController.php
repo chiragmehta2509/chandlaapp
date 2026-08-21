@@ -58,10 +58,9 @@ class AuthController extends Controller
                 languageCode: 'en_US',
                 components: [
                     [
-                        'type' => 'body', 
+                        'type' => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($user->name),
-                            \App\Services\WhatsAppService::formatTextParameter(strtoupper(substr($token, 0, 6))),
                         ]
                     ],
                     [
