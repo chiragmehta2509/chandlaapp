@@ -432,8 +432,16 @@ class AuthController extends Controller
 
     public function sendOTP(Request $request)
     {
+        // Normalise before validation: strip +91 / 0 prefix
+        $request->merge([
+            'phone' => $this->normalizeIndianMobile($request->input('phone')),
+        ]);
+
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|regex:/^[0-9]{10}$/',
+            'phone' => 'required|string|size:10|regex:/^[6-9][0-9]{9}$/',
+        ], [
+            'phone.regex' => 'Enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).',
+            'phone.size'  => 'Mobile number must be exactly 10 digits.',
         ]);
 
         if ($validator->fails()) {
@@ -459,10 +467,18 @@ class AuthController extends Controller
 
     public function verifyOTP(Request $request)
     {
+        // Normalise before validation: strip +91 / 0 prefix
+        $request->merge([
+            'phone' => $this->normalizeIndianMobile($request->input('phone')),
+        ]);
+
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|regex:/^[0-9]{10}$/',
+            'phone' => 'required|string|size:10|regex:/^[6-9][0-9]{9}$/',
             'otp'   => 'required|string|size:6',
             'name'  => 'nullable|string',
+        ], [
+            'phone.regex' => 'Enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).',
+            'phone.size'  => 'Mobile number must be exactly 10 digits.',
         ]);
 
         if ($validator->fails()) {
@@ -550,12 +566,20 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Normalise before validation: strip +91 / 0 prefix
+        $request->merge([
+            'phone' => $this->normalizeIndianMobile($request->input('phone')),
+        ]);
+
         $validator = Validator::make($request->all(), [
-            'name'     => 'required|string|max:255',
-            'email'    => 'nullable|email|unique:users,email',
-            'phone'    => 'required|string|regex:/^[0-9]{10}$/|unique:users,phone',
-            'password' => 'required|string|min:8|confirmed',
+            'name'          => 'required|string|max:255',
+            'email'         => 'nullable|email|unique:users,email',
+            'phone'         => ['required', 'string', 'size:10', 'regex:/^[6-9][0-9]{9}$/', 'unique:users,phone'],
+            'password'      => 'required|string|min:8|confirmed',
             'referral_code' => 'nullable|string|exists:users,referral_code',
+        ], [
+            'phone.regex' => 'Enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9).',
+            'phone.size'  => 'Mobile number must be exactly 10 digits.',
         ]);
 
         if ($validator->fails()) {
@@ -1032,6 +1056,22 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ],
         ], 201);
+    }
+
+    /**
+     * Normalize to 10-digit Indian mobile: strips spaces, optional +91 / 0 prefix.
+     */
+    private function normalizeIndianMobile(mixed $raw): string
+    {
+        $digits = preg_replace('/\D/', '', (string) $raw);
+        if (str_starts_with($digits, '91') && strlen($digits) === 12) {
+            $digits = substr($digits, 2);
+        }
+        if (str_starts_with($digits, '0') && strlen($digits) === 11) {
+            $digits = substr($digits, 1);
+        }
+
+        return $digits;
     }
 
     /**
