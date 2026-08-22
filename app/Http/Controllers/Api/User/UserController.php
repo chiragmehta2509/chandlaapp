@@ -87,7 +87,6 @@ class UserController extends Controller
                         'type' => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($user->name),
-                            \App\Services\WhatsAppService::formatTextParameter($user->phone),
                         ]
                     ],
                     [

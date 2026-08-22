@@ -613,7 +613,7 @@ class AuthController extends Controller
             $waService  = new \App\Services\WhatsAppService();
             $cleanPhone = preg_replace('/^\+?91/', '', $request->phone);
 
-            // Try with button (verification link) first
+            // Template otp_verification_link has 1 body var ({{1}} = name) + 1 button (token suffix)
             $waResult = $waService->sendTemplateMessage(
                 to: '91' . $cleanPhone,
                 templateName: 'otp_verification_link',
@@ -623,7 +623,6 @@ class AuthController extends Controller
                         'type'       => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($request->name),
-                            \App\Services\WhatsAppService::formatTextParameter($request->phone),
                         ],
                     ],
                     [
@@ -636,26 +635,6 @@ class AuthController extends Controller
             );
 
             \Illuminate\Support\Facades\Log::info('API register WA result', ['result' => $waResult]);
-
-            // If button template failed, retry with body-only (no button)
-            if ($waResult === null) {
-                \Illuminate\Support\Facades\Log::warning('API register WA button send failed — retrying body-only');
-                $waResult = $waService->sendTemplateMessage(
-                    to: '91' . $cleanPhone,
-                    templateName: 'otp_verification_link',
-                    languageCode: 'en_US',
-                    components: [
-                        [
-                            'type'       => 'body',
-                            'parameters' => [
-                                \App\Services\WhatsAppService::formatTextParameter($request->name),
-                                \App\Services\WhatsAppService::formatTextParameter($request->phone),
-                            ],
-                        ],
-                    ]
-                );
-                \Illuminate\Support\Facades\Log::info('API register WA body-only result', ['result' => $waResult]);
-            }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('API Link WhatsApp failed', ['error' => $e->getMessage()]);
         }

@@ -73,6 +73,36 @@ Route::prefix('v1')->group(function () {
         ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     });
     
+    // -------------------------------------------------------------------------
+    // App Version Check (static — update values here when releasing a new build)
+    // GET /api/v1/app-version
+    // -------------------------------------------------------------------------
+    Route::get('/app-version', function () {
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'android' => [
+                    'min_version'    => '1.0.0',
+                    'min_build'      => 1,
+                    'latest_version' => '1.0.0',
+                    'latest_build'   => 1,
+                    'store_url'      => env('PLAY_STORE_URL', 'https://play.google.com/store/apps/details?id=com.skylighttech.chandla_book'),
+                    'force_update'   => false,
+                    'update_message' => 'A new version of Chandla Book is available. Please update to continue.',
+                ],
+                'ios'     => [
+                    'min_version'    => '1.0.0',
+                    'min_build'      => 1,
+                    'latest_version' => '1.0.0',
+                    'latest_build'   => 1,
+                    'store_url'      => env('APP_STORE_URL', 'https://apps.apple.com/us/app/chandla-book/id6796605523'),
+                    'force_update'   => false,
+                    'update_message' => 'A new version of Chandla Book is available. Please update to continue.',
+                ],
+            ],
+        ]);
+    });
+
     // Authentication Routes (Public)
     Route::prefix('auth')->group(function () {
         // Social Login
