@@ -500,7 +500,7 @@ class AuthController extends Controller
 
         cache()->forget("otp_{$request->phone}");
 
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('phone', $request->phone)->where('is_deleted', false)->first();
 
         if (!$user) {
             $user = User::create([
@@ -574,7 +574,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name'          => 'required|string|max:255',
             'email'         => 'nullable|email|unique:users,email',
-            'phone'         => ['required', 'string', 'size:10', 'regex:/^[6-9][0-9]{9}$/', 'unique:users,phone'],
+            'phone'         => ['required', 'string', 'size:10', 'regex:/^[6-9][0-9]{9}$/', \Illuminate\Validation\Rule::unique('users', 'phone')->where('is_deleted', false)],
             'password'      => 'required|string|min:8|confirmed',
             'referral_code' => 'nullable|string|exists:users,referral_code',
         ], [
@@ -786,7 +786,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'     => 'nullable|string|max:255',
-            'phone'    => 'nullable|string|unique:users,phone,' . $request->user()->id,
+            'phone'    => ['nullable', 'string', \Illuminate\Validation\Rule::unique('users', 'phone')->ignore($request->user()->id)->where('is_deleted', false)],
             'language' => 'nullable|string|in:en,hi,gu',
         ]);
 

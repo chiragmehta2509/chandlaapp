@@ -161,7 +161,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => ['nullable', 'string', 'max:255', 'email:rfc,dns', 'unique:users,email', new NotDisposableEmail],
-            'phone' => ['required', 'string', 'size:10', 'regex:/^[6-9][0-9]{9}$/', 'unique:users,phone'],
+            'phone' => ['required', 'string', 'size:10', 'regex:/^[6-9][0-9]{9}$/', \Illuminate\Validation\Rule::unique('users', 'phone')->where('is_deleted', false)],
             'password' => 'required|string|min:8|confirmed',
             'referral_code' => 'nullable|string|exists:users,referral_code',
         ], [

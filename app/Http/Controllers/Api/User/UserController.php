@@ -25,7 +25,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|unique:users,phone,' . $request->user()->id,
+            'phone' => ['nullable', 'string', \Illuminate\Validation\Rule::unique('users', 'phone')->ignore($request->user()->id)->where('is_deleted', false)],
             'language' => 'nullable|string|in:en,hi,gu',
         ]);
 

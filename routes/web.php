@@ -48,7 +48,7 @@ Route::get('/storage/{path}', function (string $path) {
         abort(404);
     }
     $disk = \Illuminate\Support\Facades\Storage::disk('public');
-    if (! $disk->exists($path)) {
+    if (!$disk->exists($path)) {
         abort(404);
     }
     return response()->file($disk->path($path), [
@@ -57,9 +57,9 @@ Route::get('/storage/{path}', function (string $path) {
 })->where('path', '.*')->name('storage.fallback');
 
 Route::view('/privacy', 'public.privacy')->name('public.privacy');
-Route::view('/terms',   'public.terms')->name('public.terms');
-Route::view('/refund',  'public.refund')->name('public.refund');
-Route::view('/about',   'public.about')->name('public.about');
+Route::view('/terms', 'public.terms')->name('public.terms');
+Route::view('/refund', 'public.refund')->name('public.refund');
+Route::view('/about', 'public.about')->name('public.about');
 Route::get('/contact', [PublicSeoController::class, 'contact'])->name('public.contact');
 Route::get('/robots.txt', [PublicSeoController::class, 'robots'])->name('public.robots');
 Route::get('/sitemap.xml', [PublicSeoController::class, 'sitemap'])->name('public.sitemap');
@@ -70,7 +70,7 @@ Route::post('/webhooks/razorpay', MatrimonialRazorpayWebhookController::class);
 Route::post('/webhooks/razorpay-payments', [\App\Http\Controllers\Webhooks\RazorpayWebhookController::class, 'handle']);
 
 /** WhatsApp Cloud API webhook (Meta verification + event callbacks). */
-Route::get('/webhooks/whatsapp',  [\App\Http\Controllers\Webhooks\WhatsAppWebhookController::class, 'verify']);
+Route::get('/webhooks/whatsapp', [\App\Http\Controllers\Webhooks\WhatsAppWebhookController::class, 'verify']);
 Route::post('/webhooks/whatsapp', [\App\Http\Controllers\Webhooks\WhatsAppWebhookController::class, 'handle']);
 
 Route::view('/docs', 'swagger');
@@ -124,11 +124,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Admin Protected Routes
     Route::middleware(['admin.auth'])->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        
+
         // Users Management
         Route::resource('users', AdminUserController::class);
         Route::post('/users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
-        
+
         // Events Management
         Route::resource('events', AdminEventController::class)->only(['index', 'show', 'destroy']);
 
@@ -138,10 +138,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Chandlas Management
         Route::resource('chandlas', AdminChandlaController::class)->only(['index', 'show', 'destroy']);
         Route::post('/chandlas/{id}/verify', [AdminChandlaController::class, 'verify'])->name('chandlas.verify');
-        
+
         // Contacts Management
         Route::resource('contacts', AdminContactController::class)->only(['index', 'show']);
-        
+
         // Payments Management
         Route::get('/payments/export', [AdminPaymentController::class, 'export'])->name('payments.export');
         Route::resource('payments', AdminPaymentController::class)->only(['index', 'show']);
@@ -248,7 +248,7 @@ Route::prefix('client')->name('client.')->group(function () {
         // Cash Inventory
         Route::get('/events/{eventId}/cash-inventory', [ClientCashInventoryController::class, 'show'])->name('cash-inventory.show');
         Route::post('/events/{eventId}/cash-inventory', [ClientCashInventoryController::class, 'update'])->name('cash-inventory.update');
-        
+
         // Contacts Management
         Route::get('/contacts/import', [ClientContactController::class, 'importForm'])->name('contacts.import');
         Route::post('/contacts/import', [ClientContactController::class, 'import'])->name('contacts.import.store');
@@ -346,14 +346,14 @@ Route::prefix('client')->name('client.')->group(function () {
 
         // ── Expense Management ────────────────────────────────────────────────
         Route::prefix('expenses')->name('expenses.')->group(function () {
-            Route::get('/',          [ClientExpenseController::class, 'index'])->name('index');
-            Route::get('/pdf',       [ClientExpenseController::class, 'pdf'])->name('pdf');
-            Route::get('/create',    [ClientExpenseController::class, 'create'])->name('create');
-            Route::post('/',         [ClientExpenseController::class, 'store'])->name('store');
-            Route::get('/{id}',      [ClientExpenseController::class, 'show'])->name('show')->whereNumber('id');
+            Route::get('/', [ClientExpenseController::class, 'index'])->name('index');
+            Route::get('/pdf', [ClientExpenseController::class, 'pdf'])->name('pdf');
+            Route::get('/create', [ClientExpenseController::class, 'create'])->name('create');
+            Route::post('/', [ClientExpenseController::class, 'store'])->name('store');
+            Route::get('/{id}', [ClientExpenseController::class, 'show'])->name('show')->whereNumber('id');
             Route::get('/{id}/edit', [ClientExpenseController::class, 'edit'])->name('edit')->whereNumber('id');
-            Route::put('/{id}',      [ClientExpenseController::class, 'update'])->name('update')->whereNumber('id');
-            Route::delete('/{id}',   [ClientExpenseController::class, 'destroy'])->name('destroy')->whereNumber('id');
+            Route::put('/{id}', [ClientExpenseController::class, 'update'])->name('update')->whereNumber('id');
+            Route::delete('/{id}', [ClientExpenseController::class, 'destroy'])->name('destroy')->whereNumber('id');
         });
     });
 });
@@ -368,3 +368,15 @@ Route::get('/{token}', function ($token) {
 })->where('token', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
 
 require __DIR__ . '/vendor_web.php';
+
+Route::get('/.well-known/assetlinks.json', function () {
+    return response()->file(public_path('assetlinks.json'), [
+        'Content-Type' => 'application/json',
+    ]);
+});
+
+Route::get('/.well-known/apple-app-site-association', function () {
+    return response()->file(public_path('apple-app-site-association'), [
+        'Content-Type' => 'application/json',
+    ]);
+});
