@@ -167,25 +167,31 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     });
     
     // Notification Routes
+    // ⚠️ IMPORTANT: Static/named routes MUST come before /{id} wildcard routes.
+    // Laravel matches in declaration order — putting /{id} first causes it to
+    // swallow static segments (read-all, preferences, device/*) → 403 errors.
     Route::prefix('notifications')->group(function () {
-        Route::get('/', [NotificationController::class, 'index']);
-        Route::get('/unread', [NotificationController::class, 'unread']);
-        Route::get('/{id}', [NotificationController::class, 'show']);
-        Route::put('/{id}/read', [NotificationController::class, 'markAsRead']);
-        Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
-        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-        Route::delete('/clear-all', [NotificationController::class, 'clearAll']);
-        Route::delete('/{id}', [NotificationController::class, 'destroy']);
-        Route::delete('/', [NotificationController::class, 'clearAll']);
-        
-        // Device Token Management
-        Route::post('/device/register', [NotificationController::class, 'registerDevice']);
-        Route::delete('/device/{id}', [NotificationController::class, 'unregisterDevice']);
-        Route::get('/device/list', [NotificationController::class, 'listDevices']);
-        
-        // Preferences
-        Route::get('/preferences', [NotificationController::class, 'getPreferences']);
-        Route::put('/preferences', [NotificationController::class, 'updatePreferences']);
+        // --- List / bulk actions (no wildcard segment) ---
+        Route::get('/',                [NotificationController::class, 'index']);
+        Route::get('/unread',          [NotificationController::class, 'unread']);
+        Route::put('/read-all',        [NotificationController::class, 'markAllAsRead']);
+        Route::post('/mark-all-read',  [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/clear-all',    [NotificationController::class, 'clearAll']);
+        Route::delete('/',             [NotificationController::class, 'clearAll']);
+
+        // --- Device Token Management (static prefix 'device') ---
+        Route::post('/device/register',    [NotificationController::class, 'registerDevice']);
+        Route::get('/device/list',         [NotificationController::class, 'listDevices']);
+        Route::delete('/device/{id}',      [NotificationController::class, 'unregisterDevice']);
+
+        // --- Preferences (static prefix 'preferences') ---
+        Route::get('/preferences',  [NotificationController::class, 'getPreferences']);
+        Route::put('/preferences',  [NotificationController::class, 'updatePreferences']);
+
+        // --- Single notification (wildcard /{id} — must be LAST) ---
+        Route::get('/{id}',          [NotificationController::class, 'show']);
+        Route::put('/{id}/read',     [NotificationController::class, 'markAsRead']);
+        Route::delete('/{id}',       [NotificationController::class, 'destroy']);
     });
     
     // Event Routes
