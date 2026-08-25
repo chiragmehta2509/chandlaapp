@@ -613,7 +613,7 @@ class AuthController extends Controller
             $waService  = new \App\Services\WhatsAppService();
             $cleanPhone = preg_replace('/^\+?91/', '', $request->phone);
 
-            // Template otp_verification_link has 1 body var ({{1}} = name) + 1 button (token suffix)
+            // Template otp_verification_link has 2 body vars: {{1}}=name, {{2}}=phone number + 1 button (token suffix)
             $waResult = $waService->sendTemplateMessage(
                 to: '91' . $cleanPhone,
                 templateName: 'otp_verification_link',
@@ -623,6 +623,7 @@ class AuthController extends Controller
                         'type'       => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($request->name),
+                            \App\Services\WhatsAppService::formatTextParameter('+91' . $cleanPhone),
                         ],
                     ],
                     [
