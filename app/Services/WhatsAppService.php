@@ -61,6 +61,19 @@ class WhatsAppService
             $resJson = $response->json();
             $errorCode = $resJson['error']['code'] ?? null;
 
+            // Handle Error 190 / 102 / 10: Expired or invalid access token
+            // This means WHATSAPP_TOKEN in .env needs to be regenerated in Meta Business Manager.
+            if (in_array($errorCode, [190, 102, 10], true)) {
+                Log::critical('🚨 WhatsApp Access Token is EXPIRED or INVALID. '
+                    . 'Go to Meta Business Manager → System Users → Generate New Token. '
+                    . 'Then update WHATSAPP_TOKEN in .env and run: php artisan config:clear', [
+                    'error_code'    => $errorCode,
+                    'error_message' => $resJson['error']['message'] ?? 'unknown',
+                    'phone_number_id' => $this->phoneNumberId,
+                ]);
+                return null;
+            }
+
             // Handle Error 132001: Template name does not exist in the requested language
             // Automatically try alternate language codes (e.g., en_US <-> en <-> en_GB)
             if ($errorCode === 132001) {
@@ -82,9 +95,9 @@ class WhatsAppService
             }
 
             Log::error('WhatsApp API Error', [
-                'status' => $response->status(),
+                'status'   => $response->status(),
                 'response' => $resJson,
-                'payload' => $payload
+                'payload'  => $payload,
             ]);
 
         } catch (\Exception $e) {
