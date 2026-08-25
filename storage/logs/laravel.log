@@ -1,0 +1,499 @@
+[2026-08-22 10:16:15] local.INFO: API Link to WhatsApp 9913776671: https://chandlabook.in/client/account_verification/0803d8ea-92e6-49ef-872b-b2814121e0f6  
+[2026-08-22 10:16:16] local.INFO: API register WA result {"result":{"messaging_product":"whatsapp","contacts":[{"input":"919913776671","wa_id":"919913776671"}],"messages":[{"id":"wamid.HBgMOTE5OTEzNzc2NjcxFQIAERgSMDcxQkQwODhFRDlGREMzNjdGAA==","message_status":"accepted"}]}} 
+[2026-08-22 10:16:26] local.INFO: WhatsApp webhook received {"payload":{"object":"whatsapp_business_account","entry":[{"id":"1399319828839378","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"917861976671","phone_number_id":"1248746341654215"},"contacts":[{"wa_id":"Over 9 levels deep, aborting normalization","user_id":"Over 9 levels deep, aborting normalization"}],"statuses":[{"id":"Over 9 levels deep, aborting normalization","status":"Over 9 levels deep, aborting normalization","timestamp":"Over 9 levels deep, aborting normalization","recipient_id":"Over 9 levels deep, aborting normalization","recipient_user_id":"Over 9 levels deep, aborting normalization","pricing":"Over 9 levels deep, aborting normalization"}]},"field":"messages"}]}]}} 
+[2026-08-22 10:16:26] local.INFO: WhatsApp status update {"id":"wamid.HBgMOTE5OTEzNzc2NjcxFQIAERgSMDcxQkQwODhFRDlGREMzNjdGAA==","status":"sent","recipient":"919913776671"} 
+[2026-08-22 10:16:26] local.INFO: WhatsApp webhook received {"payload":{"object":"whatsapp_business_account","entry":[{"id":"1399319828839378","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"917861976671","phone_number_id":"1248746341654215"},"contacts":[{"wa_id":"Over 9 levels deep, aborting normalization","user_id":"Over 9 levels deep, aborting normalization"}],"statuses":[{"id":"Over 9 levels deep, aborting normalization","status":"Over 9 levels deep, aborting normalization","timestamp":"Over 9 levels deep, aborting normalization","recipient_id":"Over 9 levels deep, aborting normalization","recipient_user_id":"Over 9 levels deep, aborting normalization","pricing":"Over 9 levels deep, aborting normalization"}]},"field":"messages"}]}]}} 
+[2026-08-22 10:16:26] local.INFO: WhatsApp status update {"id":"wamid.HBgMOTE5OTEzNzc2NjcxFQIAERgSMDcxQkQwODhFRDlGREMzNjdGAA==","status":"delivered","recipient":"919913776671"} 
+[2026-08-22 10:16:45] local.INFO: WhatsApp webhook received {"payload":{"object":"whatsapp_business_account","entry":[{"id":"1399319828839378","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"917861976671","phone_number_id":"1248746341654215"},"contacts":[{"wa_id":"Over 9 levels deep, aborting normalization","user_id":"Over 9 levels deep, aborting normalization"}],"statuses":[{"id":"Over 9 levels deep, aborting normalization","status":"Over 9 levels deep, aborting normalization","timestamp":"Over 9 levels deep, aborting normalization","recipient_id":"Over 9 levels deep, aborting normalization","recipient_user_id":"Over 9 levels deep, aborting normalization","pricing":"Over 9 levels deep, aborting normalization"}]},"field":"messages"}]}]}} 
+[2026-08-22 10:16:45] local.INFO: WhatsApp status update {"id":"wamid.HBgMOTE5OTEzNzc2NjcxFQIAERgSMDcxQkQwODhFRDlGREMzNjdGAA==","status":"read","recipient":"919913776671"} 
+[2026-08-22 11:38:44] local.INFO: verifyAccountLink called {"token":"0803d8ea-92e6-49ef-872b-b2814121e0f6","cache_key":"reg_data_0803d8ea-92e6-49ef-872b-b2814121e0f6","cache_driver":"database","cache_has":false} 
+[2026-08-22 11:38:44] local.INFO: Cache lookup result {"found":false,"data":null} 
+[2026-08-22 11:39:04] local.INFO: Link to WhatsApp 9913776671: https://chandlabook.in/client/account_verification/6eefbf43-f4aa-43af-8573-1ad89e15745d  
+[2026-08-22 11:39:04] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AP9X3buwxMqd--g825zM9jd"}},"payload":{"messaging_product":"whatsapp","to":"919913776671","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Vaishali Mehta"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"6eefbf43-f4aa-43af-8573-1ad89e15745d"}]}]}}} 
+[2026-08-23 22:26:30] local.INFO: API Link to WhatsApp 8200889047: https://chandlabook.in/client/account_verification/4a888090-9bbf-41bf-a662-3eb88f6f510e  
+[2026-08-23 22:26:31] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"Auqno5dnm82zcHXrGBBF-DY"}},"payload":{"messaging_product":"whatsapp","to":"918200889047","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Patel Vishal Navinbhai"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"4a888090-9bbf-41bf-a662-3eb88f6f510e"}]}]}}} 
+[2026-08-23 22:26:31] local.INFO: API register WA result {"result":null} 
+[2026-08-23 22:29:05] local.INFO: API Link to WhatsApp 8200889047: https://chandlabook.in/client/account_verification/26bd6652-31be-4d68-8f93-2fb4cb46c81b  
+[2026-08-23 22:29:05] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"A55QYcw_iJGSCYQnSyA8UCt"}},"payload":{"messaging_product":"whatsapp","to":"918200889047","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Patel Vishal"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"26bd6652-31be-4d68-8f93-2fb4cb46c81b"}]}]}}} 
+[2026-08-23 22:29:05] local.INFO: API register WA result {"result":null} 
+[2026-08-23 22:31:47] local.INFO: API Link to WhatsApp 8200889047: https://chandlabook.in/client/account_verification/4741f356-8e30-4ab7-84f4-9861f5985e11  
+[2026-08-23 22:31:47] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"ARTQxgXbqV2w8aQM1F4GKmp"}},"payload":{"messaging_product":"whatsapp","to":"918200889047","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Patel Vishal"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"4741f356-8e30-4ab7-84f4-9861f5985e11"}]}]}}} 
+[2026-08-23 22:31:47] local.INFO: API register WA result {"result":null} 
+[2026-08-23 22:33:31] local.INFO: API Link to WhatsApp 7016811612: https://chandlabook.in/client/account_verification/8a1633cf-cf23-46da-8481-47402ab8ee55  
+[2026-08-23 22:33:32] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AIIpy1eJ9Pjjipdt4eg1ryF"}},"payload":{"messaging_product":"whatsapp","to":"917016811612","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Mital"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"8a1633cf-cf23-46da-8481-47402ab8ee55"}]}]}}} 
+[2026-08-23 22:33:32] local.INFO: API register WA result {"result":null} 
+[2026-08-23 23:09:39] local.INFO: API Link to WhatsApp 8200889047: https://chandlabook.in/client/account_verification/8346c30e-1030-4746-9c6f-bebe0a9b74cd  
+[2026-08-23 23:09:40] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AiXr_84NhC72vkvSdHfMAfx"}},"payload":{"messaging_product":"whatsapp","to":"918200889047","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Vishal Patel"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"8346c30e-1030-4746-9c6f-bebe0a9b74cd"}]}]}}} 
+[2026-08-23 23:09:40] local.INFO: API register WA result {"result":null} 
+[2026-08-23 23:10:54] local.INFO: API Link to WhatsApp 8200889047: https://chandlabook.in/client/account_verification/ca05adfd-2f8d-4bb1-b9fe-1d18904da0e2  
+[2026-08-23 23:10:55] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AZhybX1lPxFEYkzGHj6cEl8"}},"payload":{"messaging_product":"whatsapp","to":"918200889047","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Vishalpatel"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"ca05adfd-2f8d-4bb1-b9fe-1d18904da0e2"}]}]}}} 
+[2026-08-23 23:10:55] local.INFO: API register WA result {"result":null} 
+[2026-08-24 15:35:29] local.INFO: WhatsApp webhook received {"payload":{"object":"whatsapp_business_account","entry":[{"id":"1399319828839378","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"917861976671","phone_number_id":"1248746341654215"},"contacts":[{"wa_id":"Over 9 levels deep, aborting normalization","user_id":"Over 9 levels deep, aborting normalization"}],"statuses":[{"id":"Over 9 levels deep, aborting normalization","status":"Over 9 levels deep, aborting normalization","timestamp":"Over 9 levels deep, aborting normalization","recipient_id":"Over 9 levels deep, aborting normalization","recipient_user_id":"Over 9 levels deep, aborting normalization","pricing":"Over 9 levels deep, aborting normalization"}]},"field":"messages"}]}]}} 
+[2026-08-24 15:35:29] local.INFO: WhatsApp status update {"id":"wamid.HBgMOTE3OTg0ODA2MTQwFQIAERgSREI5NDk1QjZFRTZFQzVDMTI0AA==","status":"read","recipient":"917984806140"} 
+[2026-08-24 15:35:31] local.INFO: verifyAccountLink called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_driver":"database","cache_has":false} 
+[2026-08-24 15:35:31] local.INFO: Cache lookup result {"found":false,"data":null} 
+[2026-08-24 16:20:45] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 16:20:58] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 16:23:37] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 16:48:55] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 16:50:36] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:07:54] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:07:54] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:10:37] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:10:58] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:10:58] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:11:00] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:11:02] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:11:06] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:11:27] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:11:40] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:11:51] local.ERROR: syntax error, unexpected token "<<", expecting end of file {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\", expecting end of file at /home/chandlabook/public_html/routes/web.php:372)
+[stacktrace]
+#0 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(511): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(465): Illuminate\\Routing\\Router->loadRoutes()
+#2 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(194): Illuminate\\Routing\\Router->group()
+#3 /home/chandlabook/public_html/app/Providers/RouteServiceProvider.php(31): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App\\Providers\\RouteServiceProvider->App\\Providers\\{closure}()
+#5 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#9 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(120): Illuminate\\Container\\Container->call()
+#10 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(45): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#16 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(119): Illuminate\\Container\\Container->call()
+#17 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1062): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1040): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1039): array_walk()
+#21 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(186): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(170): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /home/chandlabook/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /home/chandlabook/public_html/public/index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 {main}
+"} 
+[2026-08-24 17:17:15] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 17:18:05] local.INFO: API Link to WhatsApp 7984806140: https://chandlabook.in/client/account_verification/15e9634e-de68-4d97-8096-6e5bf03578fa  
+[2026-08-24 17:18:05] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AKIwQ6vkLIM8hDX1Xhl-lT7"}},"payload":{"messaging_product":"whatsapp","to":"917984806140","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Fgg"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"15e9634e-de68-4d97-8096-6e5bf03578fa"}]}]}}} 
+[2026-08-24 17:18:05] local.INFO: API register WA result {"result":null} 
+[2026-08-24 17:19:01] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 17:19:45] local.INFO: API Link to WhatsApp 7984806140: https://chandlabook.in/client/account_verification/9cf959cd-9e75-4359-ab0a-ab8b4a62fbb9  
+[2026-08-24 17:19:46] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AKQgkUh3B_OAaQ15aCwVLF8"}},"payload":{"messaging_product":"whatsapp","to":"917984806140","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Vbb"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"9cf959cd-9e75-4359-ab0a-ab8b4a62fbb9"}]}]}}} 
+[2026-08-24 17:19:46] local.INFO: API register WA result {"result":null} 
+[2026-08-24 17:22:00] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 17:23:50] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 17:24:17] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 17:24:29] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 17:25:08] local.INFO: API verifyAccount called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_has":false} 
+[2026-08-24 17:25:22] local.INFO: API Link to WhatsApp 7984806140: https://chandlabook.in/client/account_verification/e18fb307-c736-40e9-8751-210faec4901c  
+[2026-08-24 17:25:23] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"Aw2U85q7_PYR6roJFmA6nFx"}},"payload":{"messaging_product":"whatsapp","to":"917984806140","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"7984806140"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"e18fb307-c736-40e9-8751-210faec4901c"}]}]}}} 
+[2026-08-24 17:25:23] local.INFO: API register WA result {"result":null} 
+[2026-08-24 17:30:12] local.INFO: API Link to WhatsApp 7984806140: https://chandlabook.in/client/account_verification/4ecc5eac-59e1-47f0-8dde-348f2fc7e338  
+[2026-08-24 17:30:13] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"A_iAHs2y66sQHrJyuBZpcxx"}},"payload":{"messaging_product":"whatsapp","to":"917984806140","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"7984806140"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"4ecc5eac-59e1-47f0-8dde-348f2fc7e338"}]}]}}} 
+[2026-08-24 17:30:13] local.INFO: API register WA result {"result":null} 
+[2026-08-24 17:31:21] local.INFO: API Link to WhatsApp 7984806140: https://chandlabook.in/client/account_verification/b0b132fd-5ef1-42ba-9a42-ef3153d79cda  
+[2026-08-24 17:31:22] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AJAPo7-3Js39Z44VqZkS38m"}},"payload":{"messaging_product":"whatsapp","to":"917984806140","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"7984806140"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"b0b132fd-5ef1-42ba-9a42-ef3153d79cda"}]}]}}} 
+[2026-08-24 17:31:22] local.INFO: API register WA result {"result":null} 
+[2026-08-24 17:31:37] local.INFO: API Link to WhatsApp 7984806140: https://chandlabook.in/client/account_verification/b4a69517-d483-4400-9c21-da9b2793f59a  
+[2026-08-24 17:31:37] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AOR4snp9xVkUquhuG4PxTgP"}},"payload":{"messaging_product":"whatsapp","to":"917984806140","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"7984806140"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"b4a69517-d483-4400-9c21-da9b2793f59a"}]}]}}} 
+[2026-08-24 17:31:37] local.INFO: API register WA result {"result":null} 
+[2026-08-24 20:13:33] local.INFO: API Profile Link to WhatsApp 9999999998: https://chandlabook.in/client/profile/verify/3cabaccb-6072-4ce5-8f90-4b33dbbc0963  
+[2026-08-24 20:13:34] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AdzepSha52B9tQCGUfcUG6-"}},"payload":{"messaging_product":"whatsapp","to":"919999999998","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"A Bd"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"3cabaccb-6072-4ce5-8f90-4b33dbbc0963"}]}]}}} 
+[2026-08-24 20:53:49] local.INFO: API Link to WhatsApp 8200889047: https://chandlabook.in/client/account_verification/e7823dc7-0001-492f-b4cb-fea38322a832  
+[2026-08-24 20:53:50] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AswAH8NGd7A6yu4zkXyZEN9"}},"payload":{"messaging_product":"whatsapp","to":"918200889047","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Patel Vishal"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"e7823dc7-0001-492f-b4cb-fea38322a832"}]}]}}} 
+[2026-08-24 20:53:50] local.INFO: API register WA result {"result":null} 
+[2026-08-24 20:55:24] local.INFO: API Link to WhatsApp 8200889047: https://chandlabook.in/client/account_verification/a06781a7-9fb3-4a78-ae43-890d40056666  
+[2026-08-24 20:55:24] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"A8YSftmnOn1wh-FSWkbIXlr"}},"payload":{"messaging_product":"whatsapp","to":"918200889047","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Vishal Patel"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"a06781a7-9fb3-4a78-ae43-890d40056666"}]}]}}} 
+[2026-08-24 20:55:24] local.INFO: API register WA result {"result":null} 
+[2026-08-24 23:09:31] local.INFO: API Link to WhatsApp 8460230446: https://chandlabook.in/client/account_verification/ef5c8bbf-67ca-4d9b-90df-622f78bba4a4  
+[2026-08-24 23:09:31] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"A5mwAUSm2w9JXWeNaeUuc1s"}},"payload":{"messaging_product":"whatsapp","to":"918460230446","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"ed"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"ef5c8bbf-67ca-4d9b-90df-622f78bba4a4"}]}]}}} 
+[2026-08-24 23:09:31] local.INFO: API register WA result {"result":null} 
+[2026-08-24 23:22:05] local.INFO: verifyAccountLink called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_driver":"database","cache_has":false} 
+[2026-08-24 23:22:05] local.INFO: Cache lookup result {"found":false,"data":null} 
+[2026-08-24 23:49:07] local.INFO: verifyAccountLink called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_driver":"database","cache_has":false} 
+[2026-08-24 23:49:07] local.INFO: Cache lookup result {"found":false,"data":null} 
+[2026-08-24 23:49:25] local.INFO: verifyAccountLink called {"token":"b7cc7852-a15d-4184-8634-6a5d54d93401","cache_key":"reg_data_b7cc7852-a15d-4184-8634-6a5d54d93401","cache_driver":"database","cache_has":false} 
+[2026-08-24 23:49:25] local.INFO: Cache lookup result {"found":false,"data":null} 
+[2026-08-25 00:34:43] local.INFO: API Profile Link to WhatsApp 9999999998: https://chandlabook.in/client/profile/verify/4a00616b-46e8-418e-84cf-918bd1f8fa5d  
+[2026-08-25 00:34:44] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"ATNEcJylVfSwvl4PFwNIRik"}},"payload":{"messaging_product":"whatsapp","to":"919999999998","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"A Bd"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"4a00616b-46e8-418e-84cf-918bd1f8fa5d"}]}]}}} 
+[2026-08-25 09:11:58] local.INFO: API Link to WhatsApp 9913776671: https://chandlabook.in/client/account_verification/a56ea1f3-5ab2-47c7-b7a8-36f3444343b9  
+[2026-08-25 09:11:59] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AgQKpFnS0qx-CfgCS9CGS2c"}},"payload":{"messaging_product":"whatsapp","to":"919913776671","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Chirag"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"a56ea1f3-5ab2-47c7-b7a8-36f3444343b9"}]}]}}} 
+[2026-08-25 09:11:59] local.INFO: API register WA result {"result":null} 
+[2026-08-25 09:14:12] local.INFO: Link to WhatsApp 9913776671: https://chandlabook.in/client/account_verification/d0d20a86-f161-4512-9eb8-08607bd911e8  
+[2026-08-25 09:14:13] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AatNMo-Cx1gOMxQfMmbc8YS"}},"payload":{"messaging_product":"whatsapp","to":"919913776671","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Vaishali Mehta"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"d0d20a86-f161-4512-9eb8-08607bd911e8"}]}]}}} 
+[2026-08-25 15:14:09] local.INFO: Link to WhatsApp 9913776671: https://chandlabook.in/client/account_verification/4cbd30b2-ee27-4f0f-a0f1-8074b413484b  
+[2026-08-25 15:14:09] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"AjIBTHu7YR507_DAHbeLw23"}},"payload":{"messaging_product":"whatsapp","to":"919913776671","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Chirag Devendrabhai Mehta"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"4cbd30b2-ee27-4f0f-a0f1-8074b413484b"}]}]}}} 
+[2026-08-25 15:22:37] local.INFO: Link to WhatsApp 9913776671: https://chandlabook.in/client/account_verification/d5f6705a-0e1b-423c-8195-b741756bcd59  
+[2026-08-25 15:22:37] local.ERROR: WhatsApp API Error {"status":400,"response":{"error":{"message":"(#132000) Number of parameters does not match the expected number of params","code":132000,"type":"OAuthException","error_data":{"messaging_product":"whatsapp","details":"body: number of localizable_params (1) does not match the expected number of params (2)"},"fbtrace_id":"Ambzj8nZYN_MJyHZMYBqgwY"}},"payload":{"messaging_product":"whatsapp","to":"919913776671","type":"template","template":{"name":"otp_verification_link","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Chirag Devendrabhai Mehta"}]},{"type":"button","sub_type":"url","index":"0","parameters":[{"type":"text","text":"d5f6705a-0e1b-423c-8195-b741756bcd59"}]}]}}} 
+[2026-08-25 15:31:29] local.INFO: WhatsApp webhook received {"payload":{"object":"whatsapp_business_account","entry":[{"id":"1399319828839378","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"917861976671","phone_number_id":"1248746341654215"},"contacts":[{"wa_id":"Over 9 levels deep, aborting normalization","user_id":"Over 9 levels deep, aborting normalization"}],"statuses":[{"id":"Over 9 levels deep, aborting normalization","status":"Over 9 levels deep, aborting normalization","timestamp":"Over 9 levels deep, aborting normalization","recipient_id":"Over 9 levels deep, aborting normalization","recipient_user_id":"Over 9 levels deep, aborting normalization","pricing":"Over 9 levels deep, aborting normalization"}]},"field":"messages"}]}]}} 
+[2026-08-25 15:31:29] local.INFO: WhatsApp status update {"id":"wamid.HBgMOTE5OTEzNzc2NjcxFQIAERgSNUEwRUFEQkIyMTE5RDlCNDAxAA==","status":"delivered","recipient":"919913776671"} 
+[2026-08-25 15:31:29] local.INFO: WhatsApp webhook received {"payload":{"object":"whatsapp_business_account","entry":[{"id":"1399319828839378","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"917861976671","phone_number_id":"1248746341654215"},"contacts":[{"wa_id":"Over 9 levels deep, aborting normalization","user_id":"Over 9 levels deep, aborting normalization"}],"statuses":[{"id":"Over 9 levels deep, aborting normalization","status":"Over 9 levels deep, aborting normalization","timestamp":"Over 9 levels deep, aborting normalization","recipient_id":"Over 9 levels deep, aborting normalization","recipient_user_id":"Over 9 levels deep, aborting normalization","pricing":"Over 9 levels deep, aborting normalization"}]},"field":"messages"}]}]}} 
+[2026-08-25 15:31:29] local.INFO: WhatsApp status update {"id":"wamid.HBgMOTE5OTEzNzc2NjcxFQIAERgSNUEwRUFEQkIyMTE5RDlCNDAxAA==","status":"sent","recipient":"919913776671"} 
+[2026-08-25 15:31:40] local.INFO: WhatsApp webhook received {"payload":{"object":"whatsapp_business_account","entry":[{"id":"1399319828839378","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"917861976671","phone_number_id":"1248746341654215"},"contacts":[{"wa_id":"Over 9 levels deep, aborting normalization","user_id":"Over 9 levels deep, aborting normalization"}],"statuses":[{"id":"Over 9 levels deep, aborting normalization","status":"Over 9 levels deep, aborting normalization","timestamp":"Over 9 levels deep, aborting normalization","recipient_id":"Over 9 levels deep, aborting normalization","recipient_user_id":"Over 9 levels deep, aborting normalization","pricing":"Over 9 levels deep, aborting normalization"}]},"field":"messages"}]}]}} 
+[2026-08-25 15:31:40] local.INFO: WhatsApp status update {"id":"wamid.HBgMOTE5OTEzNzc2NjcxFQIAERgSNUEwRUFEQkIyMTE5RDlCNDAxAA==","status":"read","recipient":"919913776671"} 
