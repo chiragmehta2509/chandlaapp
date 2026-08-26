@@ -18,6 +18,6 @@ yarn-error.log
 /.vscode
 /firebase-credentials.json
 /storage/app/firebase-credentials.json
-echo "chandla-book-firebase-adminsdk-fbsvc-*.json" >> .gitignore
-echo "*firebase-adminsdk*.json" >> .gitignore
-echo ".env" >> .gitignore
+chandla-book-firebase-adminsdk-fbsvc-*.json
+*firebase-adminsdk*.json
+storage/logs/*.log
