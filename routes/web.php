@@ -369,11 +369,6 @@ Route::get('/{token}', function ($token) {
 
 require __DIR__ . '/vendor_web.php';
 
-Route::get('/.well-known/assetlinks.json', function () {
-    return response()->file(public_path('assetlinks.json'), [
-        'Content-Type' => 'application/json',
-    ]);
-});
 
 Route::get('/.well-known/apple-app-site-association', function () {
     return response()->file(public_path('apple-app-site-association'), [

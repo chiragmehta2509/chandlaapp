@@ -2,25 +2,20 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
-
     RewriteEngine On
-
     # ── Allow PUT, DELETE, PATCH methods (blocked by LiteSpeed by default) ──────
     # This is required for Flutter/mobile apps that send PUT/DELETE directly.
     <Limit GET POST PUT DELETE PATCH HEAD OPTIONS>
         Order allow,deny
         Allow from all
     </Limit>
-
     # ── Handle Authorization Header ──────────────────────────────────────────────
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
     # ── Redirect Trailing Slashes ────────────────────────────────────────────────
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
-
     # ── Route Everything to index.php ────────────────────────────────────────────
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

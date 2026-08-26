@@ -1,0 +1,1336 @@
+[1mdiff --git a/app/Http/Controllers/Api/User/UserController.php b/app/Http/Controllers/Api/User/UserController.php[m
+[1mindex 1521e1d..b65ce33 100644[m
+[1m--- a/app/Http/Controllers/Api/User/UserController.php[m
+[1m+++ b/app/Http/Controllers/Api/User/UserController.php[m
+[36m@@ -502,16 +502,17 @@[m [mclass UserController extends Controller[m
+ [m
+     public function getStats(Request $request)[m
+     {[m
+[31m-        $user = $request->user();[m
+[31m-        $userId = $user->dataOwnerId();[m
+[32m+[m[32m        $user    = $request->user();[m
+[32m+[m[32m        $ownerId = $user->dataOwnerId(); // Always resolve to the real data owner (handles family sub-accounts)[m
+ [m
+         $stats = [[m
+[31m-            'total_events' => \App\Models\Event::where('user_id', $userId)->count(),[m
+[31m-            'active_events' => \App\Models\Event::where('user_id', $userId)->active()->count(),[m
+[31m-            'archived_events' => \App\Models\Event::where('user_id', $userId)->archived()->count(),[m
+[31m-            'total_contacts' => \App\Models\Contact::where('user_id', $userId)->count(),[m
+[31m-            'favorite_contacts' => \App\Models\Contact::where('user_id', $userId)->favorite()->count(),[m
+[31m-            'total_entries' => \App\Models\Chandla::whereIn('user_id', $user->allowedUserIds())->count(),[m
+[32m+[m[32m            'total_events'      => \App\Models\Event::where('user_id', $ownerId)->count(),[m
+[32m+[m[32m            'active_events'     => \App\Models\Event::where('user_id', $ownerId)->where('is_archived', false)->count(),[m
+[32m+[m[32m            'archived_events'   => \App\Models\Event::where('user_id', $ownerId)->where('is_archived', true)->count(),[m
+[32m+[m[32m            'total_contacts'    => \App\Models\Contact::where('user_id', $ownerId)->count(),[m
+[32m+[m[32m            'favorite_contacts' => \App\Models\Contact::where('user_id', $ownerId)->where('is_favorite', true)->count(),[m
+[32m+[m[32m            // "ENTRIES" on the dashboard = Chandla ledger rows (same as ChandlaController::index)[m
+[32m+[m[32m            'total_entries'     => \App\Models\Chandla::where('user_id', $ownerId)->count(),[m
+             'subscription_status' => $user->subscription_status,[m
+         ];[m
+ [m
+[1mdiff --git a/composer.lock b/composer.lock[m
+[1mindex 63fe705..66a5e8d 100644[m
+[1m--- a/composer.lock[m
+[1m+++ b/composer.lock[m
+[36m@@ -399,28 +399,29 @@[m
+         },[m
+         {[m
+             "name": "composer/pcre",[m
+[31m-            "version": "3.3.2",[m
+[32m+[m[32m            "version": "3.4.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/composer/pcre.git",[m
+[31m-                "reference": "b2bed4734f0cc156ee1fe9c0da2550420d99a21e"[m
+[32m+[m[32m                "reference": "d5a341b3fb61f3001970940afb1d332968a183ed"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/composer/pcre/zipball/b2bed4734f0cc156ee1fe9c0da2550420d99a21e",[m
+[31m-                "reference": "b2bed4734f0cc156ee1fe9c0da2550420d99a21e",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/composer/pcre/zipball/d5a341b3fb61f3001970940afb1d332968a183ed",[m
+[32m+[m[32m                "reference": "d5a341b3fb61f3001970940afb1d332968a183ed",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+                 "php": "^7.4 || ^8.0"[m
+             },[m
+             "conflict": {[m
+[31m-                "phpstan/phpstan": "<1.11.10"[m
+[32m+[m[32m                "phpstan/phpstan": "<2.2.2"[m
+             },[m
+             "require-dev": {[m
+[31m-                "phpstan/phpstan": "^1.12 || ^2",[m
+[31m-                "phpstan/phpstan-strict-rules": "^1 || ^2",[m
+[31m-                "phpunit/phpunit": "^8 || ^9"[m
+[32m+[m[32m                "phpstan/phpstan": "^2",[m
+[32m+[m[32m                "phpstan/phpstan-deprecation-rules": "^2",[m
+[32m+[m[32m                "phpstan/phpstan-strict-rules": "^2",[m
+[32m+[m[32m                "phpunit/phpunit": "^9"[m
+             },[m
+             "type": "library",[m
+             "extra": {[m
+[36m@@ -458,7 +459,7 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/composer/pcre/issues",[m
+[31m-                "source": "https://github.com/composer/pcre/tree/3.3.2"[m
+[32m+[m[32m                "source": "https://github.com/composer/pcre/tree/3.4.0"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -468,13 +469,9 @@[m
+                 {[m
+                     "url": "https://github.com/composer",[m
+                     "type": "github"[m
+[31m-                },[m
+[31m-                {[m
+[31m-                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",[m
+[31m-                    "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2024-11-12T16:29:46+00:00"[m
+[32m+[m[32m            "time": "2026-06-07T11:47:49+00:00"[m
+         },[m
+         {[m
+             "name": "composer/semver",[m
+[36m@@ -1157,16 +1154,16 @@[m
+         },[m
+         {[m
+             "name": "firebase/php-jwt",[m
+[31m-            "version": "v6.11.1",[m
+[32m+[m[32m            "version": "v7.1.0",[m
+             "source": {[m
+                 "type": "git",[m
+[31m-                "url": "https://github.com/firebase/php-jwt.git",[m
+[31m-                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66"[m
+[32m+[m[32m                "url": "https://github.com/googleapis/php-jwt.git",[m
+[32m+[m[32m                "reference": "b374a5d1a4f1f67fadc2165cdb284645945e2fc0"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",[m
+[31m-                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/php-jwt/zipball/b374a5d1a4f1f67fadc2165cdb284645945e2fc0",[m
+[32m+[m[32m                "reference": "b374a5d1a4f1f67fadc2165cdb284645945e2fc0",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -1174,6 +1171,8 @@[m
+             },[m
+             "require-dev": {[m
+                 "guzzlehttp/guzzle": "^7.4",[m
+[32m+[m[32m                "phpfastcache/phpfastcache": "^9.2",[m
+[32m+[m[32m                "phpseclib/phpseclib": "~3.0",[m
+                 "phpspec/prophecy-phpunit": "^2.0",[m
+                 "phpunit/phpunit": "^9.5",[m
+                 "psr/cache": "^2.0||^3.0",[m
+[36m@@ -1182,7 +1181,8 @@[m
+             },[m
+             "suggest": {[m
+                 "ext-sodium": "Support EdDSA (Ed25519) signatures",[m
+[31m-                "paragonie/sodium_compat": "Support EdDSA (Ed25519) signatures when libsodium is not present"[m
+[32m+[m[32m                "paragonie/sodium_compat": "Support EdDSA (Ed25519) signatures when libsodium is not present",[m
+[32m+[m[32m                "phpseclib/phpseclib": "Support PS256 (RSASSA-PSS) signatures"[m
+             },[m
+             "type": "library",[m
+             "autoload": {[m
+[36m@@ -1207,16 +1207,16 @@[m
+                 }[m
+             ],[m
+             "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",[m
+[31m-            "homepage": "https://github.com/firebase/php-jwt",[m
+[32m+[m[32m            "homepage": "https://github.com/googleapis/php-jwt",[m
+             "keywords": [[m
+                 "jwt",[m
+                 "php"[m
+             ],[m
+             "support": {[m
+[31m-                "issues": "https://github.com/firebase/php-jwt/issues",[m
+[31m-                "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"[m
+[32m+[m[32m                "issues": "https://github.com/googleapis/php-jwt/issues",[m
+[32m+[m[32m                "source": "https://github.com/googleapis/php-jwt/tree/v7.1.0"[m
+             },[m
+[31m-            "time": "2025-04-09T20:32:01+00:00"[m
+[32m+[m[32m            "time": "2026-06-11T17:54:14+00:00"[m
+         },[m
+         {[m
+             "name": "fruitcake/php-cors",[m
+[36m@@ -1291,43 +1291,45 @@[m
+         },[m
+         {[m
+             "name": "google/apiclient",[m
+[31m-            "version": "v2.18.4",[m
+[32m+[m[32m            "version": "v2.19.4",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/google-api-php-client.git",[m
+[31m-                "reference": "5b51fdb2cbd2a96088e3dfc6f565bdf6fb0af94b"[m
+[32m+[m[32m                "reference": "f745b310113d556c19d5e54ccc48b5821d1e2622"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/5b51fdb2cbd2a96088e3dfc6f565bdf6fb0af94b",[m
+[31m-                "reference": "5b51fdb2cbd2a96088e3dfc6f565bdf6fb0af94b",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/f745b310113d556c19d5e54ccc48b5821d1e2622",[m
+[32m+[m[32m                "reference": "f745b310113d556c19d5e54ccc48b5821d1e2622",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "firebase/php-jwt": "^6.0",[m
+[32m+[m[32m                "firebase/php-jwt": "^6.0||^7.0",[m
+                 "google/apiclient-services": "~0.350",[m
+                 "google/auth": "^1.37",[m
+                 "guzzlehttp/guzzle": "^7.4.5",[m
+                 "guzzlehttp/psr7": "^2.6",[m
+                 "monolog/monolog": "^2.9||^3.0",[m
+[31m-                "php": "^8.1",[m
+[31m-                "phpseclib/phpseclib": "^3.0.36"[m
+[32m+[m[32m                "php": "^8.1"[m
+             },[m
+             "require-dev": {[m
+                 "cache/filesystem-adapter": "^1.1",[m
+[31m-                "composer/composer": "^1.10.23",[m
+[32m+[m[32m                "composer/composer": "^2.9",[m
+                 "phpcompatibility/php-compatibility": "^9.2",[m
+                 "phpspec/prophecy-phpunit": "^2.1",[m
+                 "phpunit/phpunit": "^9.6",[m
+                 "squizlabs/php_codesniffer": "^3.8",[m
+[31m-                "symfony/css-selector": "~2.1",[m
+[31m-                "symfony/dom-crawler": "~2.1"[m
+[32m+[m[32m                "symfony/css-selector": "^5.4",[m
+[32m+[m[32m                "symfony/dom-crawler": "^5.4"[m
+             },[m
+             "suggest": {[m
+                 "cache/filesystem-adapter": "For caching certs and tokens (using Google\\Client::setCache)"[m
+             },[m
+             "type": "library",[m
+             "extra": {[m
+[32m+[m[32m                "component": {[m
+[32m+[m[32m                    "entry": "src/Client.php"[m
+[32m+[m[32m                },[m
+                 "branch-alias": {[m
+                     "dev-main": "2.x-dev"[m
+                 }[m
+[36m@@ -1354,22 +1356,22 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/googleapis/google-api-php-client/issues",[m
+[31m-                "source": "https://github.com/googleapis/google-api-php-client/tree/v2.18.4"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/google-api-php-client/tree/v2.19.4"[m
+             },[m
+[31m-            "time": "2025-09-30T04:23:07+00:00"[m
+[32m+[m[32m            "time": "2026-06-29T08:12:37+00:00"[m
+         },[m
+         {[m
+             "name": "google/apiclient-services",[m
+[31m-            "version": "v0.426.0",[m
+[32m+[m[32m            "version": "v0.452.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/google-api-php-client-services.git",[m
+[31m-                "reference": "cc74cd104a1ed1cf545480c52f13831e6eb0efe2"[m
+[32m+[m[32m                "reference": "2b86a7203ffd6520968ec568d58131ed380a59e1"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/cc74cd104a1ed1cf545480c52f13831e6eb0efe2",[m
+[31m-                "reference": "cc74cd104a1ed1cf545480c52f13831e6eb0efe2",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/2b86a7203ffd6520968ec568d58131ed380a59e1",[m
+[32m+[m[32m                "reference": "2b86a7203ffd6520968ec568d58131ed380a59e1",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -1398,36 +1400,37 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",[m
+[31m-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.426.0"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.452.0"[m
+             },[m
+[31m-            "time": "2025-12-24T01:04:22+00:00"[m
+[32m+[m[32m            "time": "2026-07-27T01:28:26+00:00"[m
+         },[m
+         {[m
+             "name": "google/auth",[m
+[31m-            "version": "v1.49.0",[m
+[32m+[m[32m            "version": "v1.53.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/google-auth-library-php.git",[m
+[31m-                "reference": "68e3d88cb59a49f713e3db25d4f6bb3cc0b70764"[m
+[32m+[m[32m                "reference": "d677d0b0c4bd52ab222a85df8e74e0d491c0cc5a"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/68e3d88cb59a49f713e3db25d4f6bb3cc0b70764",[m
+[31m-                "reference": "68e3d88cb59a49f713e3db25d4f6bb3cc0b70764",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/d677d0b0c4bd52ab222a85df8e74e0d491c0cc5a",[m
+[32m+[m[32m                "reference": "d677d0b0c4bd52ab222a85df8e74e0d491c0cc5a",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "firebase/php-jwt": "^6.0",[m
+[31m-                "guzzlehttp/guzzle": "^7.4.5",[m
+[31m-                "guzzlehttp/psr7": "^2.4.5",[m
+[32m+[m[32m                "firebase/php-jwt": "^6.0||^7.0",[m
+[32m+[m[32m                "guzzlehttp/guzzle": "^7.8.2||^8.0",[m
+[32m+[m[32m                "guzzlehttp/psr7": "^2.6.3||^3.0",[m
+                 "php": "^8.1",[m
+                 "psr/cache": "^2.0||^3.0",[m
+[32m+[m[32m                "psr/http-client": "^1.0",[m
+                 "psr/http-message": "^1.1||^2.0",[m
+[31m-                "psr/log": "^3.0"[m
+[32m+[m[32m                "psr/log": "^2.0||^3.0"[m
+             },[m
+             "require-dev": {[m
+[31m-                "guzzlehttp/promises": "^2.0",[m
+[31m-                "kelvinmo/simplejwt": "0.7.1",[m
+[32m+[m[32m                "guzzlehttp/promises": "^2.0.3||^3.0",[m
+[32m+[m[32m                "kelvinmo/simplejwt": "^1.1.0",[m
+                 "phpseclib/phpseclib": "^3.0.35",[m
+                 "phpspec/prophecy-phpunit": "^2.1",[m
+                 "phpunit/phpunit": "^9.6",[m
+[36m@@ -1435,7 +1438,7 @@[m
+                 "squizlabs/php_codesniffer": "^4.0",[m
+                 "symfony/filesystem": "^6.3||^7.3",[m
+                 "symfony/process": "^6.0||^7.0",[m
+[31m-                "webmozart/assert": "^1.11"[m
+[32m+[m[32m                "webmozart/assert": "^1.11||^2.0"[m
+             },[m
+             "suggest": {[m
+                 "phpseclib/phpseclib": "May be used in place of OpenSSL for signing strings or for token management. Please require version ^2."[m
+[36m@@ -1460,22 +1463,22 @@[m
+             "support": {[m
+                 "docs": "https://cloud.google.com/php/docs/reference/auth/latest",[m
+                 "issues": "https://github.com/googleapis/google-auth-library-php/issues",[m
+[31m-                "source": "https://github.com/googleapis/google-auth-library-php/tree/v1.49.0"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/google-auth-library-php/tree/v1.53.0"[m
+             },[m
+[31m-            "time": "2025-11-06T21:27:55+00:00"[m
+[32m+[m[32m            "time": "2026-07-22T22:36:10+00:00"[m
+         },[m
+         {[m
+             "name": "google/cloud-core",[m
+[31m-            "version": "v1.69.0",[m
+[32m+[m[32m            "version": "v1.72.4",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/google-cloud-php-core.git",[m
+[31m-                "reference": "a35bcf9d79f7007eaaf325e00011d08f40494fb1"[m
+[32m+[m[32m                "reference": "d46317d5a9e779189513f89bfc3e4e9364b5eaf2"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/a35bcf9d79f7007eaaf325e00011d08f40494fb1",[m
+[31m-                "reference": "a35bcf9d79f7007eaaf325e00011d08f40494fb1",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/d46317d5a9e779189513f89bfc3e4e9364b5eaf2",[m
+[32m+[m[32m                "reference": "d46317d5a9e779189513f89bfc3e4e9364b5eaf2",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -1491,11 +1494,11 @@[m
+             },[m
+             "require-dev": {[m
+                 "erusev/parsedown": "^1.6",[m
+[31m-                "google/cloud-common-protos": "~0.5",[m
+[32m+[m[32m                "google/cloud-common-protos": "~0.5||^1.0",[m
+                 "nikic/php-parser": "^5.6",[m
+                 "opis/closure": "^3.7|^4.0",[m
+                 "phpdocumentor/reflection": "^6.0",[m
+[31m-                "phpdocumentor/reflection-docblock": "^5.3",[m
+[32m+[m[32m                "phpdocumentor/reflection-docblock": "^5.3.3||^6.0",[m
+                 "phpspec/prophecy-phpunit": "^2.0",[m
+                 "phpunit/phpunit": "^9.0",[m
+                 "squizlabs/php_codesniffer": "2.*"[m
+[36m@@ -1527,34 +1530,35 @@[m
+             ],[m
+             "description": "Google Cloud PHP shared dependency, providing functionality useful to all components.",[m
+             "support": {[m
+[31m-                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.69.0"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.72.4"[m
+             },[m
+[31m-            "time": "2025-12-06T04:51:04+00:00"[m
+[32m+[m[32m            "time": "2026-07-07T16:28:46+00:00"[m
+         },[m
+         {[m
+             "name": "google/cloud-storage",[m
+[31m-            "version": "v1.49.0",[m
+[32m+[m[32m            "version": "v1.51.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/google-cloud-php-storage.git",[m
+[31m-                "reference": "30aefa19ce5af165cef8bb39c224cfa865461541"[m
+[32m+[m[32m                "reference": "9ba3d5e8cbd53bf67fab644b5be310e719533def"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/30aefa19ce5af165cef8bb39c224cfa865461541",[m
+[31m-                "reference": "30aefa19ce5af165cef8bb39c224cfa865461541",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/9ba3d5e8cbd53bf67fab644b5be310e719533def",[m
+[32m+[m[32m                "reference": "9ba3d5e8cbd53bf67fab644b5be310e719533def",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "google/cloud-core": "^1.57",[m
+[32m+[m[32m                "google/cloud-core": "^1.72.0",[m
+                 "php": "^8.1",[m
+                 "ramsey/uuid": "^4.2.3"[m
+             },[m
+             "require-dev": {[m
+                 "erusev/parsedown": "^1.6",[m
+                 "google/cloud-pubsub": "^2.0",[m
+[31m-                "phpdocumentor/reflection": "^5.3.3||^6.0",[m
+[31m-                "phpdocumentor/reflection-docblock": "^5.3",[m
+[32m+[m[32m                "nikic/php-parser": "^5",[m
+[32m+[m[32m                "phpdocumentor/reflection": "^6.0",[m
+[32m+[m[32m                "phpdocumentor/reflection-docblock": "^5.3.3",[m
+                 "phpseclib/phpseclib": "^2.0||^3.0",[m
+                 "phpspec/prophecy-phpunit": "^2.0",[m
+                 "phpunit/phpunit": "^9.0",[m
+[36m@@ -1584,26 +1588,26 @@[m
+             ],[m
+             "description": "Cloud Storage Client for PHP",[m
+             "support": {[m
+[31m-                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.49.0"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.51.0"[m
+             },[m
+[31m-            "time": "2025-12-06T04:51:04+00:00"[m
+[32m+[m[32m            "time": "2026-04-09T21:01:46+00:00"[m
+         },[m
+         {[m
+             "name": "google/common-protos",[m
+[31m-            "version": "4.12.4",[m
+[32m+[m[32m            "version": "4.14.1",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/common-protos-php.git",[m
+[31m-                "reference": "0127156899af0df2681bd42024c60bd5360d64e3"[m
+[32m+[m[32m                "reference": "4eb6813b8068653e055fc8a63dbda3446f3e8869"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/0127156899af0df2681bd42024c60bd5360d64e3",[m
+[31m-                "reference": "0127156899af0df2681bd42024c60bd5360d64e3",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/4eb6813b8068653e055fc8a63dbda3446f3e8869",[m
+[32m+[m[32m                "reference": "4eb6813b8068653e055fc8a63dbda3446f3e8869",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "google/protobuf": "^4.31",[m
+[32m+[m[32m                "google/protobuf": "^4.31||^5.0",[m
+                 "php": "^8.1"[m
+             },[m
+             "require-dev": {[m
+[36m@@ -1643,30 +1647,30 @@[m
+                 "google"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/googleapis/common-protos-php/tree/v4.12.4"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/common-protos-php/tree/v4.14.1"[m
+             },[m
+[31m-            "time": "2025-09-20T01:29:44+00:00"[m
+[32m+[m[32m            "time": "2026-06-17T23:07:32+00:00"[m
+         },[m
+         {[m
+             "name": "google/gax",[m
+[31m-            "version": "v1.40.0",[m
+[32m+[m[32m            "version": "v1.46.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/gax-php.git",[m
+[31m-                "reference": "1d3834d60b3f0794427c64d2b27d7c627fbba92c"[m
+[32m+[m[32m                "reference": "32824ff2b65fd4fe6d916f667cdc31445579e9f2"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/gax-php/zipball/1d3834d60b3f0794427c64d2b27d7c627fbba92c",[m
+[31m-                "reference": "1d3834d60b3f0794427c64d2b27d7c627fbba92c",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/gax-php/zipball/32824ff2b65fd4fe6d916f667cdc31445579e9f2",[m
+[32m+[m[32m                "reference": "32824ff2b65fd4fe6d916f667cdc31445579e9f2",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "google/auth": "^1.49",[m
+[31m-                "google/common-protos": "^4.4",[m
+[32m+[m[32m                "google/auth": "^1.52",[m
+[32m+[m[32m                "google/common-protos": "^4.9",[m
+                 "google/grpc-gcp": "^0.4",[m
+                 "google/longrunning": "~0.4",[m
+[31m-                "google/protobuf": "^4.31",[m
+[32m+[m[32m                "google/protobuf": "^4.31||^5.34",[m
+                 "grpc/grpc": "^1.13",[m
+                 "guzzlehttp/promises": "^2.0",[m
+                 "guzzlehttp/psr7": "^2.0",[m
+[36m@@ -1677,16 +1681,23 @@[m
+                 "ext-protobuf": "<4.31.0"[m
+             },[m
+             "require-dev": {[m
+[32m+[m[32m                "google/cloud-tools": "^0.16.1",[m
+                 "phpspec/prophecy-phpunit": "^2.1",[m
+                 "phpstan/phpstan": "^2.0",[m
+[31m-                "phpunit/phpunit": "^9.6",[m
+[31m-                "squizlabs/php_codesniffer": "4.*"[m
+[32m+[m[32m                "phpunit/phpunit": "^9.6"[m
+             },[m
+             "type": "library",[m
+[32m+[m[32m            "extra": {[m
+[32m+[m[32m                "component": {[m
+[32m+[m[32m                    "id": "gax",[m
+[32m+[m[32m                    "path": "Gax",[m
+[32m+[m[32m                    "entry": "README.md",[m
+[32m+[m[32m                    "target": "googleapis/gax-php.git"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+             "autoload": {[m
+                 "psr-4": {[m
+[31m-                    "Google\\ApiCore\\": "src",[m
+[31m-                    "GPBMetadata\\ApiCore\\": "metadata/ApiCore"[m
+[32m+[m[32m                    "Google\\ApiCore\\": "src"[m
+                 }[m
+             },[m
+             "notification-url": "https://packagist.org/downloads/",[m
+[36m@@ -1700,27 +1711,27 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/googleapis/gax-php/issues",[m
+[31m-                "source": "https://github.com/googleapis/gax-php/tree/v1.40.0"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/gax-php/tree/v1.46.0"[m
+             },[m
+[31m-            "time": "2025-12-04T18:45:15+00:00"[m
+[32m+[m[32m            "time": "2026-07-22T05:23:19+00:00"[m
+         },[m
+         {[m
+             "name": "google/grpc-gcp",[m
+[31m-            "version": "v0.4.1",[m
+[32m+[m[32m            "version": "0.4.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/GoogleCloudPlatform/grpc-gcp-php.git",[m
+[31m-                "reference": "e585b7721bbe806ef45b5c52ae43dfc2bff89968"[m
+[32m+[m[32m                "reference": "1049c0c15b6a1789fdeb52af688a94d540932469"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/GoogleCloudPlatform/grpc-gcp-php/zipball/e585b7721bbe806ef45b5c52ae43dfc2bff89968",[m
+[31m-                "reference": "e585b7721bbe806ef45b5c52ae43dfc2bff89968",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/GoogleCloudPlatform/grpc-gcp-php/zipball/1049c0c15b6a1789fdeb52af688a94d540932469",[m
+[32m+[m[32m                "reference": "1049c0c15b6a1789fdeb52af688a94d540932469",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+                 "google/auth": "^1.3",[m
+[31m-                "google/protobuf": "^v3.25.3||^4.26.1",[m
+[32m+[m[32m                "google/protobuf": "^v3.25.3||^4.26.1||^5.0",[m
+                 "grpc/grpc": "^v1.13.0",[m
+                 "php": "^8.0",[m
+                 "psr/cache": "^1.0.1||^2.0.0||^3.0.0"[m
+[36m@@ -1745,22 +1756,22 @@[m
+             "description": "gRPC GCP library for channel management",[m
+             "support": {[m
+                 "issues": "https://github.com/GoogleCloudPlatform/grpc-gcp-php/issues",[m
+[31m-                "source": "https://github.com/GoogleCloudPlatform/grpc-gcp-php/tree/v0.4.1"[m
+[32m+[m[32m                "source": "https://github.com/GoogleCloudPlatform/grpc-gcp-php/tree/v0.4.2"[m
+             },[m
+[31m-            "time": "2025-02-19T21:53:22+00:00"[m
+[32m+[m[32m            "time": "2026-03-12T22:56:09+00:00"[m
+         },[m
+         {[m
+             "name": "google/longrunning",[m
+[31m-            "version": "0.6.0",[m
+[32m+[m[32m            "version": "0.7.1",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/googleapis/php-longrunning.git",[m
+[31m-                "reference": "226d3b5166eaa13754cc5e452b37872478e23375"[m
+[32m+[m[32m                "reference": "cac9bedf199239ae2b1acd4a8e4ea2276bd9f55a"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/googleapis/php-longrunning/zipball/226d3b5166eaa13754cc5e452b37872478e23375",[m
+[31m-                "reference": "226d3b5166eaa13754cc5e452b37872478e23375",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/googleapis/php-longrunning/zipball/cac9bedf199239ae2b1acd4a8e4ea2276bd9f55a",[m
+[32m+[m[32m                "reference": "cac9bedf199239ae2b1acd4a8e4ea2276bd9f55a",[m
+                 "shasum": ""[m
+             },[m
+             "require-dev": {[m
+[36m@@ -1789,29 +1800,29 @@[m
+             ],[m
+             "description": "Google LongRunning Client for PHP",[m
+             "support": {[m
+[31m-                "source": "https://github.com/googleapis/php-longrunning/tree/v0.6.0"[m
+[32m+[m[32m                "source": "https://github.com/googleapis/php-longrunning/tree/v0.7.1"[m
+             },[m
+[31m-            "time": "2025-10-07T18:41:09+00:00"[m
+[32m+[m[32m            "time": "2026-03-31T19:52:22+00:00"[m
+         },[m
+         {[m
+             "name": "google/protobuf",[m
+[31m-            "version": "v4.33.2",[m
+[32m+[m[32m            "version": "v5.35.1",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/protocolbuffers/protobuf-php.git",[m
+[31m-                "reference": "fbd96b7bf1343f4b0d8fb358526c7ba4d72f1318"[m
+[32m+[m[32m                "reference": "55bb4a7d6739b5af0927b96213c1371a3afb7cfb"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/fbd96b7bf1343f4b0d8fb358526c7ba4d72f1318",[m
+[31m-                "reference": "fbd96b7bf1343f4b0d8fb358526c7ba4d72f1318",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/55bb4a7d6739b5af0927b96213c1371a3afb7cfb",[m
+[32m+[m[32m                "reference": "55bb4a7d6739b5af0927b96213c1371a3afb7cfb",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "php": ">=8.1.0"[m
+[32m+[m[32m                "php": ">=8.2.0"[m
+             },[m
+             "require-dev": {[m
+[31m-                "phpunit/phpunit": ">=5.0.0 <8.5.27"[m
+[32m+[m[32m                "phpunit/phpunit": ">=11.5.0 <12.0.0"[m
+             },[m
+             "suggest": {[m
+                 "ext-bcmath": "Need to support JSON deserialization"[m
+[36m@@ -1833,9 +1844,9 @@[m
+                 "proto"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v4.33.2"[m
+[32m+[m[32m                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v5.35.1"[m
+             },[m
+[31m-            "time": "2025-12-05T22:12:22+00:00"[m
+[32m+[m[32m            "time": "2026-06-11T21:19:23+00:00"[m
+         },[m
+         {[m
+             "name": "graham-campbell/result-type",[m
+[36m@@ -1901,20 +1912,20 @@[m
+         },[m
+         {[m
+             "name": "grpc/grpc",[m
+[31m-            "version": "1.74.0",[m
+[32m+[m[32m            "version": "1.82.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/grpc/grpc-php.git",[m
+[31m-                "reference": "32bf4dba256d60d395582fb6e4e8d3936bcdb713"[m
+[32m+[m[32m                "reference": "be984cb608f21e96453b3cfe54c748cc7b192250"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/grpc/grpc-php/zipball/32bf4dba256d60d395582fb6e4e8d3936bcdb713",[m
+[31m-                "reference": "32bf4dba256d60d395582fb6e4e8d3936bcdb713",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/grpc/grpc-php/zipball/be984cb608f21e96453b3cfe54c748cc7b192250",[m
+[32m+[m[32m                "reference": "be984cb608f21e96453b3cfe54c748cc7b192250",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "php": ">=7.0.0"[m
+[32m+[m[32m                "php": ">=7.1.0"[m
+             },[m
+             "require-dev": {[m
+                 "google/auth": "^v1.3.0"[m
+[36m@@ -1939,31 +1950,32 @@[m
+                 "rpc"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/grpc/grpc-php/tree/v1.74.0"[m
+[32m+[m[32m                "source": "https://github.com/grpc/grpc-php/tree/v1.82.0"[m
+             },[m
+[31m-            "time": "2025-07-24T20:02:16+00:00"[m
+[32m+[m[32m            "time": "2026-07-03T09:39:53+00:00"[m
+         },[m
+         {[m
+             "name": "guzzlehttp/guzzle",[m
+[31m-            "version": "7.10.0",[m
+[32m+[m[32m            "version": "7.15.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/guzzle/guzzle.git",[m
+[31m-                "reference": "b51ac707cfa420b7bfd4e4d5e510ba8008e822b4"[m
+[32m+[m[32m                "reference": "744101956d78b7c1384d0cbf379db13e859167bf"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/b51ac707cfa420b7bfd4e4d5e510ba8008e822b4",[m
+[31m-                "reference": "b51ac707cfa420b7bfd4e4d5e510ba8008e822b4",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/744101956d78b7c1384d0cbf379db13e859167bf",[m
+[32m+[m[32m                "reference": "744101956d78b7c1384d0cbf379db13e859167bf",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+                 "ext-json": "*",[m
+[31m-                "guzzlehttp/promises": "^2.3",[m
+[31m-                "guzzlehttp/psr7": "^2.8",[m
+[32m+[m[32m                "guzzlehttp/promises": "^2.5.1",[m
+[32m+[m[32m                "guzzlehttp/psr7": "^2.13",[m
+                 "php": "^7.2.5 || ^8.0",[m
+                 "psr/http-client": "^1.0",[m
+[31m-                "symfony/deprecation-contracts": "^2.2 || ^3.0"[m
+[32m+[m[32m                "symfony/deprecation-contracts": "^2.5 || ^3.0",[m
+[32m+[m[32m                "symfony/polyfill-php80": "^1.25"[m
+             },[m
+             "provide": {[m
+                 "psr/http-client-implementation": "1.0"[m
+[36m@@ -1971,9 +1983,10 @@[m
+             "require-dev": {[m
+                 "bamarni/composer-bin-plugin": "^1.8.2",[m
+                 "ext-curl": "*",[m
+[31m-                "guzzle/client-integration-tests": "3.0.2",[m
+[32m+[m[32m                "guzzle/client-integration-tests": "3.0.3",[m
+[32m+[m[32m                "guzzlehttp/test-server": "^0.7",[m
+                 "php-http/message-factory": "^1.1",[m
+[31m-                "phpunit/phpunit": "^8.5.39 || ^9.6.20",[m
+[32m+[m[32m                "phpunit/phpunit": "^8.5.52 || ^9.6.34",[m
+                 "psr/log": "^1.1 || ^2.0 || ^3.0"[m
+             },[m
+             "suggest": {[m
+[36m@@ -2051,7 +2064,7 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/guzzle/guzzle/issues",[m
+[31m-                "source": "https://github.com/guzzle/guzzle/tree/7.10.0"[m
+[32m+[m[32m                "source": "https://github.com/guzzle/guzzle/tree/7.15.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2067,28 +2080,29 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2025-08-23T22:36:01+00:00"[m
+[32m+[m[32m            "time": "2026-07-26T23:23:20+00:00"[m
+         },[m
+         {[m
+             "name": "guzzlehttp/promises",[m
+[31m-            "version": "2.3.0",[m
+[32m+[m[32m            "version": "2.5.1",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/guzzle/promises.git",[m
+[31m-                "reference": "481557b130ef3790cf82b713667b43030dc9c957"[m
+[32m+[m[32m                "reference": "9ad1e4fc607446a055b95870c7f668e93b5cff29"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/guzzle/promises/zipball/481557b130ef3790cf82b713667b43030dc9c957",[m
+[31m-                "reference": "481557b130ef3790cf82b713667b43030dc9c957",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/guzzle/promises/zipball/9ad1e4fc607446a055b95870c7f668e93b5cff29",[m
+[32m+[m[32m                "reference": "9ad1e4fc607446a055b95870c7f668e93b5cff29",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "php": "^7.2.5 || ^8.0"[m
+[32m+[m[32m                "php": "^7.2.5 || ^8.0",[m
+[32m+[m[32m                "symfony/deprecation-contracts": "^2.5 || ^3.0"[m
+             },[m
+             "require-dev": {[m
+                 "bamarni/composer-bin-plugin": "^1.8.2",[m
+[31m-                "phpunit/phpunit": "^8.5.44 || ^9.6.25"[m
+[32m+[m[32m                "phpunit/phpunit": "^8.5.52 || ^9.6.34"[m
+             },[m
+             "type": "library",[m
+             "extra": {[m
+[36m@@ -2134,7 +2148,7 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/guzzle/promises/issues",[m
+[31m-                "source": "https://github.com/guzzle/promises/tree/2.3.0"[m
+[32m+[m[32m                "source": "https://github.com/guzzle/promises/tree/2.5.1"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2150,27 +2164,29 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2025-08-22T14:34:08+00:00"[m
+[32m+[m[32m            "time": "2026-07-08T15:48:39+00:00"[m
+         },[m
+         {[m
+             "name": "guzzlehttp/psr7",[m
+[31m-            "version": "2.8.0",[m
+[32m+[m[32m            "version": "2.13.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/guzzle/psr7.git",[m
+[31m-                "reference": "21dc724a0583619cd1652f673303492272778051"[m
+[32m+[m[32m                "reference": "dad89620b7a6edb60c15858442eb2e408b45d8f4"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/21dc724a0583619cd1652f673303492272778051",[m
+[31m-                "reference": "21dc724a0583619cd1652f673303492272778051",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/guzzle/psr7/zipball/dad89620b7a6edb60c15858442eb2e408b45d8f4",[m
+[32m+[m[32m                "reference": "dad89620b7a6edb60c15858442eb2e408b45d8f4",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+                 "php": "^7.2.5 || ^8.0",[m
+                 "psr/http-factory": "^1.0",[m
+                 "psr/http-message": "^1.1 || ^2.0",[m
+[31m-                "ralouphie/getallheaders": "^3.0"[m
+[32m+[m[32m                "ralouphie/getallheaders": "^3.0",[m
+[32m+[m[32m                "symfony/deprecation-contracts": "^2.5 || ^3.0",[m
+[32m+[m[32m                "symfony/polyfill-php80": "^1.25"[m
+             },[m
+             "provide": {[m
+                 "psr/http-factory-implementation": "1.0",[m
+[36m@@ -2178,8 +2194,9 @@[m
+             },[m
+             "require-dev": {[m
+                 "bamarni/composer-bin-plugin": "^1.8.2",[m
+[31m-                "http-interop/http-factory-tests": "0.9.0",[m
+[31m-                "phpunit/phpunit": "^8.5.44 || ^9.6.25"[m
+[32m+[m[32m                "http-interop/http-factory-tests": "1.1.0",[m
+[32m+[m[32m                "jshttp/mime-db": "1.54.0.1",[m
+[32m+[m[32m                "phpunit/phpunit": "^8.5.52 || ^9.6.34"[m
+             },[m
+             "suggest": {[m
+                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"[m
+[36m@@ -2250,7 +2267,7 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/guzzle/psr7/issues",[m
+[31m-                "source": "https://github.com/guzzle/psr7/tree/2.8.0"[m
+[32m+[m[32m                "source": "https://github.com/guzzle/psr7/tree/2.13.0"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2266,29 +2283,29 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2025-08-23T21:21:41+00:00"[m
+[32m+[m[32m            "time": "2026-07-16T22:23:49+00:00"[m
+         },[m
+         {[m
+             "name": "guzzlehttp/uri-template",[m
+[31m-            "version": "v1.0.5",[m
+[32m+[m[32m            "version": "v1.0.10",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/guzzle/uri-template.git",[m
+[31m-                "reference": "4f4bbd4e7172148801e76e3decc1e559bdee34e1"[m
+[32m+[m[32m                "reference": "f6c24c21f42b990e9a58912b332d0874df6ba839"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/4f4bbd4e7172148801e76e3decc1e559bdee34e1",[m
+[31m-                "reference": "4f4bbd4e7172148801e76e3decc1e559bdee34e1",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/f6c24c21f42b990e9a58912b332d0874df6ba839",[m
+[32m+[m[32m                "reference": "f6c24c21f42b990e9a58912b332d0874df6ba839",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+                 "php": "^7.2.5 || ^8.0",[m
+[31m-                "symfony/polyfill-php80": "^1.24"[m
+[32m+[m[32m                "symfony/polyfill-php80": "^1.25"[m
+             },[m
+             "require-dev": {[m
+                 "bamarni/composer-bin-plugin": "^1.8.2",[m
+[31m-                "phpunit/phpunit": "^8.5.44 || ^9.6.25",[m
+[32m+[m[32m                "phpunit/phpunit": "^8.5.52 || ^9.6.34",[m
+                 "uri-template/tests": "1.0.0"[m
+             },[m
+             "type": "library",[m
+[36m@@ -2336,7 +2353,7 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/guzzle/uri-template/issues",[m
+[31m-                "source": "https://github.com/guzzle/uri-template/tree/v1.0.5"[m
+[32m+[m[32m                "source": "https://github.com/guzzle/uri-template/tree/v1.0.10"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2352,19 +2369,19 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2025-08-22T14:27:06+00:00"[m
+[32m+[m[32m            "time": "2026-07-17T13:53:03+00:00"[m
+         },[m
+         {[m
+             "name": "kreait/firebase-php",[m
+             "version": "6.9.6",[m
+             "source": {[m
+                 "type": "git",[m
+[31m-                "url": "https://github.com/kreait/firebase-php.git",[m
+[32m+[m[32m                "url": "https://github.com/beste/firebase-php.git",[m
+                 "reference": "d6592be9b27a7c0b13f484f5af494e278901e441"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/kreait/firebase-php/zipball/d6592be9b27a7c0b13f484f5af494e278901e441",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/beste/firebase-php/zipball/d6592be9b27a7c0b13f484f5af494e278901e441",[m
+                 "reference": "d6592be9b27a7c0b13f484f5af494e278901e441",[m
+                 "shasum": ""[m
+             },[m
+[36m@@ -2452,12 +2469,12 @@[m
+             "version": "3.0.3",[m
+             "source": {[m
+                 "type": "git",[m
+[31m-                "url": "https://github.com/kreait/firebase-tokens-php.git",[m
+[32m+[m[32m                "url": "https://github.com/beste/firebase-tokens-php.git",[m
+                 "reference": "3f732ae04f6548f5130709daf06fcc1ca0561002"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/kreait/firebase-tokens-php/zipball/3f732ae04f6548f5130709daf06fcc1ca0561002",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/beste/firebase-tokens-php/zipball/3f732ae04f6548f5130709daf06fcc1ca0561002",[m
+                 "reference": "3f732ae04f6548f5130709daf06fcc1ca0561002",[m
+                 "shasum": ""[m
+             },[m
+[36m@@ -2510,8 +2527,8 @@[m
+                 "token"[m
+             ],[m
+             "support": {[m
+[31m-                "issues": "https://github.com/kreait/firebase-tokens-php/issues",[m
+[31m-                "source": "https://github.com/kreait/firebase-tokens-php/tree/3.0.3"[m
+[32m+[m[32m                "issues": "https://github.com/beste/firebase-tokens-php/issues",[m
+[32m+[m[32m                "source": "https://github.com/beste/firebase-tokens-php/tree/3.0.3"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2523,16 +2540,16 @@[m
+         },[m
+         {[m
+             "name": "laravel/framework",[m
+[31m-            "version": "v10.50.0",[m
+[32m+[m[32m            "version": "10.50.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/laravel/framework.git",[m
+[31m-                "reference": "fc41c8ceb4d4a55b23d4030ef4ed86383e4b2bc3"[m
+[32m+[m[32m                "reference": "3ff39b7a9b83e633383ec9b019827ed54b6d38bc"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/laravel/framework/zipball/fc41c8ceb4d4a55b23d4030ef4ed86383e4b2bc3",[m
+[31m-                "reference": "fc41c8ceb4d4a55b23d4030ef4ed86383e4b2bc3",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/laravel/framework/zipball/3ff39b7a9b83e633383ec9b019827ed54b6d38bc",[m
+[32m+[m[32m                "reference": "3ff39b7a9b83e633383ec9b019827ed54b6d38bc",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -2727,7 +2744,7 @@[m
+                 "issues": "https://github.com/laravel/framework/issues",[m
+                 "source": "https://github.com/laravel/framework"[m
+             },[m
+[31m-            "time": "2025-11-28T18:20:42+00:00"[m
+[32m+[m[32m            "time": "2026-02-15T14:12:07+00:00"[m
+         },[m
+         {[m
+             "name": "laravel/prompts",[m
+[36m@@ -2916,16 +2933,16 @@[m
+         },[m
+         {[m
+             "name": "laravel/tinker",[m
+[31m-            "version": "v2.10.2",[m
+[32m+[m[32m            "version": "v2.11.1",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/laravel/tinker.git",[m
+[31m-                "reference": "3bcb5f62d6f837e0f093a601e26badafb127bd4c"[m
+[32m+[m[32m                "reference": "c9f80cc835649b5c1842898fb043f8cc098dd741"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/laravel/tinker/zipball/3bcb5f62d6f837e0f093a601e26badafb127bd4c",[m
+[31m-                "reference": "3bcb5f62d6f837e0f093a601e26badafb127bd4c",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/laravel/tinker/zipball/c9f80cc835649b5c1842898fb043f8cc098dd741",[m
+[32m+[m[32m                "reference": "c9f80cc835649b5c1842898fb043f8cc098dd741",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -2934,7 +2951,7 @@[m
+                 "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",[m
+                 "php": "^7.2.5|^8.0",[m
+                 "psy/psysh": "^0.11.1|^0.12.0",[m
+[31m-                "symfony/var-dumper": "^4.3.4|^5.0|^6.0|^7.0"[m
+[32m+[m[32m                "symfony/var-dumper": "^4.3.4|^5.0|^6.0|^7.0|^8.0"[m
+             },[m
+             "require-dev": {[m
+                 "mockery/mockery": "~1.3.3|^1.4.2",[m
+[36m@@ -2976,9 +2993,9 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/laravel/tinker/issues",[m
+[31m-                "source": "https://github.com/laravel/tinker/tree/v2.10.2"[m
+[32m+[m[32m                "source": "https://github.com/laravel/tinker/tree/v2.11.1"[m
+             },[m
+[31m-            "time": "2025-11-20T16:29:12+00:00"[m
+[32m+[m[32m            "time": "2026-02-06T14:12:35+00:00"[m
+         },[m
+         {[m
+             "name": "lcobucci/clock",[m
+[36m@@ -3120,16 +3137,16 @@[m
+         },[m
+         {[m
+             "name": "league/commonmark",[m
+[31m-            "version": "2.8.0",[m
+[32m+[m[32m            "version": "2.8.3",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/thephpleague/commonmark.git",[m
+[31m-                "reference": "4efa10c1e56488e658d10adf7b7b7dcd19940bfb"[m
+[32m+[m[32m                "reference": "1902f60f984235023acbe03db6ad614a37b3c3e7"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/4efa10c1e56488e658d10adf7b7b7dcd19940bfb",[m
+[31m-                "reference": "4efa10c1e56488e658d10adf7b7b7dcd19940bfb",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/1902f60f984235023acbe03db6ad614a37b3c3e7",[m
+[32m+[m[32m                "reference": "1902f60f984235023acbe03db6ad614a37b3c3e7",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3151,12 +3168,12 @@[m
+                 "github/gfm": "0.29.0",[m
+                 "michelf/php-markdown": "^1.4 || ^2.0",[m
+                 "nyholm/psr7": "^1.5",[m
+[31m-                "phpstan/phpstan": "^1.8.2",[m
+[31m-                "phpunit/phpunit": "^9.5.21 || ^10.5.9 || ^11.0.0",[m
+[32m+[m[32m                "phpstan/phpstan": "^2.0.0",[m
+[32m+[m[32m                "phpunit/phpunit": "^9.5.21 || ^10.5.9 || ^11.0.0 || ^12.0.0 || ^13.0.0",[m
+                 "scrutinizer/ocular": "^1.8.1",[m
+[31m-                "symfony/finder": "^5.3 | ^6.0 | ^7.0",[m
+[31m-                "symfony/process": "^5.4 | ^6.0 | ^7.0",[m
+[31m-                "symfony/yaml": "^2.3 | ^3.0 | ^4.0 | ^5.0 | ^6.0 | ^7.0",[m
+[32m+[m[32m                "symfony/finder": "^5.3 | ^6.0 | ^7.0 || ^8.0",[m
+[32m+[m[32m                "symfony/process": "^5.4 | ^6.0 | ^7.0 || ^8.0",[m
+[32m+[m[32m                "symfony/yaml": "^2.3 | ^3.0 | ^4.0 | ^5.0 | ^6.0 | ^7.0 || ^8.0",[m
+                 "unleashedtech/php-coding-standard": "^3.1.1",[m
+                 "vimeo/psalm": "^4.24.0 || ^5.0.0 || ^6.0.0"[m
+             },[m
+[36m@@ -3223,7 +3240,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2025-11-26T21:48:24+00:00"[m
+[32m+[m[32m            "time": "2026-07-12T15:29:16+00:00"[m
+         },[m
+         {[m
+             "name": "league/config",[m
+[36m@@ -3309,16 +3326,16 @@[m
+         },[m
+         {[m
+             "name": "league/flysystem",[m
+[31m-            "version": "3.30.2",[m
+[32m+[m[32m            "version": "3.35.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/thephpleague/flysystem.git",[m
+[31m-                "reference": "5966a8ba23e62bdb518dd9e0e665c2dbd4b5b277"[m
+[32m+[m[32m                "reference": "b277b5dc3d56650b68904117124e79c851e12376"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/5966a8ba23e62bdb518dd9e0e665c2dbd4b5b277",[m
+[31m-                "reference": "5966a8ba23e62bdb518dd9e0e665c2dbd4b5b277",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/b277b5dc3d56650b68904117124e79c851e12376",[m
+[32m+[m[32m                "reference": "b277b5dc3d56650b68904117124e79c851e12376",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3386,22 +3403,22 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/thephpleague/flysystem/issues",[m
+[31m-                "source": "https://github.com/thephpleague/flysystem/tree/3.30.2"[m
+[32m+[m[32m                "source": "https://github.com/thephpleague/flysystem/tree/3.35.2"[m
+             },[m
+[31m-            "time": "2025-11-10T17:13:11+00:00"[m
+[32m+[m[32m            "time": "2026-07-06T14:42:07+00:00"[m
+         },[m
+         {[m
+             "name": "league/flysystem-local",[m
+[31m-            "version": "3.30.2",[m
+[32m+[m[32m            "version": "3.31.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/thephpleague/flysystem-local.git",[m
+[31m-                "reference": "ab4f9d0d672f601b102936aa728801dd1a11968d"[m
+[32m+[m[32m                "reference": "2f669db18a4c20c755c2bb7d3a7b0b2340488079"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/ab4f9d0d672f601b102936aa728801dd1a11968d",[m
+[31m-                "reference": "ab4f9d0d672f601b102936aa728801dd1a11968d",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/2f669db18a4c20c755c2bb7d3a7b0b2340488079",[m
+[32m+[m[32m                "reference": "2f669db18a4c20c755c2bb7d3a7b0b2340488079",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3435,22 +3452,22 @@[m
+                 "local"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/thephpleague/flysystem-local/tree/3.30.2"[m
+[32m+[m[32m                "source": "https://github.com/thephpleague/flysystem-local/tree/3.31.0"[m
+             },[m
+[31m-            "time": "2025-11-10T11:23:37+00:00"[m
+[32m+[m[32m            "time": "2026-01-23T15:30:45+00:00"[m
+         },[m
+         {[m
+             "name": "league/mime-type-detection",[m
+[31m-            "version": "1.16.0",[m
+[32m+[m[32m            "version": "1.17.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/thephpleague/mime-type-detection.git",[m
+[31m-                "reference": "2d6702ff215bf922936ccc1ad31007edc76451b9"[m
+[32m+[m[32m                "reference": "f5f47eff7c48ed1003069a2ca67f316fb4021c76"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/2d6702ff215bf922936ccc1ad31007edc76451b9",[m
+[31m-                "reference": "2d6702ff215bf922936ccc1ad31007edc76451b9",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/f5f47eff7c48ed1003069a2ca67f316fb4021c76",[m
+[32m+[m[32m                "reference": "f5f47eff7c48ed1003069a2ca67f316fb4021c76",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3460,7 +3477,7 @@[m
+             "require-dev": {[m
+                 "friendsofphp/php-cs-fixer": "^3.2",[m
+                 "phpstan/phpstan": "^0.12.68",[m
+[31m-                "phpunit/phpunit": "^8.5.8 || ^9.3 || ^10.0"[m
+[32m+[m[32m                "phpunit/phpunit": "^8.5.8 || ^9.3 || ^10.0 || ^11.0 || ^12.0"[m
+             },[m
+             "type": "library",[m
+             "autoload": {[m
+[36m@@ -3481,7 +3498,7 @@[m
+             "description": "Mime-type detection for Flysystem",[m
+             "support": {[m
+                 "issues": "https://github.com/thephpleague/mime-type-detection/issues",[m
+[31m-                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.16.0"[m
+[32m+[m[32m                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.17.0"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -3493,33 +3510,33 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2024-09-21T08:32:55+00:00"[m
+[32m+[m[32m            "time": "2026-07-09T11:49:27+00:00"[m
+         },[m
+         {[m
+             "name": "maatwebsite/excel",[m
+[31m-            "version": "3.1.67",[m
+[32m+[m[32m            "version": "3.1.69",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/SpartnerNL/Laravel-Excel.git",[m
+[31m-                "reference": "e508e34a502a3acc3329b464dad257378a7edb4d"[m
+[32m+[m[32m                "reference": "ae5d65b7c9a2fac43bff4d44f796ac95d7a8e760"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/SpartnerNL/Laravel-Excel/zipball/e508e34a502a3acc3329b464dad257378a7edb4d",[m
+[31m-                "reference": "e508e34a502a3acc3329b464dad257378a7edb4d",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/SpartnerNL/Laravel-Excel/zipball/ae5d65b7c9a2fac43bff4d44f796ac95d7a8e760",[m
+[32m+[m[32m                "reference": "ae5d65b7c9a2fac43bff4d44f796ac95d7a8e760",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+                 "composer/semver": "^3.3",[m
+                 "ext-json": "*",[m
+[31m-                "illuminate/support": "5.8.*||^6.0||^7.0||^8.0||^9.0||^10.0||^11.0||^12.0",[m
+[32m+[m[32m                "illuminate/support": "5.8.*||^6.0||^7.0||^8.0||^9.0||^10.0||^11.0||^12.0||^13.0",[m
+                 "php": "^7.0||^8.0",[m
+[31m-                "phpoffice/phpspreadsheet": "^1.30.0",[m
+[32m+[m[32m                "phpoffice/phpspreadsheet": "^1.30.4",[m
+                 "psr/simple-cache": "^1.0||^2.0||^3.0"[m
+             },[m
+             "require-dev": {[m
+[31m-                "laravel/scout": "^7.0||^8.0||^9.0||^10.0",[m
+[31m-                "orchestra/testbench": "^6.0||^7.0||^8.0||^9.0||^10.0",[m
+[32m+[m[32m                "laravel/scout": "^7.0||^8.0||^9.0||^10.0||^11.0",[m
+[32m+[m[32m                "orchestra/testbench": "^6.0||^7.0||^8.0||^9.0||^10.0||^11.0",[m
+                 "predis/predis": "^1.1"[m
+             },[m
+             "type": "library",[m
+[36m@@ -3562,7 +3579,7 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/SpartnerNL/Laravel-Excel/issues",[m
+[31m-                "source": "https://github.com/SpartnerNL/Laravel-Excel/tree/3.1.67"[m
+[32m+[m[32m                "source": "https://github.com/SpartnerNL/Laravel-Excel/tree/3.1.69"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -3574,7 +3591,7 @@[m
+                     "type": "github"[m
+                 }[m
+             ],[m
+[31m-            "time": "2025-08-26T09:13:16+00:00"[m
+[32m+[m[32m            "time": "2026-04-30T20:03:58+00:00"[m
+         },[m
+         {[m
+             "name": "maennchen/zipstream-php",[m
+[36m@@ -3763,16 +3780,16 @@[m
+         },[m
+         {[m
+             "name": "masterminds/html5",[m
+[31m-            "version": "2.10.0",[m
+[32m+[m[32m            "version": "2.10.1",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/Masterminds/html5-php.git",[m
+[31m-                "reference": "fcf91eb64359852f00d921887b219479b4f21251"[m
+[32m+[m[32m                "reference": "fd5018f6815fff903946d0564977b44ce8010e29"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/fcf91eb64359852f00d921887b219479b4f21251",[m
+[31m-                "reference": "fcf91eb64359852f00d921887b219479b4f21251",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/fd5018f6815fff903946d0564977b44ce8010e29",[m
+[32m+[m[32m                "reference": "fd5018f6815fff903946d0564977b44ce8010e29",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3780,7 +3797,7 @@[m
+                 "php": ">=5.3.0"[m
+             },[m
+             "require-dev": {[m
+[31m-                "phpunit/phpunit": "^4.8.35 || ^5.7.21 || ^6 || ^7 || ^8 || ^9"[m
+[32m+[m[32m                "phpunit/phpunit": "^4.8.35 || ^5.7.21 || ^6 || ^7 || ^8 || ^9 || ^10"[m
+             },[m
+             "type": "library",[m
+             "extra": {[m
+[36m@@ -3824,22 +3841,22 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/Masterminds/html5-php/issues",[m
+[31m-                "source": "https://github.com/Masterminds/html5-php/tree/2.10.0"[m
+[32m+[m[32m                "source": "https://github.com/Masterminds/html5-php/tree/2.10.1"[m
+             },[m
+[31m-            "time": "2025-07-25T09:04:22+00:00"[m
+[32m+[m[32m            "time": "2026-06-23T18:43:15+00:00"[m
+         },[m
+         {[m
+             "name": "monolog/monolog",[m
+[31m-            "version": "3.9.0",[m
+[32m+[m[32m            "version": "3.10.0",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/Seldaek/monolog.git",[m
+[31m-                "reference": "10d85740180ecba7896c87e06a166e0c95a0e3b6"[m
+[32m+[m[32m                "reference": "b321dd6749f0bf7189444158a3ce785cc16d69b0"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/10d85740180ecba7896c87e06a166e0c95a0e3b6",[m
+[31m-                "reference": "10d85740180ecba7896c87e06a166e0c95a0e3b6",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/b321dd6749f0bf7189444158a3ce785cc16d69b0",[m
+[32m+[m[32m                "reference": "b321dd6749f0bf7189444158a3ce785cc16d69b0",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3857,7 +3874,7 @@[m
+                 "graylog2/gelf-php": "^1.4.2 || ^2.0",[m
+                 "guzzlehttp/guzzle": "^7.4.5",[m
+                 "guzzlehttp/psr7": "^2.2",[m
+[31m-                "mongodb/mongodb": "^1.8",[m
+[32m+[m[32m                "mongodb/mongodb": "^1.8 || ^2.0",[m
+                 "php-amqplib/php-amqplib": "~2.4 || ^3",[m
+                 "php-console/php-console": "^3.1.8",[m
+                 "phpstan/phpstan": "^2",[m
+[36m@@ -3917,7 +3934,7 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/Seldaek/monolog/issues",[m
+[31m-                "source": "https://github.com/Seldaek/monolog/tree/3.9.0"[m
+[32m+[m[32m                "source": "https://github.com/Seldaek/monolog/tree/3.10.0"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -3929,20 +3946,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2025-03-24T10:02:05+00:00"[m
+[32m+[m[32m            "time": "2026-01-02T08:56:05+00:00"[m
+         },[m
+         {[m
+             "name": "mtdowling/jmespath.php",[m
+[31m-            "version": "2.8.0",[m
+[32m+[m[32m            "version": "2.9.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/jmespath/jmespath.php.git",[m
+[31m-                "reference": "a2a865e05d5f420b50cc2f85bb78d565db12a6bc"[m
+[32m+[m[32m                "reference": "2157c5e50e813ec6a96c1eed3be7f64a20fb32a8"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/a2a865e05d5f420b50cc2f85bb78d565db12a6bc",[m
+[31m-                "reference": "a2a865e05d5f420b50cc2f85bb78d565db12a6bc",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/2157c5e50e813ec6a96c1eed3be7f64a20fb32a8",[m
+[32m+[m[32m                "reference": "2157c5e50e813ec6a96c1eed3be7f64a20fb32a8",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3951,7 +3968,7 @@[m
+             },[m
+             "require-dev": {[m
+                 "composer/xdebug-handler": "^3.0.3",[m
+[31m-                "phpunit/phpunit": "^8.5.33"[m
+[32m+[m[32m                "phpunit/phpunit": "^8.5.52"[m
+             },[m
+             "bin": [[m
+                 "bin/jp.php"[m
+[36m@@ -3959,7 +3976,7 @@[m
+             "type": "library",[m
+             "extra": {[m
+                 "branch-alias": {[m
+[31m-                    "dev-master": "2.8-dev"[m
+[32m+[m[32m                    "dev-master": "2.9-dev"[m
+                 }[m
+             },[m
+             "autoload": {[m
+[36m@@ -3993,9 +4010,9 @@[m
+             ],[m
+             "support": {[m
+                 "issues": "https://github.com/jmespath/jmespath.php/issues",[m
+[31m-                "source": "https://github.com/jmespath/jmespath.php/tree/2.8.0"[m
+[32m+[m[32m                "source": "https://github.com/jmespath/jmespath.php/tree/2.9.2"[m
+             },[m
+[31m-            "time": "2024-09-04T18:46:31+00:00"[m
+[32m+[m[32m            "time": "2026-07-06T18:56:19+00:00"[m
+         },[m
+         {[m
+             "name": "nesbot/carbon",[m
+[36m@@ -4106,16 +4123,16 @@[m
+         },[m
+         {[m
+             "name": "nette/schema",[m
+[31m-            "version": "v1.3.3",[m
+[32m+[m[32m            "version": "v1.3.5",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/nette/schema.git",[m
+[31m-                "reference": "2befc2f42d7c715fd9d95efc31b1081e5d765004"[m
+[32m+[m[32m                "reference": "f0ab1a3cda782dbc5da270d28545236aa80c4002"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/nette/schema/zipball/2befc2f42d7c715fd9d95efc31b1081e5d765004",[m
+[31m-                "reference": "2befc2f42d7c715fd9d95efc31b1081e5d765004",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/nette/schema/zipball/f0ab1a3cda782dbc5da270d28545236aa80c4002",[m
+[32m+[m[32m                "reference": "f0ab1a3cda782dbc5da270d28545236aa80c4002",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -4123,8 +4140,10 @@[m
+                 "php": "8.1 - 8.5"[m
+             },[m
+             "require-dev": {[m
+[31m-                "nette/tester": "^2.5.2",[m
+[31m-                "phpstan/phpstan-nette": "^2.0@stable",[m
+[32m+[m[32m                "nette/phpstan-rules": "^1.0",[m
+[32m+[m[32m                "nette/tester": "^2.6",[m
+[32m+[m[32m                "phpstan/extension-installer": "^1.4@stable",[m
+[32m+
