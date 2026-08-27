@@ -122,8 +122,19 @@ class AuthController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $login = $request->input('login');
-        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        $login = trim($request->input('login'));
+
+        // Determine whether the user typed an email or a phone number
+        $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
+        if ($isEmail) {
+            $login = strtolower($login); // normalize email to lowercase
+            $field = 'email';
+        } else {
+            // Normalize phone: strip non-digits, remove +91 / 0 prefix
+            $login = $this->normalizeIndianMobile($login);
+            $field = 'phone';
+        }
+
         $user = User::where($field, $login)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -134,22 +145,20 @@ class AuthController extends Controller
             return back()->withErrors(['login' => 'Account is inactive or deleted'])->withInput();
         }
 
-        if (Auth::guard('web')->attempt([$field => $login, 'password' => $request->password], $request->filled('remember'))) {
-            $request->session()->regenerate();
-            $request->session()->put('login_method', $field);
+        // Credentials verified manually above — log the user in directly
+        Auth::guard('web')->login($user, $request->filled('remember'));
+        $request->session()->regenerate();
+        $request->session()->put('login_method', $field);
 
-            if ($request->filled('remember')) {
-                \Illuminate\Support\Facades\Cookie::queue('remembered_login', $login, 60 * 24 * 30); // 30 days
-                \Illuminate\Support\Facades\Cookie::queue('remembered_password', $request->password, 60 * 24 * 30);
-            } else {
-                \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('remembered_login'));
-                \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('remembered_password'));
-            }
-
-            return redirect()->intended(route('client.dashboard'));
+        if ($request->filled('remember')) {
+            \Illuminate\Support\Facades\Cookie::queue('remembered_login', $request->input('login'), 60 * 24 * 30); // 30 days
+            \Illuminate\Support\Facades\Cookie::queue('remembered_password', $request->password, 60 * 24 * 30);
+        } else {
+            \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('remembered_login'));
+            \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('remembered_password'));
         }
 
-        return back()->withErrors(['login' => 'Invalid credentials'])->withInput();
+        return redirect()->intended(route('client.dashboard'));
     }
 
     public function register(Request $request)

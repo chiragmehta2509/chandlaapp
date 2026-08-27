@@ -654,7 +654,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email'    => 'required|email',
+            'login'    => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -666,7 +666,19 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $login = trim($request->input('login'));
+
+        // Detect email vs phone and normalise accordingly
+        $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
+        if ($isEmail) {
+            $login = strtolower($login);
+            $field = 'email';
+        } else {
+            $login = $this->normalizeIndianMobile($login);
+            $field = 'phone';
+        }
+
+        $user = User::where($field, $login)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
