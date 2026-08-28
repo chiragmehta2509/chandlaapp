@@ -653,9 +653,19 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // Auto-fill 'login' if mobile app sends 'email', 'phone', or 'username' instead
+        if (!$request->has('login')) {
+            $fallbackLogin = $request->input('email') ?? $request->input('phone') ?? $request->input('username');
+            if ($fallbackLogin !== null) {
+                $request->merge(['login' => $fallbackLogin]);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'login'    => 'required|string',
             'password' => 'required|string',
+        ], [
+            'login.required' => 'The login (or email/phone) field is required.',
         ]);
 
         if ($validator->fails()) {
