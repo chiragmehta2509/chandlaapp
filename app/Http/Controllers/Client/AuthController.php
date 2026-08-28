@@ -413,15 +413,7 @@ class AuthController extends Controller
             return back()->withErrors(['login' => 'No account found with that mobile number.'])->withInput();
         }
 
-        // If the user also has an email, prefer the email path
-        if (!empty($user->email)) {
-            $status = Password::sendResetLink(['email' => $user->email]);
-            return $status === Password::RESET_LINK_SENT
-                ? back()->with('status', 'Password reset link sent to your registered email.')
-                : back()->withErrors(['login' => __($status)])->withInput();
-        }
-
-        // Phone-only user → generate custom token, send WhatsApp
+        // Cell number entered → generate custom token, send WhatsApp message directly
         $token = Str::random(64);
         cache()->put("pwd_reset_phone_{$token}", $phone, now()->addHour());
 
@@ -453,7 +445,7 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Log::error('Password reset WhatsApp failed', ['error' => $e->getMessage()]);
         }
 
-        return back()->with('status', 'Password reset link sent to your WhatsApp number ending in ' . substr($phone, -4) . '.');
+        return back()->with('status', 'Password reset link sent to your WhatsApp number.');
     }
 
     public function showResetPasswordForm(Request $request, string $token)

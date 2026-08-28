@@ -840,6 +840,14 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request)
     {
+        // Support 'email' or 'phone' fields if 'login' key is omitted by mobile app
+        if (!$request->has('login')) {
+            $fallbackLogin = $request->input('email') ?? $request->input('phone') ?? $request->input('username');
+            if ($fallbackLogin !== null) {
+                $request->merge(['login' => $fallbackLogin]);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'login' => 'required|string',
         ]);
@@ -887,16 +895,7 @@ class AuthController extends Controller
             ], 404);
         }
 
-        // If the user also has an email, prefer email reset
-        if (!empty($user->email)) {
-            \Illuminate\Support\Facades\Password::sendResetLink(['email' => $user->email]);
-            return response()->json([
-                'success' => true,
-                'message' => 'Password reset link sent to your registered email.',
-            ]);
-        }
-
-        // Phone-only user → custom token + WhatsApp
+        // Cell number entered → generate custom token & send WhatsApp message directly
         $token    = Str::random(64);
         $resetUrl = route('password.reset', ['token' => $token]) . '?phone=' . urlencode($phone);
 
@@ -930,7 +929,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Password reset link sent to your WhatsApp.',
+            'message' => 'Password reset link sent to your WhatsApp number.',
         ]);
     }
 
