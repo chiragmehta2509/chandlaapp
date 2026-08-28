@@ -1,0 +1,50 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "6L9W7ALFBJ.com.skylighttech.chandlabook",
+        "paths": [
+          "/client/account_verification/*",
+          "/verify-account/*",
+          "/client/register*",
+          "/register*",
+          "/events/*",
+          "/chandlas/*",
+          "/contacts/*",
+          "/invitations/*",
+          "/transactions/*",
+          "/expenses*",
+          "*"
+        ],
+        "components": [
+          {
+            "/": "/client/account_verification/*",
+            "comment": "Account verification"
+          },
+          {
+            "/": "/verify-account/*",
+            "comment": "Account verification"
+          },
+          {
+            "/": "/client/register*",
+            "comment": "Register referral"
+          },
+          {
+            "/": "/register*",
+            "comment": "Register"
+          },
+          {
+            "/": "/*",
+            "comment": "All in-app routes"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "6L9W7ALFBJ.com.skylighttech.chandlabook"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.skylighttech.chandla_book",
+      "sha256_cert_fingerprints": [
+        "00:0E:1F:D3:32:6E:F4:A2:04:77:B9:B6:63:19:34:2E:DD:D0:78:B7:EE:CD:57:DE:C7:D0:39:AB:A2:52:01:A4",
+        "30:59:BE:44:84:B5:67:57:62:26:BC:53:DB:46:ED:25:36:99:4C:76:4F:21:7A:03:43:03:FE:92:88:F9:7D:D8",
+        "F6:B0:B9:A1:58:3C:FE:2F:39:08:47:05:F0:3E:CF:6D:2A:DE:57:A2:32:15:89:B0:F4:B5:FE:89:D4:7F:6A:94"
+      ]
+    }
+  }
+]

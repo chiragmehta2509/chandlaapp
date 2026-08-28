@@ -369,9 +369,31 @@ Route::get('/{token}', function ($token) {
 
 require __DIR__ . '/vendor_web.php';
 
-
+// Digital App Links & Universal Links
 Route::get('/.well-known/apple-app-site-association', function () {
-    return response()->file(public_path('apple-app-site-association'), [
-        'Content-Type' => 'application/json',
-    ]);
+    $path = file_exists(public_path('.well-known/apple-app-site-association')) 
+        ? public_path('.well-known/apple-app-site-association') 
+        : public_path('apple-app-site-association');
+    return response()->file($path, ['Content-Type' => 'application/json']);
 });
+
+Route::get('/apple-app-site-association', function () {
+    $path = file_exists(public_path('.well-known/apple-app-site-association')) 
+        ? public_path('.well-known/apple-app-site-association') 
+        : public_path('apple-app-site-association');
+    return response()->file($path, ['Content-Type' => 'application/json']);
+});
+
+Route::get('/.well-known/assetlinks.json', function () {
+    $path = file_exists(public_path('.well-known/assetlinks.json')) 
+        ? public_path('.well-known/assetlinks.json') 
+        : public_path('assetlinks.json');
+    return response()->file($path, ['Content-Type' => 'application/json']);
+});
+
+Route::get('/assetlinks.json', function () {
+    $path = file_exists(public_path('.well-known/assetlinks.json')) 
+        ? public_path('.well-known/assetlinks.json') 
+        : public_path('assetlinks.json');
+    return response()->file($path, ['Content-Type' => 'application/json']);
+});
