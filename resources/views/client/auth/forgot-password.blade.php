@@ -40,7 +40,7 @@
                 <div class="bg-white dark:bg-white/10 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-white/20 p-6 sm:p-8 shadow-xl">
                     <div class="text-center mb-8">
                         <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Forgot password</h1>
-                        <p class="text-slate-600 dark:text-white/70 mt-2 text-sm sm:text-base">We&apos;ll email you a reset link.</p>
+                        <p class="text-slate-600 dark:text-white/70 mt-2 text-sm sm:text-base">Enter your email or mobile number to receive a reset link.</p>
                     </div>
 
                     @if($errors->any())
@@ -61,16 +61,17 @@
                     <form method="POST" action="{{ route('password.email') }}">
                         @csrf
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2" for="email">Registered email</label>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2" for="login">Email or Mobile Number</label>
                             <input
                                 class="w-full rounded-xl border border-slate-200 dark:border-white/20 bg-white dark:bg-white/10 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:text-white/40 focus:border-indigo-400/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
-                                id="email"
-                                type="email"
-                                name="email"
-                                value="{{ old('email') }}"
+                                id="login"
+                                type="text"
+                                name="login"
+                                value="{{ old('login') }}"
+                                placeholder="e.g. user@example.com or 9876543210"
                                 required
                                 autofocus
-                                autocomplete="email"
+                                autocomplete="username"
                             >
                         </div>
 

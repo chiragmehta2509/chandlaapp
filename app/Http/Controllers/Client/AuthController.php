@@ -383,16 +383,77 @@ class AuthController extends Controller
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'login' => 'required|string',
         ]);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $input = trim($request->input('login'));
+        $isEmail = filter_var($input, FILTER_VALIDATE_EMAIL);
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', __($status))
-            : back()->withErrors(['email' => __($status)]);
+        if ($isEmail) {
+            // ── Email path: use Laravel's built-in password broker ──
+            $input = strtolower($input);
+            $user  = User::where('email', $input)->first();
+
+            if (!$user) {
+                return back()->withErrors(['login' => 'No account found with that email address.'])->withInput();
+            }
+
+            $status = Password::sendResetLink(['email' => $input]);
+
+            return $status === Password::RESET_LINK_SENT
+                ? back()->with('status', 'Password reset link sent to your email.')
+                : back()->withErrors(['login' => __($status)])->withInput();
+        }
+
+        // ── Phone path: lookup by phone, send WhatsApp ──
+        $phone = $this->normalizeIndianMobile($input);
+        $user  = User::where('phone', $phone)->where('is_deleted', false)->first();
+
+        if (!$user) {
+            return back()->withErrors(['login' => 'No account found with that mobile number.'])->withInput();
+        }
+
+        // If the user also has an email, prefer the email path
+        if (!empty($user->email)) {
+            $status = Password::sendResetLink(['email' => $user->email]);
+            return $status === Password::RESET_LINK_SENT
+                ? back()->with('status', 'Password reset link sent to your registered email.')
+                : back()->withErrors(['login' => __($status)])->withInput();
+        }
+
+        // Phone-only user → generate custom token, send WhatsApp
+        $token = Str::random(64);
+        cache()->put("pwd_reset_phone_{$token}", $phone, now()->addHour());
+
+        $resetUrl = route('password.reset', ['token' => $token]) . '?phone=' . urlencode($phone);
+
+        try {
+            $waService  = new \App\Services\WhatsAppService();
+            $cleanPhone = preg_replace('/^\+?91/', '', $phone);
+            $waService->sendTemplateMessage(
+                to: '91' . $cleanPhone,
+                templateName: 'reset_password',
+                languageCode: 'en_US',
+                components: [
+                    [
+                        'type'       => 'body',
+                        'parameters' => [
+                            \App\Services\WhatsAppService::formatTextParameter($resetUrl),
+                        ],
+                    ],
+                    [
+                        'type'     => 'button',
+                        'sub_type' => 'url',
+                        'index'    => '0',
+                        'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token . '?phone=' . urlencode($phone))],
+                    ],
+                ]
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Password reset WhatsApp failed', ['error' => $e->getMessage()]);
+        }
+
+        return back()->with('status', 'Password reset link sent to your WhatsApp number ending in ' . substr($phone, -4) . '.');
     }
 
     public function showResetPasswordForm(Request $request, string $token)
@@ -400,14 +461,47 @@ class AuthController extends Controller
         return view('client.auth.reset-password', [
             'token' => $token,
             'email' => $request->email,
+            'phone' => $request->phone,
         ]);
     }
 
     public function resetPassword(Request $request)
     {
+        // Phone-based reset (custom cache token)
+        if ($request->filled('phone') && !$request->filled('email')) {
+            $request->validate([
+                'token'    => 'required|string',
+                'phone'    => 'required|string',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+
+            $phone = $this->normalizeIndianMobile($request->phone);
+            $cachedPhone = cache()->get("pwd_reset_phone_{$request->token}");
+
+            if (!$cachedPhone || $cachedPhone !== $phone) {
+                return back()->withErrors(['password' => 'This reset link has expired or is invalid. Please request a new one.'])->withInput();
+            }
+
+            $user = User::where('phone', $phone)->where('is_deleted', false)->first();
+            if (!$user) {
+                return back()->withErrors(['password' => 'Account not found.'])->withInput();
+            }
+
+            $user->forceFill([
+                'password'       => Hash::make($request->password),
+                'remember_token' => Str::random(60),
+            ])->save();
+
+            cache()->forget("pwd_reset_phone_{$request->token}");
+            event(new PasswordReset($user));
+
+            return redirect()->route('client.login')->with('status', 'Password reset successfully. Please sign in.');
+        }
+
+        // Email-based reset (Laravel broker)
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
+            'token'    => 'required',
+            'email'    => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -415,7 +509,7 @@ class AuthController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password),
+                    'password'       => Hash::make($password),
                     'remember_token' => Str::random(60),
                 ])->save();
 

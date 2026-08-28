@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "6L9W7ALFBJ.com.skylighttech.chandlabook",
+        "appID": "6L9W7ALFBJ.com.skylighttech.chandlaBook.ios",
         "paths": [
           "/client/account_verification/*",
           "/verify-account/*",
@@ -44,7 +44,7 @@
   },
   "webcredentials": {
     "apps": [
-      "6L9W7ALFBJ.com.skylighttech.chandlabook"
+      "6L9W7ALFBJ.com.skylighttech.chandlaBook.ios"
     ]
   }
 }

@@ -39,6 +39,19 @@
         <form method="POST" action="{{ route('password.update') }}">
             @csrf
             <input type="hidden" name="token" value="{{ $token }}">
+            @if(!empty($phone))
+            {{-- Phone-only reset flow --}}
+            <input type="hidden" name="phone" value="{{ old('phone', $phone) }}">
+            <div class="mb-4">
+                <label class="cb-label !normal-case !tracking-normal !text-slate-600 !text-sm">Mobile Number</label>
+                <div class="cb-field flex items-center gap-2 cursor-default select-all bg-slate-50 border-slate-200">
+                    <i class="fas fa-mobile-alt text-slate-400 text-sm shrink-0"></i>
+                    <span class="text-slate-700 text-sm truncate">+91 {{ old('phone', $phone) }}</span>
+                    <span class="ml-auto text-xs text-slate-400 shrink-0">Verified</span>
+                </div>
+            </div>
+            @else
+            {{-- Email reset flow --}}
             <div class="mb-4">
                 <label class="cb-label !normal-case !tracking-normal !text-slate-600 !text-sm">Email</label>
                 {{-- Keep the value in a hidden field so it's still submitted --}}
@@ -49,6 +62,8 @@
                     <span class="ml-auto text-xs text-slate-400 shrink-0">Verified</span>
                 </div>
             </div>
+            @endif
+
             <div class="mb-4">
                 <label class="cb-label !normal-case !tracking-normal !text-slate-600 !text-sm" for="password">New password</label>
                 <div class="relative">
