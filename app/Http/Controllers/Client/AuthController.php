@@ -425,19 +425,13 @@ class AuthController extends Controller
             $waService->sendTemplateMessage(
                 to: '91' . $cleanPhone,
                 templateName: 'reset_password',
-                languageCode: 'en_US',
+                languageCode: 'en',
                 components: [
                     [
                         'type'       => 'body',
                         'parameters' => [
                             \App\Services\WhatsAppService::formatTextParameter($resetUrl),
                         ],
-                    ],
-                    [
-                        'type'     => 'button',
-                        'sub_type' => 'url',
-                        'index'    => '0',
-                        'parameters' => [\App\Services\WhatsAppService::formatTextParameter($token . '?phone=' . urlencode($phone))],
                     ],
                 ]
             );

@@ -27,7 +27,7 @@ class WhatsAppService
      * @param array $components The components array for the template variables (e.g., body parameters)
      * @return array|null Returns the API response as an array on success, or null on failure.
      */
-    public function sendTemplateMessage(string $to, string $templateName, string $languageCode = 'en_US', array $components = []): ?array
+    public function sendTemplateMessage(string $to, string $templateName, string $languageCode = 'en', array $components = []): ?array
     {
         if (empty($this->token) || empty($this->phoneNumberId)) {
             Log::error('WhatsApp credentials are not configured.');
