@@ -3,10 +3,15 @@
     "apps": [],
     "details": [
       {
-        "appID": "6L9W7ALFBJ.com.skylighttech.chandlaBook.ios",
+        "appIDs": [
+          "6L9W7ALFBJ.com.skylighttech.chandlaBook.ios",
+          "6L9W7ALFBJ.com.skylighttech.chandlabook"
+        ],
         "paths": [
           "/client/account_verification/*",
           "/verify-account/*",
+          "/client/reset-password/*",
+          "/reset-password/*",
           "/client/register*",
           "/register*",
           "/events/*",
@@ -27,6 +32,14 @@
             "comment": "Account verification"
           },
           {
+            "/": "/client/reset-password/*",
+            "comment": "Password reset"
+          },
+          {
+            "/": "/reset-password/*",
+            "comment": "Password reset"
+          },
+          {
             "/": "/client/register*",
             "comment": "Register referral"
           },
@@ -44,7 +57,8 @@
   },
   "webcredentials": {
     "apps": [
-      "6L9W7ALFBJ.com.skylighttech.chandlaBook.ios"
+      "6L9W7ALFBJ.com.skylighttech.chandlaBook.ios",
+      "6L9W7ALFBJ.com.skylighttech.chandlabook"
     ]
   }
 }
