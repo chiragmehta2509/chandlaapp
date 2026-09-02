@@ -282,23 +282,62 @@ class ChandlaController extends Controller
 
     public function store(Request $request)
     {
+        // Normalize boolean-like strings that mobile apps often send
+        // ("true"/"false") so Laravel's `boolean` rule accepts them
+        foreach (['gift_received'] as $boolField) {
+            if ($request->has($boolField)) {
+                $val = $request->input($boolField);
+                if ($val === 'true')  $request->merge([$boolField => true]);
+                if ($val === 'false') $request->merge([$boolField => false]);
+            }
+        }
+
+        // Treat empty strings as null for optional fields so nullable rules work correctly
+        foreach (['giver_phone', 'giver_email', 'giver_address', 'gpay_transaction_id',
+                  'gift_item_name', 'receipt_number', 'notes', 'description',
+                  'payment_method', 'amount'] as $field) {
+            if ($request->input($field) === '') {
+                $request->merge([$field => null]);
+            }
+        }
+
+        // Default payment_method to 'cash' for chandla/cover if not provided
+        $category = $request->input('category');
+        if (in_array($category, ['chandla', 'cover']) && !$request->filled('payment_method')) {
+            $request->merge(['payment_method' => 'cash']);
+        }
+
         $validator = Validator::make($request->all(), [
-            'event_id' => 'required|exists:events,id',
-            'giver_name' => 'required|string|max:255',
-            'giver_phone' => 'nullable|string',
-            'giver_email' => 'nullable|email',
-            'giver_address' => 'nullable|string',
-            'category' => 'required|in:chandla,cover,gift',
-            'payment_method' => 'nullable|in:cash,gpay,hard_form,other',
-            'gpay_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'gpay_transaction_id' => 'nullable|required_if:payment_method,gpay|string|max:255',
-            'amount' => 'required_if:category,chandla|nullable|numeric|min:0',
-            'gift_item_name' => 'nullable|required_if:category,gift|string|max:255',
-            'gift_received' => 'nullable|required_if:category,gift|boolean',
-            'received_date' => 'required|date',
-            'receipt_number' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'description' => 'nullable|string',
+            'event_id'            => 'required|exists:events,id',
+            'giver_name'          => 'required|string|max:255',
+            'giver_phone'         => 'nullable|string|max:20',
+            'giver_email'         => 'nullable|email|max:255',
+            'giver_address'       => 'nullable|string|max:500',
+            'category'            => 'required|in:chandla,cover,gift',
+            'payment_method'      => 'nullable|in:cash,gpay,hard_form,other',
+            'gpay_image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'gpay_transaction_id' => 'nullable|string|max:255',
+            'amount'              => [
+                'nullable',
+                'numeric',
+                'min:0',
+                \Illuminate\Validation\Rule::requiredIf(fn () => $request->input('category') === 'chandla'),
+            ],
+            'gift_item_name'  => [
+                'nullable',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::requiredIf(fn () => $request->input('category') === 'gift'),
+            ],
+            'gift_received'   => [
+                'nullable',
+                'boolean',
+                \Illuminate\Validation\Rule::requiredIf(fn () => $request->input('category') === 'gift'),
+            ],
+            'received_date'   => 'required|date',
+            'receipt_number'  => 'nullable|string|max:100',
+            'notes'           => 'nullable|string',
+            'description'     => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -413,21 +452,38 @@ class ChandlaController extends Controller
         $userId = $request->user()->dataOwnerId();
         $chandla = Chandla::where('user_id', $userId)->findOrFail($id);
 
+        // Normalize boolean-like strings from mobile
+        if ($request->has('gift_received')) {
+            $val = $request->input('gift_received');
+            if ($val === 'true')  $request->merge(['gift_received' => true]);
+            if ($val === 'false') $request->merge(['gift_received' => false]);
+        }
+
+        // Treat empty strings as null for optional fields
+        foreach (['giver_phone', 'giver_email', 'giver_address', 'gpay_transaction_id',
+                  'gift_item_name', 'receipt_number', 'notes', 'description',
+                  'payment_method', 'amount'] as $field) {
+            if ($request->input($field) === '') {
+                $request->merge([$field => null]);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
-            'giver_name' => 'nullable|string|max:255',
-            'giver_phone' => 'nullable|string',
-            'giver_email' => 'nullable|email',
-            'giver_address' => 'nullable|string',
-            'category' => 'nullable|in:chandla,cover,gift',
-            'payment_method' => 'nullable|in:cash,gpay,hard_form,other',
-            'gpay_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'giver_name'          => 'nullable|string|max:255',
+            'giver_phone'         => 'nullable|string|max:20',
+            'giver_email'         => 'nullable|email|max:255',
+            'giver_address'       => 'nullable|string|max:500',
+            'category'            => 'nullable|in:chandla,cover,gift',
+            'payment_method'      => 'nullable|in:cash,gpay,hard_form,other',
+            'gpay_image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'gpay_transaction_id' => 'nullable|string|max:255',
-            'amount' => 'nullable|numeric|min:0',
-            'gift_item_name' => 'nullable|string|max:255',
-            'gift_received' => 'nullable|boolean',
-            'received_date' => 'nullable|date',
-            'receipt_number' => 'nullable|string',
-            'notes' => 'nullable|string',
+            'amount'              => 'nullable|numeric|min:0',
+            'gift_item_name'      => 'nullable|string|max:255',
+            'gift_received'       => 'nullable|boolean',
+            'received_date'       => 'nullable|date',
+            'receipt_number'      => 'nullable|string|max:100',
+            'notes'               => 'nullable|string',
+            'description'         => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
