@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\Ganpati\GanpatiController;
 use App\Http\Controllers\Api\FamilyMember\FamilyMemberController;
 use App\Http\Controllers\Api\Expense\ExpenseController;
 use App\Http\Controllers\Api\Subscription\SubscriptionController;
+use App\Http\Controllers\Webhooks\AppleWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,26 +83,30 @@ Route::prefix('v1')->group(function () {
             'success' => true,
             'data'    => [
                 'android' => [
-                    'min_version'    => '1.0.0',
-                    'min_build'      => 18,
-                    'latest_version' => '1.0.1',
-                    'latest_build'   => 12,
-                    'store_url'      => env('PLAY_STORE_URL', 'https://play.google.com/store/apps/details?id=com.skylighttech.chandla_book'),
-                    'force_update'   => true,
-                    'payment'        => true,
-                    'digitalcontent' => true,
-                    'update_message' => 'A critical update is required. Please update the app to continue.',
+                    'min_version'       => '1.1.1',
+                    'min_build'         => 18,
+                    'latest_version'    => '1.1.1',
+                    'latest_build'      => 13,
+                    'store_url'         => env('PLAY_STORE_URL', 'https://play.google.com/store/apps/details?id=com.skylighttech.chandla_book'),
+                    'force_update'      => true,
+                    'payment'           => true,
+                    'digitalcontent'    => true,
+                    'in_review_version' => '1.1.2',
+                    'in_review_build'   => 14,
+                    'update_message'    => 'A critical update is required. Please update the app to continue.',
                 ],
                 'ios'     => [
-                    'min_version'    => '1.0.0',
-                    'min_build'      => 18,
-                    'latest_version' => '1.0.1',
-                    'latest_build'   => 12,
-                    'store_url'      => env('APP_STORE_URL', 'https://apps.apple.com/us/app/chandla-book/id6796605523'),
-                    'force_update'   => true,
-                    'payment'        => false,
-                    'digitalcontent' => false,
-                    'update_message' => 'A critical update is required. Please update the app to continue.',
+                    'min_version'       => '1.1.1',
+                    'min_build'         => 18,
+                    'latest_version'    => '1.1.1',
+                    'latest_build'      => 13,
+                    'store_url'         => env('APP_STORE_URL', 'https://apps.apple.com/us/app/chandla-book/id6796605523'),
+                    'force_update'      => true,
+                    'payment'           => true,
+                    'digitalcontent'    => true,
+                    'in_review_version' => '1.1.2',
+                    'in_review_build'   => 14,
+                    'update_message'    => 'A critical update is required. Please update the app to continue.',
                 ],
             ],
         ]);
@@ -345,6 +350,10 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
     Route::post('/payments/razorpay/verify', [SubscriptionController::class, 'verify']);
 
+    // ── Apple In-App Purchase (StoreKit 2) ────────────────────────────────────
+    Route::post('/payments/apple/verify',  [AppleWebhookController::class, 'verify']);   // verify & activate after purchase
+    Route::post('/payments/apple/restore', [AppleWebhookController::class, 'restore']);  // restore on new device
+
     // Transactions Route
     Route::prefix('transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
@@ -408,6 +417,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/{id}',        [ExpenseController::class, 'update']);         // update (multipart fallback)
         Route::delete('/{id}',      [ExpenseController::class, 'destroy']);        // delete expense
     });
+});
+
+// ── Apple App Store Server Notifications V2 (public, no auth) ────────────────
+// Configure this URL in App Store Connect → App Information → App Store Server Notifications
+// Production & Sandbox URL: https://yourdomain.com/api/v1/webhooks/apple/notifications
+Route::prefix('v1')->group(function () {
+    Route::post('/webhooks/apple/notifications', [AppleWebhookController::class, 'webhook']);
 });
 
 // Push Notification Module Routes
