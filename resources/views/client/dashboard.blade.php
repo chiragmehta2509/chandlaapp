@@ -26,11 +26,11 @@
                         <i class="fa-regular fa-circle-question text-indigo-100/90 text-[0.75rem]" aria-hidden="true"></i>
                         FAQ
                     </a>
-                    <a href="{{ config('chandlabook.play_store_url') }}" target="_blank" class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-emerald-600/30 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition hover:bg-emerald-600/50">
+                    <a href="{{ config('chandlabook.play_store_url', 'https://play.google.com/store/apps/details?id=com.skylighttech.chandla_book') }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-emerald-600/30 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition hover:bg-emerald-600/50">
                         <i class="fab fa-google-play text-green-400 text-[0.75rem]" aria-hidden="true"></i>
                         Android App
                     </a>
-                    <a href="{{ config('chandlabook.app_store_url') }}" target="_blank" class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-600/30 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition hover:bg-slate-600/50">
+                    <a href="{{ config('chandlabook.app_store_url', 'https://apps.apple.com/us/app/chandla-book/id6796605523') }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-600/30 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition hover:bg-slate-600/50">
                         <i class="fab fa-apple text-slate-300 text-[0.75rem]" aria-hidden="true"></i>
                         iOS App
                     </a>
