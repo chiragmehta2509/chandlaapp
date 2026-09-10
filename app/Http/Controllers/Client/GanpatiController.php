@@ -430,6 +430,11 @@ class GanpatiController extends Controller
             try {
                 $waService = new \App\Services\WhatsAppService();
                 $cleanPhone = preg_replace('/^\+?91/', '', $chandla->giver_phone);
+                $eventTitle = trim($event->title ?? ($chandla->event->title ?? ''));
+                $amountParam = !empty($eventTitle)
+                    ? ($chandla->amount ?? 0) . ' for ' . $eventTitle
+                    : (string) ($chandla->amount ?? 0);
+
                 $waService->sendTemplateMessage(
                     to: '91' . $cleanPhone,
                     templateName: 'chandla_added',
@@ -439,7 +444,7 @@ class GanpatiController extends Controller
                             'type' => 'body',
                             'parameters' => [
                                 \App\Services\WhatsAppService::formatTextParameter($chandla->giver_name ?? 'Guest'),
-                                \App\Services\WhatsAppService::formatTextParameter((string) ($chandla->amount ?? 0))
+                                \App\Services\WhatsAppService::formatTextParameter($amountParam)
                             ]
                         ]
                     ]
