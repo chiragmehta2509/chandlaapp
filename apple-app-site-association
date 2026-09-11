@@ -24,32 +24,25 @@
         ],
         "components": [
           {
-            "/": "/client/account_verification/*",
-            "comment": "Account verification"
+            "/": "/client/account_verification/*"
           },
           {
-            "/": "/verify-account/*",
-            "comment": "Account verification"
+            "/": "/verify-account/*"
           },
           {
-            "/": "/client/reset-password/*",
-            "comment": "Password reset"
+            "/": "/client/reset-password/*"
           },
           {
-            "/": "/reset-password/*",
-            "comment": "Password reset"
+            "/": "/reset-password/*"
           },
           {
-            "/": "/client/register*",
-            "comment": "Register referral"
+            "/": "/client/register*"
           },
           {
-            "/": "/register*",
-            "comment": "Register"
+            "/": "/register*"
           },
           {
-            "/": "/*",
-            "comment": "All in-app routes"
+            "/": "/*"
           }
         ]
       }

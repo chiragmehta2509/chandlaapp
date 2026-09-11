@@ -23,6 +23,7 @@ class SubscriptionPack extends Model
         'limits',
         'live_payment_url',
         'test_payment_url',
+        'apple_product_id',   // StoreKit 2 product identifier
     ];
 
     protected $casts = [

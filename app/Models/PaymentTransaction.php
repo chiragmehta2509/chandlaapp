@@ -30,6 +30,12 @@ class PaymentTransaction extends Model
     public const PKG_DIRECT_GPAY       = 'direct_gpay_unlock';
     public const PKG_PROFESSIONAL      = 'professional';
     public const PKG_ENTERPRISE        = 'enterprise';
+    public const PKG_APPLE_IAP         = 'apple_iap';  // generic Apple IAP purchase
+
+    // ── Gateway constants ─────────────────────────────────────────────────────
+    public const GATEWAY_RAZORPAY  = 'razorpay';
+    public const GATEWAY_APPLE_IAP = 'apple_iap';
+    public const GATEWAY_GOOGLE    = 'google_play';
 
     protected $table = 'payment_transactions';
 
@@ -40,9 +46,13 @@ class PaymentTransaction extends Model
         'package_name',
         'amount_inr',
         'currency',
+        'payment_gateway',              // 'razorpay' | 'apple_iap' | 'google_play'
         'razorpay_order_id',
         'razorpay_payment_id',
         'razorpay_signature',
+        'apple_transaction_id',
+        'apple_original_transaction_id',
+        'apple_environment',
         'payment_method',
         'status',
         'failure_reason',
@@ -50,6 +60,8 @@ class PaymentTransaction extends Model
         'reference_id',
         'paid_at',
         'metadata',
+        'revoked_at',
+        'is_refunded',
     ];
 
     protected $casts = [
@@ -57,6 +69,8 @@ class PaymentTransaction extends Model
         'gateway_response' => 'array',
         'metadata'         => 'array',
         'paid_at'          => 'datetime',
+        'revoked_at'       => 'datetime',
+        'is_refunded'      => 'boolean',
     ];
 
     // ── Auto-generate transaction number on create ────────────────────────────

@@ -47,19 +47,34 @@ class PackController extends Controller
     public function index(Request $request)
     {
         $packsConfig = config('packs');
+
+        // Build a lookup map: configKey => apple_product_id from DB (if set)
+        $appleProductIds = [];
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('subscription_packs', 'apple_product_id')) {
+                \App\Models\SubscriptionPack::whereNotNull('apple_product_id')
+                    ->each(function ($pack) use (&$appleProductIds) {
+                        $appleProductIds[$pack->slug] = $pack->apple_product_id;
+                    });
+            }
+        } catch (\Throwable $e) {
+            // Non-fatal — apple_product_id will be null
+        }
+
         $packs = [];
 
         foreach (self::$packMap as $slug => $configKey) {
             $packConfig = $packsConfig[$configKey] ?? null;
             if ($packConfig) {
                 $packs[] = [
-                    'slug' => $slug,
-                    'config_key' => $configKey,
-                    'label' => $packConfig['label'] ?? '',
-                    'amount_inr' => (float) ($packConfig['amount_inr'] ?? 0),
-                    'description' => $packConfig['description'] ?? '',
-                    'features' => $packConfig['features'] ?? [],
-                    'min_level' => $packConfig['min_level'] ?? 1,
+                    'slug'             => $slug,
+                    'config_key'       => $configKey,
+                    'label'            => $packConfig['label'] ?? '',
+                    'amount_inr'       => (float) ($packConfig['amount_inr'] ?? 0),
+                    'description'      => $packConfig['description'] ?? '',
+                    'features'         => $packConfig['features'] ?? [],
+                    'min_level'        => $packConfig['min_level'] ?? 1,
+                    'apple_product_id' => $appleProductIds[$slug] ?? $appleProductIds[$configKey] ?? null,   // iOS StoreKit product ID
                 ];
             }
         }
