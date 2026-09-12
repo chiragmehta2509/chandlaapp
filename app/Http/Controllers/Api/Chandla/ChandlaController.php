@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\Chandla;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chandla;
+use App\Models\Contact;
+use App\Models\Guest;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\ActivityLog;
@@ -144,6 +146,83 @@ class ChandlaController extends Controller
             'success' => true,
             'data' => $chandlas
         ]);
+    }
+
+    /**
+     * GET /api/v1/chandlas/search-givers?q=...
+     * Returns up to 8 giver suggestions from Contacts, Guests, and chandla history.
+     * Used by Flutter to autocomplete the giver name field.
+     */
+    public function searchGivers(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'q' => 'required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => 'Validation error', 'errors' => $validator->errors()], 422);
+        }
+
+        $searchQuery = trim($request->q);
+        $userIds     = $request->user()->allowedUserIds();
+        $items       = [];
+        $seen        = [];
+
+        // 1. Contacts
+        $contacts = Contact::whereIn('user_id', $userIds)
+            ->where(function ($q) use ($searchQuery) {
+                $q->where('name', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('phone', 'like', '%' . $searchQuery . '%');
+            })
+            ->orderBy('name')
+            ->limit(8)
+            ->get(['name', 'phone', 'email', 'address']);
+
+        foreach ($contacts as $c) {
+            $key = strtolower(trim((string) $c->name));
+            if ($key === '' || isset($seen[$key])) continue;
+            $seen[$key] = true;
+            $items[] = ['giver_name' => $c->name, 'giver_phone' => $c->phone, 'giver_email' => $c->email, 'giver_address' => $c->address, 'source' => 'contact'];
+        }
+
+        // 2. Guests
+        if (count($items) < 8) {
+            $guests = Guest::whereIn('user_id', $userIds)
+                ->where(function ($q) use ($searchQuery) {
+                    $q->where('name', 'like', '%' . $searchQuery . '%')
+                      ->orWhere('phone', 'like', '%' . $searchQuery . '%');
+                })
+                ->orderBy('name')
+                ->limit(8)
+                ->get(['name', 'phone', 'email', 'address', 'city']);
+
+            foreach ($guests as $g) {
+                $key = strtolower(trim((string) $g->name));
+                if ($key === '' || isset($seen[$key])) continue;
+                $seen[$key] = true;
+                $address = trim(implode(', ', array_filter([$g->address, $g->city])));
+                $items[] = ['giver_name' => $g->name, 'giver_phone' => $g->phone, 'giver_email' => $g->email, 'giver_address' => $address ?: null, 'source' => 'guest'];
+                if (count($items) >= 8) break;
+            }
+        }
+
+        // 3. Chandla history
+        if (count($items) < 8) {
+            $rows = Chandla::whereIn('user_id', $userIds)
+                ->where('giver_name', 'like', '%' . $searchQuery . '%')
+                ->orderByDesc('received_date')->orderByDesc('id')
+                ->limit(50)
+                ->get(['giver_name', 'giver_phone', 'giver_email', 'giver_address']);
+
+            foreach ($rows as $row) {
+                $key = strtolower(trim((string) $row->giver_name));
+                if ($key === '' || isset($seen[$key])) continue;
+                $seen[$key] = true;
+                $items[] = ['giver_name' => $row->giver_name, 'giver_phone' => $row->giver_phone, 'giver_email' => $row->giver_email, 'giver_address' => $row->giver_address, 'source' => 'history'];
+                if (count($items) >= 8) break;
+            }
+        }
+
+        return response()->json(['success' => true, 'items' => $items]);
     }
 
     public function show(Request $request, $id)

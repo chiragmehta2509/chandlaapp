@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Chandla;
 use App\Models\Contact;
+use App\Models\Guest;
 use App\Models\EventCashInventory;
 use App\Models\Event;
 use App\Models\User;
@@ -183,7 +184,37 @@ class ChandlaController extends Controller
                 'giver_phone'   => $contact->phone,
                 'giver_email'   => $contact->email,
                 'giver_address' => $contact->address,
+                'source'        => 'contact',
             ];
+        }
+
+        // Also search Guests table
+        if (count($items) < 8) {
+            $guests = Guest::whereIn('user_id', $userIds)
+                ->where(function ($q) use ($searchQuery) {
+                    $q->where('name', 'like', '%' . $searchQuery . '%')
+                      ->orWhere('phone', 'like', '%' . $searchQuery . '%');
+                })
+                ->orderBy('name')
+                ->limit(8)
+                ->get(['name', 'phone', 'email', 'address', 'city']);
+
+            foreach ($guests as $guest) {
+                $key = strtolower(trim((string) $guest->name));
+                if ($key === '' || isset($seen[$key])) {
+                    continue;
+                }
+                $seen[$key] = true;
+                $address = trim(implode(', ', array_filter([$guest->address, $guest->city])));
+                $items[] = [
+                    'giver_name'    => $guest->name,
+                    'giver_phone'   => $guest->phone,
+                    'giver_email'   => $guest->email,
+                    'giver_address' => $address ?: null,
+                    'source'        => 'guest',
+                ];
+                if (count($items) >= 8) break;
+            }
         }
 
         // If fewer than 8, also pull unique names from chandla history
@@ -206,6 +237,7 @@ class ChandlaController extends Controller
                     'giver_phone'   => $row->giver_phone,
                     'giver_email'   => $row->giver_email,
                     'giver_address' => $row->giver_address,
+                    'source'        => 'history',
                 ];
                 if (count($items) >= 8) {
                     break;

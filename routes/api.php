@@ -284,6 +284,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/', [ChandlaController::class, 'index']);
         Route::get('/stats', [ChandlaController::class, 'stats']);
         Route::get('/pdf', [ChandlaController::class, 'downloadPdf']);
+        Route::get('/search-givers', [ChandlaController::class, 'searchGivers']); // must be before /{id}
         Route::get('/{id}', [ChandlaController::class, 'show']);
         Route::post('/', [ChandlaController::class, 'store']);
         Route::put('/{id}', [ChandlaController::class, 'update']);
