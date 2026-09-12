@@ -16,11 +16,7 @@
         <span>Back to guests</span>
     </a>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            <i class="fas fa-check-circle mr-1"></i>{{ session('success') }}
-        </div>
-    @endif
+
 
     {{-- Hero card --}}
     <div class="cb-card cb-card--hero relative overflow-hidden p-5 sm:p-7 mb-5 sm:mb-6">
@@ -46,11 +42,9 @@
                             <i class="fas fa-user-tag mr-1.5 opacity-80" aria-hidden="true"></i>{{ $guest->relationship }}
                         </p>
                     @endif
-                    @if($guest->city)
                         <p class="mt-0.5 text-xs sm:text-sm text-violet-200/80">
                             <i class="fas fa-location-dot mr-1.5 opacity-80" aria-hidden="true"></i>{{ $guest->city }}
                         </p>
-                    @endif
                     @if($guest->is_favorite)
                         <p class="mt-1 text-xs text-amber-200/90 inline-flex items-center gap-1">
                             <i class="fas fa-star" aria-hidden="true"></i>Favorite guest

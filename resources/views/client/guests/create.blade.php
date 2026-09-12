@@ -125,7 +125,7 @@
                         @enderror
                     </div>
                     <div class="space-y-1.5">
-                        <label for="guest-city" class="block text-sm font-semibold text-slate-800">City</label>
+                        <label for="guest-city" class="block text-sm font-semibold text-slate-800">City <span class="text-red-600 font-bold">*</span></label>
                         <div class="relative">
                             <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" aria-hidden="true">
                                 <i class="fas fa-city"></i>
@@ -135,6 +135,7 @@
                                    name="city"
                                    value="{{ old('city') }}"
                                    maxlength="100"
+                                   required
                                    class="cb-field w-full min-h-[2.75rem] !pl-10 text-base sm:text-sm @error('city') border-red-300 ring-2 ring-red-100 @enderror"
                                    placeholder="e.g. Ahmedabad">
                         </div>
@@ -155,12 +156,13 @@
                 </h3>
 
                 <div class="space-y-1.5">
-                    <label for="guest-relationship" class="block text-sm font-semibold text-slate-800">Relationship</label>
+                    <label for="guest-relationship" class="block text-sm font-semibold text-slate-800">Relationship <span class="text-red-600 font-bold">*</span></label>
                     <input id="guest-relationship"
                            type="text"
                            name="relationship"
                            value="{{ old('relationship') }}"
                            maxlength="100"
+                           required
                            list="relationship-suggestions"
                            class="cb-field w-full min-h-[2.75rem] text-base sm:text-sm @error('relationship') border-red-300 ring-2 ring-red-100 @enderror"
                            placeholder="Friend, cousin, relative, colleague…">

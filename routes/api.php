@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Notification\NotificationController;
 use App\Http\Controllers\Api\Event\EventController;
 use App\Http\Controllers\Api\Contact\ContactController;
+use App\Http\Controllers\Api\Guest\GuestController;
 use App\Http\Controllers\Api\Entry\EntryController;
 use App\Http\Controllers\Api\Invitation\InvitationController;
 use App\Http\Controllers\Api\UPI\UPIController;
@@ -250,6 +251,19 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::post('/import', [ContactController::class, 'import']);
         Route::get('/export', [ContactController::class, 'export']);
         Route::get('/export/template', [ContactController::class, 'downloadTemplate']);
+    });
+
+    // Guest Routes
+    Route::prefix('guests')->group(function () {
+        Route::get('/',              [GuestController::class, 'index']);
+        Route::get('/favorites',     [GuestController::class, 'favorites']);
+        Route::get('/search',        [GuestController::class, 'search']);
+        Route::post('/',             [GuestController::class, 'store']);
+        Route::get('/{id}',          [GuestController::class, 'show']);
+        Route::put('/{id}',          [GuestController::class, 'update']);
+        Route::post('/{id}',         [GuestController::class, 'update']);   // PATCH-compat for Flutter
+        Route::delete('/{id}',       [GuestController::class, 'destroy']);
+        Route::post('/{id}/favorite',[GuestController::class, 'toggleFavorite']);
     });
     
     // Entry / RSVP Routes

@@ -10,9 +10,6 @@
     </div>
     @canEdit
     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-        <a href="{{ route('client.guests.import') }}" class="cb-btn cb-btn--ghost w-full sm:w-auto justify-center">
-            <i class="fas fa-file-import"></i>Import from phone
-        </a>
         <a href="{{ route('client.guests.create') }}" class="cb-btn cb-btn--gold w-full sm:w-auto justify-center">
             <i class="fas fa-plus"></i>Add guest
         </a>
