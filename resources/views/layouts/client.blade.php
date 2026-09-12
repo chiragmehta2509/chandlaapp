@@ -61,6 +61,7 @@
                     <a href="{{ route('client.expenses.index') }}" class="cb-nav-item {{ request()->routeIs('client.expenses.*') ? 'cb-nav-item--active' : '' }}">💸 Expenses</a>
                     <a href="{{ route('client.ganpati.index') }}" class="cb-nav-item cb-nav-item--ganpati {{ request()->routeIs('client.ganpati.*') ? 'cb-nav-item--active' : '' }}" style="color: #ea6d0e;">🪔 Ganpati Special</a>
                     <a href="{{ route('client.contacts.index') }}" class="cb-nav-item {{ request()->routeIs('client.contacts.*') ? 'cb-nav-item--active' : '' }}">Contacts</a>
+                    <a href="{{ route('client.guests.index') }}" class="cb-nav-item {{ request()->routeIs('client.guests.*') ? 'cb-nav-item--active' : '' }}">Guests</a>
                     <a href="{{ route('client.marriage-invitations.index') }}" class="cb-nav-item {{ request()->routeIs('client.marriage-invitations.*') ? 'cb-nav-item--active' : '' }}">Invitation</a>
                     <a href="{{ route('client.pre-wedding.index') }}" class="cb-nav-item {{ request()->routeIs('client.pre-wedding.*') ? 'cb-nav-item--active' : '' }}">Pre-wedding</a>
                     <a href="{{ route('client.plans') }}" class="cb-nav-item {{ request()->routeIs('client.plans') ? 'cb-nav-item--active' : '' }}">Plans</a>
@@ -277,6 +278,10 @@
             <a href="{{ route('client.contacts.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.contacts.*') ? 'cb-bottom-nav__item--active' : '' }}">
                 <i class="fa-solid fa-user-group"></i>
                 <span>Contacts</span>
+            </a>
+            <a href="{{ route('client.guests.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.guests.*') ? 'cb-bottom-nav__item--active' : '' }}">
+                <i class="fa-solid fa-users-line"></i>
+                <span>Guests</span>
             </a>
             <a href="{{ route('client.marriage-invitations.index') }}" class="cb-bottom-nav__item {{ request()->routeIs('client.marriage-invitations.*') ? 'cb-bottom-nav__item--active' : '' }}">
                 <i class="fa-solid fa-envelope-open-text"></i>

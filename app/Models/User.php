@@ -99,6 +99,11 @@ class User extends Authenticatable
         return $this->hasMany(Contact::class);
     }
 
+    public function guests()
+    {
+        return $this->hasMany(Guest::class);
+    }
+
     public function upiTransactions()
     {
         return $this->hasMany(UPITransaction::class);

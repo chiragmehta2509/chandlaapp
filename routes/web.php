@@ -16,6 +16,7 @@ use App\Http\Controllers\Client\DashboardController as ClientDashboardController
 use App\Http\Controllers\Client\EventController as ClientEventController;
 use App\Http\Controllers\Client\ChandlaController as ClientChandlaController;
 use App\Http\Controllers\Client\ContactController as ClientContactController;
+use App\Http\Controllers\Client\GuestController as ClientGuestController;
 use App\Http\Controllers\Client\QRCodeController as ClientQRCodeController;
 use App\Http\Controllers\Client\CashInventoryController as ClientCashInventoryController;
 use App\Http\Controllers\Client\GPayController as ClientGPayController;
@@ -254,6 +255,12 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/contacts/import', [ClientContactController::class, 'import'])->name('contacts.import.store');
         Route::resource('contacts', ClientContactController::class);
         Route::post('/contacts/{id}/toggle-favorite', [ClientContactController::class, 'toggleFavorite'])->name('contacts.toggle-favorite');
+
+        // Guests Management
+        Route::get('/guests/import', [ClientGuestController::class, 'importForm'])->name('guests.import');
+        Route::post('/guests/import', [ClientGuestController::class, 'import'])->name('guests.import.store');
+        Route::resource('guests', ClientGuestController::class);
+        Route::post('/guests/{id}/toggle-favorite', [ClientGuestController::class, 'toggleFavorite'])->name('guests.toggle-favorite');
 
         // Marriage invitation cards (₹300 Razorpay — instant webhook unlock)
         Route::get('/marriage-invitations', [ClientMarriageInvitationController::class, 'index'])->name('marriage-invitations.index');

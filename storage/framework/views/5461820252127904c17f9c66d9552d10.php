@@ -62,10 +62,10 @@
                 
                 <div class="mt-6 flex flex-wrap justify-center items-center gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
                     <span>Download Mobile App:</span>
-                    <a href="<?php echo e(config('chandlabook.play_store_url')); ?>" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-900 dark:text-white transition-colors border border-slate-300 dark:border-white/10">
+                    <a href="<?php echo e(config('chandlabook.play_store_url', 'https://play.google.com/store/apps/details?id=com.skylighttech.chandla_book')); ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-900 dark:text-white transition-colors border border-slate-300 dark:border-white/10">
                         <i class="fab fa-google-play text-sm text-green-500"></i> Google Play
                     </a>
-                    <a href="<?php echo e(config('chandlabook.app_store_url')); ?>" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-900 dark:text-white transition-colors border border-slate-300 dark:border-white/10">
+                    <a href="<?php echo e(config('chandlabook.app_store_url', 'https://apps.apple.com/us/app/chandla-book/id6796605523')); ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-900 dark:text-white transition-colors border border-slate-300 dark:border-white/10">
                         <i class="fab fa-apple text-sm"></i> App Store
                     </a>
                 </div>
