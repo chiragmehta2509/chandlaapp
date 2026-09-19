@@ -81,13 +81,19 @@
             @endif
 
             <div class="mt-6 flex flex-wrap gap-3">
-                @if(!$invitation->exportsUnlockedForUser() && !$invitation->hasPendingPayment())
+                @if(!$invitation->exportsUnlockedForUser() && !$invitation->hasPendingPayment() && config('payments.enabled', true))
                     <a href="{{ route('client.marriage-invitations.payment', $invitation->id) }}" data-loader="payment" class="cb-btn cb-btn--gold cb-btn--sm sm:!py-3 sm:!px-5 shadow-lg">
                         <i class="fas fa-lock-open" aria-hidden="true"></i>
                         Pay ₹{{ number_format((float) config('marriage_invitations.amount', 300), 0) }} with Razorpay
                     </a>
                 @endif
-                @if(!$invitation->isUnlocked())
+                @if(!$invitation->isUnlocked() && config('payments.enabled', true))
+                    <a href="{{ route('client.marriage-invitations.edit', $invitation->id) }}" class="cb-btn cb-btn--ghost cb-btn--sm sm:!py-3 sm:!px-5 !text-white !border-white/30 hover:!bg-white/10">
+                        <i class="fas fa-pen-to-square" aria-hidden="true"></i>
+                        Edit details
+                    </a>
+                @endif
+                @if(!config('payments.enabled', true))
                     <a href="{{ route('client.marriage-invitations.edit', $invitation->id) }}" class="cb-btn cb-btn--ghost cb-btn--sm sm:!py-3 sm:!px-5 !text-white !border-white/30 hover:!bg-white/10">
                         <i class="fas fa-pen-to-square" aria-hidden="true"></i>
                         Edit details
@@ -143,10 +149,8 @@
                 @endif
             </div>
         </div>
-    </div>
-
-    <div class="@if($invitation->exportsUnlockedForUser()) lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start @endif">
-        @if($invitation->exportsUnlockedForUser())
+     <div class="@if($invitation->exportsUnlockedForUser() || !config('payments.enabled', true)) lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start @endif">
+        @if($invitation->exportsUnlockedForUser() || !config('payments.enabled', true))
             <div class="lg:col-span-7 space-y-6 mb-6 lg:mb-0">
                 <div class="rounded-2xl border border-slate-200/90 bg-white dark:bg-slate-800 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-slate-50/80 to-white dark:from-slate-800 dark:to-slate-800/80">
@@ -154,7 +158,7 @@
                             <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 text-amber-800 text-sm"><i class="fas fa-print" aria-hidden="true"></i></span>
                             View or print
                         </h3>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">{{ $templateCount }} styles — same details on every card. Opens in a new tab; use your browser’s print or share.</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">{{ $templateCount }} styles — same details on every card. Opens in a new tab; use your browser's print or share.</p>
                     </div>
                     <div class="p-4 sm:p-5">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -178,7 +182,7 @@
             </div>
         @endif
 
-        <div class="{{ $invitation->exportsUnlockedForUser() ? 'lg:col-span-5' : 'max-w-2xl mx-auto' }} space-y-6 @if(!$invitation->exportsUnlockedForUser()) mb-8 @endif">
+        <div class="{{ $invitation->exportsUnlockedForUser() || !config('payments.enabled', true) ? 'lg:col-span-5' : 'max-w-2xl mx-auto' }} space-y-6 @if(!$invitation->exportsUnlockedForUser() && config('payments.enabled', true)) mb-8 @endif">
             @php
                 $firstKey = array_key_first($templates);
                 $firstName = $templates[$firstKey]['name'] ?? 'Style';
@@ -192,7 +196,7 @@
                         <iframe id="live-preview-iframe" src="{{ route('client.marriage-invitations.template-demo', ['layout' => $firstKey, 'invitation_id' => $invitation->id]) }}" class="w-full h-full border-0" title="Template Preview" loading="lazy"></iframe>
                     </div>
                 </div>
-                @if($invitation->exportsUnlockedForUser())
+                @if($invitation->exportsUnlockedForUser() || !config('payments.enabled', true))
                     <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 flex gap-3">
                         <a id="live-preview-png-btn" href="{{ route('client.marriage-invitations.export.png', $invitation->id) }}?layout={{ $firstKey }}" target="_blank" rel="noopener" class="cb-btn cb-btn--gold flex-1 justify-center shadow-sm">
                             <i class="fas fa-download text-xs" aria-hidden="true"></i> PNG
@@ -210,6 +214,7 @@
                 @endif
             </div>
         </div>
+    </div> </div>
     </div>
 
     {{-- Schedule Section --}}
@@ -257,7 +262,7 @@
     @endif
 
     {{-- Video tips — full width, only when exports are unlocked --}}
-    @if($invitation->exportsUnlockedForUser())
+    @if($invitation->exportsUnlockedForUser() || !config('payments.enabled', true))
     <div class="mt-6 cb-card p-5 sm:p-6 shadow-sm" id="mi-video-tips">
         <h3 class="text-base font-bold text-cb-navy dark:text-white flex items-center gap-2 mb-3">
             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-600 text-white text-sm" aria-hidden="true"><i class="fas fa-video"></i></span>
@@ -311,7 +316,7 @@
         </dl>
     </div>
 
-    @if(!$invitation->exportsUnlockedForUser())
+    @if(!$invitation->exportsUnlockedForUser() && config('payments.enabled', true))
         @if($invitation->hasPendingPayment())
             <div class="rounded-2xl border border-amber-200/80 dark:border-amber-800/60 bg-amber-50/40 dark:bg-amber-900/20 p-8 text-center">
                 <div class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-400 text-xl mb-4" aria-hidden="true">

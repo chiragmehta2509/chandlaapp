@@ -68,7 +68,7 @@
                 @if($prevDate !== '')
                     <p class="text-sm text-slate-600 dark:text-slate-300 mt-1"><i class="fas fa-calendar-day text-cb-gold/90 mr-1" aria-hidden="true"></i>{{ $prevDate }}</p>
                 @endif
-                @if($previewLocked)
+                @if($previewLocked && config('payments.enabled', true))
                     <div class="mt-4 rounded-xl border border-amber-300/70 bg-amber-50/95 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200 leading-relaxed">
                         <p class="font-semibold flex items-center gap-2"><i class="fas fa-lock" aria-hidden="true"></i> Payment required for full previews &amp; downloads</p>
                         <p class="mt-1.5 text-amber-900/90 dark:text-amber-300/90">You can review details and edit copy below. <strong>Open</strong>, <strong>PNG</strong>, print, and video stay locked until payment is confirmed. Use Razorpay with the <strong>same email or phone</strong> as this account.</p>
@@ -99,7 +99,7 @@
 @endif
 
 @if($latestInvitation)
-    @if(! $latestInvitation->exportsUnlockedForUser())
+    @if(! $latestInvitation->exportsUnlockedForUser() && config('payments.enabled', true))
         <div class="mb-8 flex flex-wrap items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/95 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200">
             <i class="fas fa-circle-info text-amber-600 dark:text-amber-500 mt-0.5 shrink-0" aria-hidden="true"></i>
             <span><strong>Tip:</strong> Use <strong>Edit invitation</strong> to change wording. Full card previews and downloads unlock after payment — see buttons above.</span>
@@ -125,8 +125,9 @@
     <span class="text-xs text-slate-500 dark:text-slate-400">{{ $templateCount }} looks · one shared form</span>
 </div>
 
-@if($latestInvitation && !$latestPaid)
-    {{-- Invitation saved but not paid / verified — no template actions here --}}
+    {{-- Template cards / paywall -- show cards only if no invitation OR paid/unlocked, hide paywall when payments disabled --}}
+@if($latestInvitation && !$latestPaid && config('payments.enabled', true))
+    {{-- Invitation saved but not paid / verified and payments enabled — no template actions here --}}
     <div class="cb-card mb-10 overflow-hidden border border-amber-200/90 dark:border-amber-900/50 bg-gradient-to-br from-amber-50/90 to-white dark:from-amber-950/40 dark:to-slate-900">
         <div class="px-5 py-4 border-b border-amber-100 dark:border-amber-900/50 flex items-center gap-3">
             <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200"><i class="fas fa-lock" aria-hidden="true"></i></span>
@@ -269,7 +270,7 @@
                             <td class="px-4 sm:px-5 py-3.5 text-right align-middle">
                                 <div class="flex flex-col items-end gap-1.5">
                                     <a href="{{ route('client.marriage-invitations.show', $inv->id) }}" class="cb-btn cb-btn--navy text-sm py-1.5 px-3 whitespace-nowrap">View</a>
-                                    @if(! $inv->exportsUnlockedForUser())
+                                    @if(! $inv->exportsUnlockedForUser() && config('payments.enabled', true))
                                         <a href="{{ route('client.marriage-invitations.payment', $inv->id) }}" class="text-xs font-semibold text-amber-800 hover:text-amber-950 underline underline-offset-2">Pay on Razorpay</a>
                                     @endif
                                 </div>
@@ -283,30 +284,32 @@
     </div>
 @endif
 
-@if($latestInvitation)
-    <a href="{{ route('client.marriage-invitations.edit', $latestInvitation->id) }}"
-       class="cb-fab"
-       title="Edit invitation"
-       aria-label="Edit invitation">
-        <i class="fas fa-pen"></i>
-    </a>
-@else
-    @if($showDemoThumbnails)
-        <a href="{{ route('client.packs.celebration.pay') }}" data-loader="payment"
-           class="cb-fab !bg-cb-navy"
-           title="Pay celebration pack"
-           aria-label="Pay celebration pack">
-            <i class="fas fa-gift"></i>
+    @if($latestInvitation)
+        {{-- FAB: edit existing invitation --}}
+        <a href="{{ route('client.marriage-invitations.edit', $latestInvitation->id) }}"
+           class="cb-fab"
+           title="Edit invitation"
+           aria-label="Edit invitation">
+            <i class="fas fa-pen"></i>
         </a>
     @else
-        <a href="{{ route('client.marriage-invitations.create') }}"
-           class="cb-fab"
-           title="Create invitation"
-           aria-label="Create invitation">
-            <i class="fas fa-plus"></i>
-        </a>
+        {{-- No invitation yet: if demo thumbnails are shown AND payments are enabled, show pack pay FAB; else show create FAB --}}
+        @if($showDemoThumbnails && config('payments.enabled', true))
+            <a href="{{ route('client.packs.celebration.pay') }}" data-loader="payment"
+               class="cb-fab !bg-cb-navy"
+               title="Pay celebration pack"
+               aria-label="Pay celebration pack">
+                <i class="fas fa-gift"></i>
+            </a>
+        @else
+            <a href="{{ route('client.marriage-invitations.create') }}"
+               class="cb-fab"
+               title="Create invitation"
+               aria-label="Create invitation">
+                <i class="fas fa-plus"></i>
+            </a>
+        @endif
     @endif
-@endif
 @endsection
 
 @push('styles')

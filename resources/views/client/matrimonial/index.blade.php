@@ -15,7 +15,7 @@
                 <span class="text-slate-300 hidden sm:inline" aria-hidden="true">|</span>
                 <a href="{{ route('client.matrimonial.interest-privacy') }}" class="text-cb-navy font-medium hover:underline py-0.5">Interest privacy</a>
             </div>
-            @if(!$viewerHasPlan)
+            @if(!$viewerHasPlan && config('payments.enabled', true))
                 <a href="{{ route('client.matrimonial.plans') }}" class="inline-flex w-full sm:w-auto min-h-[2.75rem] items-center justify-center gap-1.5 rounded-lg bg-amber-500 px-3 py-2 text-sm font-semibold text-slate-900 shadow hover:bg-amber-400 touch-manipulation text-center sm:ml-0">
                     <i class="fa-solid fa-unlock shrink-0" aria-hidden="true"></i> Unlock full profiles
                 </a>
@@ -65,14 +65,14 @@
                     @else
                         <div class="flex h-full min-h-[10rem] items-center justify-center text-slate-400 text-sm">No photo</div>
                     @endif
-                    @if(!$viewerHasPlan)
+                    @if(!$viewerHasPlan && config('payments.enabled', true))
                         <div class="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-slate-900/85 via-slate-900/25 to-transparent p-2.5 sm:p-4">
                             <span class="text-[0.7rem] sm:text-xs font-semibold text-white/95 text-center leading-tight"><i class="fa-solid fa-lock mr-0.5"></i> Upgrade to view details</span>
                         </div>
                     @endif
                 </a>
                 <div class="p-3.5 sm:p-4 flex-1 flex flex-col min-w-0">
-                    @if($viewerHasPlan)
+                    @if($viewerHasPlan || !config('payments.enabled', true))
                         <h2 class="font-bold text-cb-navy text-base sm:text-lg leading-tight break-words">{{ $m->display_name }}</h2>
                         <p class="text-sm text-slate-600 mt-1 break-words">{{ $m->age }} · {{ $m->city }}</p>
                         @if($m->profession)

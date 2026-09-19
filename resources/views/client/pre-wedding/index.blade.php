@@ -28,7 +28,7 @@
     <div class="mb-6">
         <h1 class="cb-page-title">Pre-wedding countdown</h1>
         <p class="cb-subtitle max-w-3xl">Upload a different photo for each milestone — every card uses its <strong>own layout, colours, and typography</strong>. Download a high-resolution PNG for Instagram, WhatsApp, or printing.</p>
-        @if($showDemoOnly)
+        @if($showDemoOnly && config('payments.enabled', true))
             @php $pwPack = number_format((float) config('packs.celebration.amount_inr', 300), 0); @endphp
             <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-950">
                 <p class="font-semibold mb-2">Preview mode — celebration pack not active on this account yet.</p>
@@ -40,7 +40,11 @@
         @endif
     </div>
 
-    @if(!$showDemoOnly)
+    @php
+        // When payments are disabled, treat all users as having full access (not demo-only)
+        $effectiveShowDemoOnly = $showDemoOnly && config('payments.enabled', true);
+    @endphp
+    @if(!$effectiveShowDemoOnly)
     <div class="cb-card p-5 sm:p-6 mb-8 border border-slate-200/90 bg-white dark:bg-slate-800 dark:border-slate-700 rounded-2xl shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Pre-wedding Settings (Date & Custom Text) --}}
@@ -94,7 +98,7 @@
     @endif
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        @if($showDemoOnly)
+        @if($effectiveShowDemoOnly)
             @include('client.pre-wedding.partials.demo-milestone-cards', ['milestones' => $milestones, 'themeHints' => $themeHints])
         @else
         @foreach($milestones as $key => $m)

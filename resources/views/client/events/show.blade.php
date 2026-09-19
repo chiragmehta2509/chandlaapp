@@ -182,7 +182,7 @@
                 @endif
             </div>
 
-            @if($plan === 'free' || $plan === 'payg')
+            @if(($plan === 'free' || $plan === 'payg') && config('payments.enabled', true))
                 <div class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-700/80 flex flex-col gap-2 mt-auto">
                     @if(Auth::user()->free_event_credits > 0)
                         <form method="POST" action="{{ route('client.events.plan.update', $event->id) }}">
@@ -201,6 +201,7 @@
                     </a>
                 </div>
             @endif
+
         </div>
     </div>
 </div>

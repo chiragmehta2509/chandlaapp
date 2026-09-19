@@ -12,7 +12,7 @@
     <p class="mt-2 text-sm">
         <a href="{{ route('client.matrimonial.interest-privacy') }}" class="font-medium text-cb-navy hover:underline touch-manipulation">Interest privacy &amp; blocked list →</a>
     </p>
-    @if(!$viewerHasPlan)
+    @if(!$viewerHasPlan && config('payments.enabled', true))
         <p class="mt-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 break-words">To send or respond to interests, <a href="{{ route('client.matrimonial.plans') }}" class="font-semibold underline">upgrade to a plan</a>. You can still block people below.</p>
     @endif
 
@@ -33,7 +33,7 @@
                     </form>
                 @endif
             </div>
-            @if($r->status === 'pending' && $viewerHasPlan)
+            @if($r->status === 'pending' && ($viewerHasPlan || !config('payments.enabled', true)))
                 <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto shrink-0 sm:min-w-0">
                     <form method="post" action="{{ route('client.matrimonial.interests.accept', $r->id) }}" class="w-full sm:w-auto min-w-0 sm:min-w-[6.5rem]">
                         @csrf

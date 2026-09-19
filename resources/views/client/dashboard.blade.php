@@ -145,7 +145,7 @@
     </div>
 </div>
 
-@if($stats['show_global_free_limit'])
+@if($stats['show_global_free_limit'] && config('payments.enabled', true))
 <div class="mb-6">
     <div class="cb-card p-5 sm:p-6 border-l-4 border-amber-500">
         <h2 class="text-lg font-bold text-gray-800 dark:text-white mb-2">Free Plan Usage (All Events)</h2>
@@ -175,6 +175,7 @@
     </div>
 </div>
 @endif
+
 
 @canEdit
 @if($dashboardQuickEvents->isNotEmpty())

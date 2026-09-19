@@ -18,7 +18,7 @@
         </div>
 
         <div class="p-4 sm:p-6 min-w-0">
-            @if($viewerHasPlan)
+            @if($viewerHasPlan || !config('payments.enabled', true))
                 <h1 class="text-xl sm:text-2xl font-bold text-cb-navy break-words">{{ $p->display_name }}</h1>
                 <p class="text-slate-600 mt-1.5 text-sm sm:text-base break-words">{{ $p->age }} years · {{ $p->city }} · {{ ucfirst($p->gender) }}</p>
                 @if($p->religion || $p->caste)
@@ -57,7 +57,7 @@
                 </div>
             @endif
 
-            @if($viewerHasPlan)
+            @if($viewerHasPlan || !config('payments.enabled', true))
                 <div class="mt-6 border-t border-slate-200 pt-4">
                     <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Interests</p>
                     @if($interest)
