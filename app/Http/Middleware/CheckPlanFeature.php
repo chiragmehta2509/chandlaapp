@@ -37,7 +37,7 @@ class CheckPlanFeature
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        // Not logged in — let auth middleware handle it
+        // Not logged in ï¿½ let auth middleware handle it
         if (! $user) {
             return $next($request);
         }
@@ -58,7 +58,7 @@ class CheckPlanFeature
         $requiredPlan = $levelNames[$minLevel] ?? "Plan Level {$minLevel}";
         $upgradeUrl   = route('client.plans');
 
-        // API / AJAX — return JSON
+        // API / AJAX ï¿½ return JSON
         if ($request->expectsJson()) {
             return response()->json([
                 'error'          => "This feature requires the {$requiredPlan} or higher.",
@@ -69,7 +69,7 @@ class CheckPlanFeature
             ], 403);
         }
 
-        // Browser — render upgrade prompt view
+        // Browser ï¿½ render upgrade prompt view
         return response()->view('errors.plan-required', [
             'requiredLevel' => $minLevel,
             'requiredPlan'  => $requiredPlan,

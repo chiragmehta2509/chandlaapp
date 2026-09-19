@@ -132,6 +132,10 @@ class Event extends Model
      */
     public function hasDirectGpayQrUnlocked(): bool
     {
+        if (!config('payments.enabled', true)) {
+            return true;
+        }
+
         if ($this->user && $this->user->planLevel() >= 2) {
             return true;
         }
@@ -157,6 +161,10 @@ class Event extends Model
      */
     public function hasGuestPayPackChandlaUnlimited(): bool
     {
+        if (!config('payments.enabled', true)) {
+            return true;
+        }
+
         if ($this->user && $this->user->planLevel() >= 2) {
             return true;
         }

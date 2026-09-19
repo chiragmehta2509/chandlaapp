@@ -211,6 +211,10 @@ class User extends Authenticatable
      */
     public function planLevel(): int
     {
+        if (!config('payments.enabled', true)) {
+            return 999;
+        }
+
         if ($this->enterprise_pack_paid_at !== null) return 7;
         if ($this->professional_pack_paid_at !== null) return 6;
         if ($this->premium_bundle_paid_at !== null) return 5;

@@ -183,7 +183,7 @@
                     <i class="fas fa-file-invoice mr-1.5"></i>Cover
                 </a>
                 @endcanEdit
-                @if($event->hasDirectGpayQrUnlocked())
+                @if($event->hasDirectGpayQrUnlocked() || !config('payments.enabled', true))
                 <button type="button"
                         class="direct-gpay-open inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 hover:bg-emerald-200"
                         data-event-id="{{ $event->id }}"
@@ -201,12 +201,15 @@
                     <i class="fas fa-hourglass-half mr-1.5"></i>Direct QR — pending
                 </a>
                 @else
+                @if(config('payments.enabled', true))
                 <a href="{{ route('client.events.direct-gpay-unlock.show', $event) }}"
                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 hover:bg-emerald-200"
                    title="Direct QR for your Event to display on invitation card. User can pay using direct QR and upload screenshots.">
                     <i class="fas fa-lock-open mr-1.5"></i>Unlock Direct QR (₹{{ number_format((float) config('services.direct_gpay_unlock.amount', 400), 0) }})
                 </a>
                 @endif
+                @endif
+
             </div>
             @endif
             <div class="flex justify-between items-center gap-3 pt-3 border-t border-slate-100 mt-auto">
