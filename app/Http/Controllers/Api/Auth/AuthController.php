@@ -198,12 +198,10 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'plan'    => 'Unlimited',
                 'data'    => [
                     'user'       => $user,
                     'token'      => $token,
                     'token_type' => 'Bearer',
-                    'plan'       => 'Unlimited',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -330,12 +328,10 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'plan'    => 'Unlimited',
                 'data'    => [
                     'user'       => $user,
                     'token'      => $token,
                     'token_type' => 'Bearer',
-                    'plan'       => 'Unlimited',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -415,12 +411,10 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'plan'    => 'Unlimited',
                 'data'    => [
                     'user'       => $user,
                     'token'      => $token,
                     'token_type' => 'Bearer',
-                    'plan'       => 'Unlimited',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -558,12 +552,10 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'OTP verified successfully',
-            'plan'    => 'Unlimited',
             'data'    => [
                 'user'       => $user,
                 'token'      => $token,
                 'token_type' => 'Bearer',
-                'plan'       => 'Unlimited',
             ],
         ]);
     }
@@ -726,12 +718,10 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
-            'plan'    => 'Unlimited',
             'data'    => [
                 'user'       => $user,
                 'token'      => $token,
                 'token_type' => 'Bearer',
-                'plan'       => 'Unlimited',
             ],
         ]);
     }
@@ -772,7 +762,6 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'plan'    => 'Unlimited',
             'data'    => $request->user()->load('settings'),
         ]);
     }
@@ -1084,12 +1073,10 @@ class AuthController extends Controller
                 'success'        => true,
                 'message'        => 'Account already verified. Logged in successfully.',
                 'phone_verified' => !is_null($existingUser->phone_verified_at),
-                'plan'           => 'Unlimited',
                 'data'           => [
                     'user'       => $existingUser,
                     'token'      => $authToken,
                     'token_type' => 'Bearer',
-                    'plan'       => 'Unlimited',
                 ],
             ]);
         }
@@ -1194,12 +1181,10 @@ class AuthController extends Controller
             'success'        => true,
             'message'        => 'Account verified and created successfully.',
             'phone_verified' => !is_null($user->phone_verified_at),
-            'plan'           => 'Unlimited',
             'data'           => [
                 'user'       => $user,
                 'token'      => $authToken,
                 'token_type' => 'Bearer',
-                'plan'       => 'Unlimited',
             ],
         ], 201);
     }
