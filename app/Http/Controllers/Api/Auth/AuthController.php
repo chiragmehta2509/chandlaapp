@@ -552,10 +552,12 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'OTP verified successfully',
+            'plan'    => 'Unlimited',
             'data'    => [
                 'user'       => $user,
                 'token'      => $token,
                 'token_type' => 'Bearer',
+                'plan'       => 'Unlimited',
             ],
         ]);
     }
@@ -718,10 +720,12 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
+            'plan'    => 'Unlimited',
             'data'    => [
                 'user'       => $user,
                 'token'      => $token,
                 'token_type' => 'Bearer',
+                'plan'       => 'Unlimited',
             ],
         ]);
     }
@@ -1073,10 +1077,12 @@ class AuthController extends Controller
                 'success'        => true,
                 'message'        => 'Account already verified. Logged in successfully.',
                 'phone_verified' => !is_null($existingUser->phone_verified_at),
+                'plan'           => 'Unlimited',
                 'data'           => [
                     'user'       => $existingUser,
                     'token'      => $authToken,
                     'token_type' => 'Bearer',
+                    'plan'       => 'Unlimited',
                 ],
             ]);
         }
@@ -1181,12 +1187,45 @@ class AuthController extends Controller
             'success'        => true,
             'message'        => 'Account verified and created successfully.',
             'phone_verified' => !is_null($user->phone_verified_at),
+            'plan'           => 'Unlimited',
             'data'           => [
                 'user'       => $user,
                 'token'      => $authToken,
                 'token_type' => 'Bearer',
+                'plan'       => 'Unlimited',
             ],
         ], 201);
+    }
+
+    /**
+     * POST /api/v1/auth/register/verify
+     *
+     * Verify registration via OTP or token and return plan='Unlimited' in the response payload.
+     */
+    public function verifyRegisterOtp(Request $request)
+    {
+        if ($request->filled('token')) {
+            return $this->verifyAccount($request);
+        }
+
+        if ($request->filled('phone') && $request->filled('otp')) {
+            return $this->verifyOTP($request);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'otp'   => 'required|string',
+            'phone' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        return $this->verifyOTP($request);
     }
 
     /**
