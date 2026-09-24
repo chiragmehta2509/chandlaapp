@@ -73,6 +73,7 @@ class User extends Authenticatable
     protected $appends = [
         'is_email_verified',
         'is_phone_verified',
+        'plan',
     ];
 
     public function getIsEmailVerifiedAttribute()
@@ -83,6 +84,11 @@ class User extends Authenticatable
     public function getIsPhoneVerifiedAttribute()
     {
         return $this->phone_verified_at !== null;
+    }
+
+    public function getPlanAttribute()
+    {
+        return 'Unlimited';
     }
 
     public const FAMILY_ROLE_VIEWER = 'viewer';

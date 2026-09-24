@@ -198,10 +198,12 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
+                'plan'    => 'Unlimited',
                 'data'    => [
                     'user'       => $user,
                     'token'      => $token,
                     'token_type' => 'Bearer',
+                    'plan'       => 'Unlimited',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -328,10 +330,12 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
+                'plan'    => 'Unlimited',
                 'data'    => [
                     'user'       => $user,
                     'token'      => $token,
                     'token_type' => 'Bearer',
+                    'plan'       => 'Unlimited',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -411,10 +415,12 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
+                'plan'    => 'Unlimited',
                 'data'    => [
                     'user'       => $user,
                     'token'      => $token,
                     'token_type' => 'Bearer',
+                    'plan'       => 'Unlimited',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -766,6 +772,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
+            'plan'    => 'Unlimited',
             'data'    => $request->user()->load('settings'),
         ]);
     }
