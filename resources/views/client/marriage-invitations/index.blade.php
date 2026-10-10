@@ -39,14 +39,14 @@
                class="cb-btn cb-btn--gold w-full sm:w-auto justify-center text-center px-8 py-3.5 text-base shadow-md ring-1 ring-amber-400/40">
                 <i class="fas fa-plus" aria-hidden="true"></i> Create your invitation
             </a>
-            @if($showDemoThumbnails && config('payments.enabled', true))
+            {{-- @if($showDemoThumbnails && config('payments.enabled', true))
                 <a href="{{ route('client.packs.celebration.pay') }}" data-loader="payment" class="cb-btn cb-btn--navy w-full sm:w-auto justify-center text-center">
                     <i class="fas fa-arrow-up-right-from-square text-xs" aria-hidden="true"></i> Pay ₹{{ $packPrice }} celebration pack (Razorpay)
                 </a>
             @endif
             @if(config('payments.enabled', true))
                 <p class="text-xs text-slate-500 text-center sm:text-right">Takes a few minutes · ₹{{ $price }} for this card on Razorpay, or the ₹{{ $packPrice }} celebration pack</p>
-            @endif
+            @endif --}}
         @endif
     </div>
 </div>

@@ -22,5 +22,5 @@
  */
 
 return [
-    'enabled' => filter_var(env('PAYMENTS_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+    'enabled' => false,
 ];

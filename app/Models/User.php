@@ -217,27 +217,7 @@ class User extends Authenticatable
      */
     public function planLevel(): int
     {
-        if (!config('payments.enabled', true)) {
-            return 999;
-        }
-
-        if ($this->enterprise_pack_paid_at !== null) return 7;
-        if ($this->professional_pack_paid_at !== null) return 6;
-        if ($this->premium_bundle_paid_at !== null) return 5;
-        if ($this->family_pack_paid_at !== null) return 4;
-        if ($this->ledger_duo_pack_paid_at !== null) return 3;
-
-        // Guest Contribution credit check
-        $hasGuestPay = $this->guest_pay_single_event_credits > 0 ||
-            \App\Models\UPITransaction::where('user_id', $this->id)
-                ->where('status', 'completed')
-                ->where('metadata->source', 'guest_pay_single_pack')
-                ->exists();
-
-        if ($hasGuestPay) return 2;
-        if ($this->celebration_pack_paid_at !== null) return 1;
-
-        return 0;
+        return 999;
     }
 
     public function maxEventsAllowed(): int

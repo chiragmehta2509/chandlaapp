@@ -27,7 +27,7 @@ class MarriageInvitationController extends Controller
         $latestInvitation = MarriageInvitation::whereIn('user_id', Auth::user()->allowedUserIds())
             ->orderByDesc('updated_at')
             ->first();
-        $showDemoThumbnails = ! Auth::user()->hasCelebrationPackAccess();
+        $showDemoThumbnails = false; // ! Auth::user()->hasCelebrationPackAccess();
 
         return view('client.marriage-invitations.index', compact('templates', 'invitations', 'latestInvitation', 'showDemoThumbnails'));
     }
