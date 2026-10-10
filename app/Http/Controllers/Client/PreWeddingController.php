@@ -29,7 +29,7 @@ class PreWeddingController extends Controller
             ['user_id' => $userId],
             ['wedding_date' => null]
         );
-        $showDemoOnly = ! $user->hasCelebrationPackAccess();
+        $showDemoOnly = false; // ! $user->hasCelebrationPackAccess();
 
         return view('client.pre-wedding.index', compact('milestones', 'assets', 'setting', 'showDemoOnly'));
     }
@@ -290,16 +290,6 @@ SVG;
 
     private function ensureCelebrationPack(): ?RedirectResponse
     {
-        if (Auth::user()->hasCelebrationPackAccess()) {
-            return null;
-        }
-
-        if (request()->expectsJson()) {
-            abort(403, 'Pay the Celebration Plan to use pre-wedding uploads and exports.');
-        }
-
-        return redirect()
-            ->route('client.pre-wedding.index')
-            ->withErrors(['pack' => 'Pay the Celebration Plan to upload photos, preview cards, and download PNGs.']);
+        return null;
     }
 }

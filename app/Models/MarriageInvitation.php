@@ -35,7 +35,7 @@ class MarriageInvitation extends Model
 
     public function isUnlocked(): bool
     {
-        return $this->paid_at !== null;
+        return true;
     }
 
     /**
@@ -43,22 +43,7 @@ class MarriageInvitation extends Model
      */
     public function isUnlockedForUser(?Authenticatable $user = null): bool
     {
-        if ($this->isUnlocked()) {
-            return true;
-        }
-        $user = $user ?? auth()->user();
-        if ($user instanceof User && $user->hasCelebrationPackAccess()) {
-            return true;
-        }
-        if ($user && config('marriage_invitations.dev_unlock_all', false)) {
-            return true;
-        }
-        if (!$user || !isset($user->email)) {
-            return false;
-        }
-        $emails = config('marriage_invitations.bypass_payment_emails', []);
-
-        return in_array(strtolower((string) $user->email), $emails, true);
+        return true;
     }
 
     /**
@@ -67,19 +52,7 @@ class MarriageInvitation extends Model
      */
     public function exportsUnlockedForUser(?Authenticatable $user = null): bool
     {
-        if ($this->isUnlocked()) {
-            return true;
-        }
-        $user = $user ?? auth()->user();
-        if ($user instanceof User && $user->hasCelebrationPackAccess()) {
-            return true;
-        }
-        if (!$user || !isset($user->email)) {
-            return false;
-        }
-        $emails = config('marriage_invitations.bypass_payment_emails', []);
-
-        return in_array(strtolower((string) $user->email), $emails, true);
+        return true;
     }
 
     public function hasPendingPayment(): bool

@@ -98,7 +98,7 @@
 
     {{-- New Interconnected Pricing Section --}}
     <div class="mt-8">
-        @include('partials.pricing-section')
+        {{-- @include('partials.pricing-section') --}}
     </div>
 </div>
 @endsection

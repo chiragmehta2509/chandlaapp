@@ -126,7 +126,7 @@ class MarriageInvitationController extends Controller
 
         return redirect()
             ->route('client.marriage-invitations.show', $invitation->id)
-            ->with('success', 'Details saved. Pay ₹' . number_format($amount, 0) . ' to unlock download and sharing.');
+            ->with('success', 'Details saved.');
     }
 
     public function show(int $id)
